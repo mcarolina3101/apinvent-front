@@ -1,0 +1,84 @@
+::ng-deep .demo-table {
+    width: 100%;
+    height: 75%;
+    overflow: auto; 
+  }
+  
+  ::ng-deep .mat-column-demo-ciudad {
+    font-style: italic;
+    width: 10% !important; 
+    max-width: 150px;
+
+  }
+
+  ::ng-deep .mat-column-demo-agencia {
+    font-style: italic;
+    width: 10% !important;
+    max-width: 150px;
+
+  }
+
+  ::ng-deep .mat-column-demo-ubicacion {
+    font-style: italic;
+    width: 10% !important;
+    max-width: 90px;
+
+  }
+  ::ng-deep .mat-column-demo-ambiente {
+    font-style: italic;
+    width: 10% !important;
+    max-width: 90px;
+  }
+
+  ::ng-deep .mat-column-demo-nombre {
+    font-style: italic;
+    width: 20% !important;
+    max-width: 160px;
+  }
+
+  ::ng-deep .mat-column-demo-ip {
+    font-style: italic;
+    width: 10% !important;
+    max-width: 90px;
+
+  }
+
+  ::ng-deep .mat-column-demo-equipo {
+    font-style: italic;
+    width: 10% !important;
+    max-width: 120px;
+
+  }
+
+  ::ng-deep .mat-column-demo-fecha {
+    font-style: italic;
+    width: 20% !important;
+    max-width: 120px;
+
+  }
+  ::ng-deep .mat-column-demo-action {
+    width: 10%;
+    max-width: 70px;
+
+  }
+  ::ng-deep .mat-form-field .mat-form-field-label{
+      font-size: 14px;
+      font-weight: bold;
+  }
+
+  ::ng-deep .mat-header-cell{
+    font-weight: bold;
+    font-size: 14px;
+  }
+
+  ::ng-deep .mat-step-header {
+    pointer-events: none !important;
+  }
+  
+  ::ng-deep .mat-step-header .mat-step-icon-selected {
+    background-color: indigo; 
+ }
+
+ ::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: indigo; 
+}

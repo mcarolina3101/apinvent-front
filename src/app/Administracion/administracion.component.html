@@ -1,0 +1,187 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6 col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-tabs card-header-primary">
+                        <div class="nav-tabs-navigation">
+                            <div class="nav-tabs-wrapper">
+                                <ul class="nav nav-tabs" data-tabs="tabs">
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link active" href="#profile" data-toggle="tab">
+                                            <i class="material-icons">assignment_ind</i> Perfiles
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" href="#users" data-toggle="tab">
+                                            <i class="material-icons">people</i> Usuarios
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="profile">
+                                <button mat-icon-button matTooltip="Agregar Perfil" (click)="clickNuevoPerfil()"
+                                    [matTooltipPosition]="'above'">
+                                    <mat-icon>add_circle_outline</mat-icon>
+                                </button>
+                                <mat-selection-list #shoes [multiple]="false">
+                                    <mat-list-option *ngFor="let a of perfiles" [value]="a.id" (click)="clickPerfil(a)">
+                                        {{a.nombre}}
+                                    </mat-list-option>
+                                </mat-selection-list>
+
+                            </div>
+                            <div class="tab-pane" id="users">
+                                <button mat-icon-button matTooltip="Agregar Usuario" (click)="clickNuevoUsuario()"
+                                    [matTooltipPosition]="'above'">
+                                    <mat-icon>add_circle_outline</mat-icon>
+                                </button>
+                                <mat-selection-list #shoes [multiple]="false">
+                                    <mat-list-option *ngFor="let a of usuarios" [value]="a.id"
+                                        (click)="clickUsuario(a)">
+                                        {{a.usuario}}
+                                    </mat-list-option>
+                                </mat-selection-list>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12" [hidden]="nusuario">
+                <div class="card">
+                    <div class="card-header card-header-danger">
+                        <h4 class="card-title">Nuevo usuario</h4>
+                        <!--p class="card-category">New employees on 15th September, 2016</p-->
+                    </div>
+                    <div class="card-body table-responsive">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Usuario</mat-label>
+                            <input matInput [(ngModel)]="nuser">
+                        </mat-form-field>
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Perfiles</mat-label>
+                            <mat-select id="a" name="a" [(value)]="nidperfil">
+                                <!--[(ngModel)]="modelo.estado"
+                                (selectionChange)="obtenerInfoModelos()"-->
+                                <mat-option *ngFor="let a of perfileslist" [value]="a.id">
+                                    {{a.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12"
+                            style="justify-content: center;display: flex;align-items: center;">
+                            <button mat-button mat-raised-button type="submit" (click)="ingresarNuevoUsuario()"
+                                class="btn btn-default ">Ingresar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12" [hidden]="nperfil">
+                <div class="card">
+                    <div class="card-header card-header-danger">
+                        <h4 class="card-title">Nuevo Perfil</h4>
+                        <!--p class="card-category">New employees on 15th September, 2016</p-->
+                    </div>
+                    <div class="card-body table-responsive">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Nombre</mat-label>
+                            <input matInput [(ngModel)]="nnombre">
+                        </mat-form-field>
+                        <p>
+                            <mat-checkbox [(ngModel)]="neditar">Editar</mat-checkbox>
+                        </p>
+                        <p>
+                            <mat-checkbox [(ngModel)]="ncrear">Crear</mat-checkbox>
+                        </p>
+                        <p>
+                            <mat-checkbox [(ngModel)]="neliminar">Eliminar</mat-checkbox>
+                        </p>
+                        <p>
+                            <mat-checkbox [(ngModel)]="nadministrar">Administrar</mat-checkbox>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12"
+                            style="justify-content: center;display: flex;align-items: center;">
+                            <button mat-button mat-raised-button type="submit" (click)="ingresarNuevoPerfil()"
+                                class="btn btn-default ">Ingresar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12" [hidden]="iusuario">
+                <div class="card">
+                    <div class="card-header card-header-danger">
+                        <h4 class="card-title">Informacion de usuario</h4>
+                        <!--p class="card-category">New employees on 15th September, 2016</p-->
+                    </div>
+                    <div class="card-body table-responsive">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Usuario</mat-label>
+                            <input matInput [(ngModel)]="iuser">
+                        </mat-form-field>
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Perfiles</mat-label>
+                            <mat-select id="a" name="a" [(value)]="iidperfil">
+                                <!--[(ngModel)]="modelo.estado"
+                                (selectionChange)="obtenerInfoModelos()"-->
+                                <mat-option *ngFor="let a of perfileslist" [value]="a.id">
+                                    {{a.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12"
+                            style="justify-content: center;display: flex;align-items: center;">
+                            <button mat-button mat-raised-button type="submit" (click)="actualizarUsuario()"
+                                class="btn btn-default ">Actualizar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-12" [hidden]="iperfil">
+                <div class="card">
+                    <div class="card-header card-header-danger">
+                        <h4 class="card-title">Informacion de Perfil</h4>
+                        <!--p class="card-category">New employees on 15th September, 2016</p-->
+                    </div>
+                    <div class="card-body table-responsive">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Nombre</mat-label>
+                            <input matInput [(ngModel)]="inombre">
+                        </mat-form-field>
+                        <p>
+                            <mat-checkbox [(ngModel)]="ieditar">Editar</mat-checkbox>
+                        </p>
+                        <p>
+                            <mat-checkbox [(ngModel)]="icrear">Crear</mat-checkbox>
+                        </p>
+                        <p>
+                            <mat-checkbox [(ngModel)]="ieliminar">Eliminar</mat-checkbox>
+                        </p>
+                        <p>
+                            <mat-checkbox [(ngModel)]="iadministrar">Administrar</mat-checkbox>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12"
+                            style="justify-content: center;display: flex;align-items: center;">
+                            <button mat-button mat-raised-button type="submit" (click)="actualizarPerfil()"
+                                class="btn btn-default ">Actualizar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

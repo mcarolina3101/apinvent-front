@@ -1,0 +1,536 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header card-header-tabs card-header-danger">
+                        <div class="nav-tabs-navigation">
+                            <div class="nav-tabs-wrapper">
+                                <span class="nav-tabs-title">Listado:</span>
+                                <ul class="nav nav-tabs" data-tabs="tabs">
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link active" data-toggle="tab" href="#ambientes"
+                                            (click)="clickListadoAmbientes()">
+                                            <i class="material-icons">storage</i> Ambientes
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" data-toggle="tab" href="#ciudades"
+                                            (click)="clickListadoCiudades()">
+                                            <i class="material-icons">location_on</i> Ciudades
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" data-toggle="tab" href="#hardwares"
+                                            (click)="clickListadoHardwares()">
+                                            <i class="material-icons">dvr</i> Hardware
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" data-toggle="tab" href="#modelos"
+                                            (click)="clickListadoModelos()">
+                                            <i class="material-icons">widgets</i> Modelos
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" data-toggle="tab" href="#carpetas"
+                                            (click)="clickListadoOrions()">
+                                            <i class="material-icons">folder_open</i> Carpetas Orion
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" data-toggle="tab" href="#propietarios"
+                                            (click)="clickListadoPropietarios()">
+                                            <i class="material-icons">engineering</i> Propietarios
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="ambientes">
+                                <table mat-table [dataSource]="ambientes" class="mat-elevation-z8 demo-table">
+                                    <ng-container matColumnDef="demo-nombre">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [(ngModel)]="ambiente.nombre"
+                                                    (change)="obtenerInfoAmbientes()">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-estado">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Activado</mat-label>
+                                                <mat-select id="a" name="a" [(ngModel)]="ambiente.estado"
+                                                    (selectionChange)="obtenerInfoAmbientes()">
+                                                    <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                        {{a.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">
+                                                check_circle</mat-icon>
+                                        </td>
+
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-action">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button (click)="openDialogAmbientes()"
+                                                    matTooltip="Agregar" [matTooltipPosition]="'above'">
+                                                    <mat-icon>add_circle_outline</mat-icon>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Editar"
+                                                    [matTooltipPosition]="'above'"
+                                                    (click)="openDialogAmbientesEdit(element.id)">
+                                                    <mat-icon>mode_edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                </table>
+                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageAmbientes($event)"
+                                    aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                            <div class="tab-pane" id="ciudades">
+                                <table mat-table [dataSource]="ciudades" class="example-full-width mat-elevation-z8 demo-table">
+                                    <ng-container matColumnDef="demo-nombre3">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [(ngModel)]="ciudad.nombre"
+                                                    (change)="obtenerInfoCiudades()">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-expansion-panel hideToggle [expanded]="element.exmod"
+                                                (opened)="expandCiudad(element.id)" (closed)="closeCiudad(element.id)">
+                                                <mat-expansion-panel-header>
+                                                    {{element.nombre}}
+                                                    <button mat-icon-button (click)="openDialogTipo(element.id)"
+                                                        matTooltip="Agregar" [matTooltipPosition]="'above'"
+                                                        style="display:flex;line-height: 24px !important; width: 24px !important; height: 24px !important;"
+                                                        [hidden]="!element.exmod">
+                                                        <mat-icon>
+                                                            add_circle_outline</mat-icon>
+                                                    </button>
+                                                </mat-expansion-panel-header>
+                                                <table mat-table [dataSource]="element.TipoCiudad"
+                                                    class="mat-elevation-z8 demo-table">
+                                                    <ng-container matColumnDef="demo-nombre3">
+                                                        <td mat-cell *matCellDef="let element">
+                                                            <mat-expansion-panel hideToggle [expanded]="element.exmod"
+                                                                (opened)="expandTipo(element.id, element.idciudad)"
+                                                                (closed)="closeTipo(element.id, element.idciudad)">
+                                                                <mat-expansion-panel-header>
+                                                                    {{element.nombre}}
+                                                                    <button mat-icon-button
+                                                                        style="display:flex;line-height: 24px !important; width: 24px !important; height: 24px !important;"
+                                                                        matTooltip="Agregar"
+                                                                        [matTooltipPosition]="'above'"
+                                                                        (click)="openDialogAgencia(element.id)"
+                                                                        [hidden]="!element.exmod">
+                                                                        <mat-icon>add_circle_outline</mat-icon>
+                                                                    </button>
+                                                                </mat-expansion-panel-header>
+                                                                <mat-selection-list [multiple]="false">
+                                                                    <mat-list-option *ngFor="let ag of agencias"
+                                                                        [value]="ag.id"
+                                                                        (click)="openDialogAgenciaEdit(ag.id)">
+                                                                        <div mat-line>{{ag.nombre}}</div>
+                                                                        <mat-icon mat-list-icon
+                                                                            [ngClass]="ag.estado ? 'green' : 'red' ">
+                                                                            check_circle</mat-icon>
+                                                                    </mat-list-option>
+                                                                </mat-selection-list>
+                                                            </mat-expansion-panel>
+                                                        </td>
+                                                    </ng-container>
+
+                                                    <ng-container matColumnDef="demo-estado3">
+                                                        <td mat-cell *matCellDef="let element">
+                                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' "
+                                                                [hidden]="element.exmod">
+                                                                check_circle</mat-icon>
+                                                        </td>
+
+                                                    </ng-container>
+
+                                                    <ng-container matColumnDef="demo-action3">
+                                                        <td mat-cell *matCellDef="let element">
+                                                            <div
+                                                                style="display:flex !important ;vertical-align: top !important;">
+                                                                <button mat-icon-button [hidden]="element.exmod"
+                                                                    matTooltip="Editar" [matTooltipPosition]="'above'"
+                                                                    (click)="openDialogTipoEdit(element.id)">
+                                                                    <mat-icon>mode_edit</mat-icon>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </ng-container>
+
+                                                    <tr mat-row *matRowDef="let row; columns: displayedColumns3;">
+                                                    </tr>
+                                                </table>
+                                            </mat-expansion-panel>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-estado3">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Activado</mat-label>
+                                                <mat-select id="a" name="a" [(ngModel)]="ciudad.estado"
+                                                    (selectionChange)="obtenerInfoCiudades()">
+                                                    <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                        {{a.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' "
+                                                [hidden]="element.exmod">check_circle
+                                            </mat-icon>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-action3">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button (click)="openDialogCiudad()"
+                                                    matTooltip="Agregar" [matTooltipPosition]="'above'">
+                                                    <mat-icon>add_circle_outline</mat-icon>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button (click)="openDialogCiudadEdit(element.id)"
+                                                    matTooltip="Editar" [matTooltipPosition]="'above'"
+                                                    [hidden]="element.exmod">
+                                                    <mat-icon>mode_edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns3;"></tr>
+                                </table>
+                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageCiudades($event)"
+                                    aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                            <div class="tab-pane" id="hardwares">
+                                <table mat-table [dataSource]="hardwares" class="mat-elevation-z8 demo-table">
+
+                                    <ng-container matColumnDef="demo-nombre2">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [(ngModel)]="hardware.nombre"
+                                                    (change)="obtenerInfoHardware()">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-link2">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Tipos</mat-label>
+                                                <mat-select id="thw" name="thw" [(ngModel)]="hardware.idLink"
+                                                    (selectionChange)="obtenerInfoHardware()">
+                                                    <mat-option [value]="null"> </mat-option>
+                                                    <mat-option *ngFor="let thw of tipohardware" [value]="thw.id">
+                                                        {{thw.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.t2[0].nombre}} </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-estado2">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Activado</mat-label>
+                                                <mat-select id="a" name="a" [(ngModel)]="hardware.estado"
+                                                    (selectionChange)="obtenerInfoHardware()">
+                                                    <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                        {{a.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">check_circle
+                                            </mat-icon>
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-action2">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button (click)="openDialogHardware()"
+                                                    matTooltip="Agregar" [matTooltipPosition]="'above'">
+                                                    <mat-icon>add_circle_outline</mat-icon>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Editar"
+                                                    [matTooltipPosition]="'above'"
+                                                    (click)="openDialogHardwareEdit(element.id)">
+                                                    <mat-icon>mode_edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+                                </table>
+                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageHardwares($event)"
+                                    aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                            <div class="tab-pane example-container" id="modelos">
+                                <table mat-table [dataSource]="modelos" class="example-full-width mat-elevation-z8 demo-table">
+                                    <ng-container matColumnDef="demo-nombre4">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [(ngModel)]="modelo.nombre"
+                                                    (change)="obtenerInfoModelos()">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="demo-equipo4">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Equipo</mat-label>
+                                                <input matInput [(ngModel)]="modelo.equipo"
+                                                    (change)="obtenerInfoModelos()" [disabled]="true">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.Equipo[0].nombre}} </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="demo-marca4">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Marca</mat-label>
+                                                <input matInput [(ngModel)]="modelo.marca"
+                                                    (change)="obtenerInfoModelos()" [disabled]="true">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.Marca[0].nombre}} </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="demo-fecha4">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Fecha</mat-label>
+                                                <input matInput [(ngModel)]="modelo.fecha"
+                                                    (change)="obtenerInfoModelos()" [disabled]="true">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.fechafin}} </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="demo-estado4">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Activado</mat-label>
+                                                <mat-select id="a" name="a" [(ngModel)]="modelo.estado"
+                                                    (selectionChange)="obtenerInfoModelos()">
+                                                    <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                        {{a.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">check_circle
+                                            </mat-icon>
+                                        </td>
+
+                                    </ng-container>
+                                    <ng-container matColumnDef="demo-action4">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button (click)="openDialogModelo()"
+                                                    matTooltip="Agregar" [matTooltipPosition]="'above'">
+                                                    <mat-icon>add_circle_outline</mat-icon>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Editar"
+                                                    [matTooltipPosition]="'above'"
+                                                    (click)="openDialogModeloEdit(element.id)" [hidden]="element.exmod">
+                                                    <mat-icon>mode_edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns4"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns4;"></tr>
+                                </table>
+                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageModelos($event)"
+                                    aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                            <div class="tab-pane" id="carpetas">
+                                <table mat-table [dataSource]="orions" class="mat-elevation-z8 demo-table">
+
+                                    <ng-container matColumnDef="demo-nombre">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [(ngModel)]="orion.nombre"
+                                                    (change)="obtenerInfoOrion()">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-estado">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Activado</mat-label>
+                                                <mat-select id="a" name="a" [(ngModel)]="orion.estado"
+                                                    (selectionChange)="obtenerInfoOrion()">
+                                                    <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                        {{a.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">check_circle
+                                            </mat-icon>
+                                        </td>
+
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-action">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button (click)="openDialogOrion()" matTooltip="Agregar"
+                                                    [matTooltipPosition]="'above'">
+                                                    <mat-icon>add_circle_outline</mat-icon>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Editar"
+                                                    [matTooltipPosition]="'above'"
+                                                    (click)="openDialogOrionEdit(element.id)">
+                                                    <mat-icon>mode_edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                </table>
+                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageOrions($event)"
+                                    aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                            <div class="tab-pane" id="propietarios">
+                                <table mat-table [dataSource]="propietarios" class="mat-elevation-z8 demo-table">
+
+                                    <ng-container matColumnDef="demo-nombre">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [(ngModel)]="propietario.nombre"
+                                                    (change)="obtenerInfoPropietarios()">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-estado">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Activado</mat-label>
+                                                <mat-select id="a" name="a" [(ngModel)]="propietario.estado"
+                                                    (selectionChange)="obtenerInfoPropietarios()">
+                                                    <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                        {{a.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">check_circle
+                                            </mat-icon>
+                                        </td>
+
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-action">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Agregar"
+                                                    [matTooltipPosition]="'above'" (click)="openDialogPropietario()">
+                                                    <mat-icon>add_circle_outline</mat-icon>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Editar"
+                                                    [matTooltipPosition]="'above'"
+                                                    (click)="openDialogPropietariosEdit(element.id)">
+                                                    <mat-icon>mode_edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                </table>
+                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PagePropietarios($event)"
+                                    aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

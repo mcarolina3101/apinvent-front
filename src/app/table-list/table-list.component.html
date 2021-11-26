@@ -1,0 +1,140 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-plain">
+                    <div class="card-header card-header-danger">
+                        <h4 class="card-title mt-0"> Inventario de equipos</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table mat-table [dataSource]="dataDevices" class="mat-elevation-z8 demo-table">
+
+                                <!--ng-container matColumnDef="demo-position">
+                                    <th mat-header-cell *matHeaderCellDef > No. </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                                </ng-container-->
+
+                                <ng-container matColumnDef="demo-ciudad">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Ciudad</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.Modelo[0].Ambiente[0].Ciudad[0].nombreciudad}}</td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-agencia">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Agencia</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.Modelo[0].Ambiente[0].Ciudad[0].Tipo[0].Agencia[0].nombreagencia}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-ubicacion">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Ubicacion</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                     </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.ubicacion}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-ambiente">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Ambiente</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                    </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.Modelo[0].Ambiente[0].nombreambiente}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-nombre">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Nombre del equipo</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                     </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-ip">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>IP Principal</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                     </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.ip}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-equipo">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Equipo</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                     </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.Modelo[0].nombremodelo}} </td>
+                                </ng-container>
+
+                                <!--ng-container matColumnDef="demo-marca">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Marca</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                     </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.marca}} </td>
+                                </ng-container-->
+
+                                <ng-container matColumnDef="demo-fecha">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Fin de soporte</mat-label>
+                                            <input matInput>
+                                        </mat-form-field>
+                                     </th>
+                                    <td mat-cell *matCellDef="let element"> {{element.Modelo[0].fechafin}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-action">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <div style="display:flex !important ;justify-content: flex-end !important;">
+                                            <button mat-icon-button matTooltip="Agregar" (click)="openDialogNew()"
+                                                [matTooltipPosition]="'above'">
+                                                <mat-icon>add_circle_outline</mat-icon>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        <div style="display:flex !important ;justify-content: flex-end !important;">
+                                            <button mat-icon-button matTooltip="Editar" (click)="obtenerInventarioid(element.id)"
+                                            (color)="blue"
+                                                [matTooltipPosition]="'above'">
+                                                <mat-icon>mode_edit</mat-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </ng-container>
+
+                                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                            </table>
+                        </div>
+                        <mat-paginator [length]="100" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"
+                                aria-label="Select page">
+                        </mat-paginator>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

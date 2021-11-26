@@ -1,0 +1,54 @@
+<div class="wrapper wrapper-full-page">
+  <div filter-color="black" class="page-header login-page header-filter" class="wrapper"
+  style="background-image: url(&#39;./assets/img/login.jpg&#39;); background-size: cover; background-position: top center;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-md-8 col-sm-8 ml-auto mr-auto">
+          <form novalidate="" method="" class="form ng-untouched ng-pristine ng-valid">
+              <div class="container"><div class="navbar-wrapper">
+                <a class="btn btn-white btn-link btn-lg"></a>
+              </div>
+              </div>
+          </form>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 col-md-8 col-sm-8 ml-auto mr-auto">
+          <form novalidate="" method="" class="form ng-untouched ng-pristine ng-valid">
+            <div class="card card-login card-hidden">
+              <div class="card-header card-header-rose text-center">
+              <h4 class="card-title">Bienvenido</h4>
+              </div>
+              <div class="card-body">
+                <p class="card-description text-center">Credenciales</p>
+                <span class="bmd-form-group">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">person</i>
+                      </span>
+                    </div>
+                    <input type="email"  class="form-control" [(ngModel)]="username">
+                  </div>
+                </span>
+                <span class="bmd-form-group">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="material-icons">lock_outline</i>
+                      </span>
+                    </div>
+                    <input type="password"  class="form-control" [(ngModel)]="password">
+                  </div>
+                </span>
+              </div>
+              <div class="card-footer justify-content-center">
+                <button  mat-button class="btn btn-default btn-white btn-lg"  (click)="check()">Ingrese</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
