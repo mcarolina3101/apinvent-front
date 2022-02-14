@@ -1,11 +1,13 @@
-import { Component, OnInit, Inject, Injectable } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { InformacionService } from '../servicios/informacion/informacion.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { StepperOrientation } from '@angular/material/stepper';
-import { map } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
+declare var $: any;
+import { saveAs } from 'file-saver';
 
 
 @Component({
@@ -19,36 +21,33 @@ export class TableListComponent implements OnInit {
     'demo-nombre',
     'demo-ciudad',
     'demo-agencia',
+    'demo-tipo',
     'demo-ubicacion',
     'demo-ambiente',
     'demo-ip',
     'demo-equipo',
+    'demo-serie',
+    'demo-inv',
+    'demo-so',
     'demo-fecha',
+    'demo-estado',
     'demo-action'];
-  public dataDevices: any[];
+  public dataDevices: any[]=[];
   public inventario: any;
   public inventid: any;
-  public ambientes: any[];
-  public cities: any[];
-  public agencias: any[];
-  public tipos: any[];
-  public modelos: any[];
-  public propietarios: any[];
-  public orion: any[];
+  public nombre:any;
+  public estado:any=1;
 
-  public amb: any;
-  public ct: any;
-  public tp: any;
-  public agc: any;
-  public mdl: any;
-  public mr: any;
-  public eq: any;
-  public prp: any;
-  public on: any;
+
+  public isnew: boolean = false;
+
+  public activado: any = [
+    { id: 1, nombre: 'Si' },
+    { id: 0, nombre: 'No' }
+  ];
 
   ambienteFormG = this._formBuilder.group({
-
-    ambiente: new FormControl(undefined, [Validators.required])
+    ambiente: [undefined, Validators.required]
   });
   ubicacionFormG = this._formBuilder.group({
     city: [undefined, Validators.required],
@@ -75,11 +74,15 @@ export class TableListComponent implements OnInit {
   adicionalFormG = this._formBuilder.group({
     opm: [undefined],
     bpac: [undefined],
+    boolinvent:[undefined],
     util: [undefined, Validators.required],
     inv: ['', Validators.minLength(1)],
     propietario: [undefined, Validators.required],
     serie: ['', Validators.minLength(1)]
   });
+  
+  public pageIndex = 0;
+  public totalenght = 0;
 
 
   constructor(
@@ -88,209 +91,96 @@ export class TableListComponent implements OnInit {
     private informacionService: InformacionService) { }
 
   ngOnInit() {
-    this.inventario = { "serie": "", "estado": 1, "pindex": 1 }
-    this.amb = { "nombre": "", "estado": 1 }
-    this.ct = { "nombre": "", "estado": 1 }
-    this.ct = { "nombre": "", "estado": 1 }
-    this.tp = { "nombre": "", "idlink": 1 }
-    this.agc = { "nombre": "", "idlink": 1 }
-    this.mdl = { "nombre": "", "estado": 1 }
-    this.mr = { "nombre": "", "estado": 1 }
-    this.eq = { "nombre": "", "idlink": 1 }
-    this.prp = { "nombre": "", "estado": 1 }
-    this.on = { "nombre": "", "estado": 1 }
-    this.obtenerInfoInventario();
-    this.obtenerInfoAmbientes();
-    this.obtenerInfoCiudades();
-    this.obtenerInfoModelos();
-    this.obtenerInfoPropietarios();
-    this.obtenerInfoOrion();
-  }
+    this.inventario = { 
+      "nombre": "", 
+      "fecha":"",
+      "ip": "", 
+      "serie": "", 
+      "so": "", 
+      "inv": "",  
+      "nAmbiente": "", 
+      "nModelo": "", 
+      "nPropietario": "", 
+      "nOrion": "", 
+      "nagencia": "", 
+      "ntipo": "", 
+      "nciudad": "", 
+      "estado": 1,
+      "nubicacion":"", 
+      "pindex": this.pageIndex + 1}
 
-  compareThem(o1, o2): boolean {
-    return o1.id === o2.id;
+    this.obtenerInfoInventario();
+    
   }
 
   obtenerInfoInventario() {
     this.informacionService.listinventario(this.inventario).subscribe(resp => {
-      this.dataDevices = resp["info"];
-    }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
-      }
-    });
-  }
-
-  obtenerInfoAmbientes() {
-    this.informacionService.listambientesNombre(this.amb).subscribe(resp => {
-      this.ambientes = resp.body["info"];
+      this.dataDevices = resp.body["info"];
       const keys = resp.headers;
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+      this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
-      }
-    });
-  }
-
-  obtenerInfoCiudades() {
-    this.informacionService.listciudadesNombre(this.ct).subscribe(resp => {
-      this.cities = resp.body["info"];
-      const keys = resp.headers;
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
-      }
-    });
-  }
-
-  obtenerInfoPropietarios() {
-    this.informacionService.listpropietariosNombre(this.prp).subscribe(resp => {
-      this.propietarios = resp.body["info"];
-      const keys = resp.headers;
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
-      }
-    });
-  }
-
-  obtenerInfoOrion() {
-    this.informacionService.listorionNombre(this.on).subscribe(resp => {
-      this.orion = resp.body["info"];
-      const keys = resp.headers;
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
-      }
-    });
-  }
-
-  obtenerInfoModelos() {
-    this.informacionService.listmodelosNombre(this.mdl).subscribe(resp => {
-      this.modelos = resp.body["info"];
-      const keys = resp.headers;
-
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
-      }
-    });
-  }
-
-  obtenerInfoTipos() {
-
-    this.informacionService.listtiposNombre(this.tp).subscribe(resp => {
-      this.tipos = resp.body["info"];
-      const keys = resp.headers;
-      if (this.inventid != undefined) {
-        this.tipos.forEach(element => {
-          if (this.compareThem(element, this.inventid.Agencia[0].Tipo[0])) {
-            this.agc.idlink = this.inventid.Agencia[0].Tipo[0].id;
-            this.ubicacionFormG.controls["tipo"].setValue(element)
-            this.obtenerInfoAgencias();
-          }
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
         });
       }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
-      }
     });
   }
 
-  obtenerInfoAgencias() {
-    this.informacionService.listagenciasNombre(this.agc).subscribe(resp => {
-      this.agencias = resp.body["info"];
+  obtenerInfoInventarioExcel() {
+    this.informacionService.downloadinv(this.inventario).subscribe(resp => {
+      //this.dataDevices = resp.body["info"];
       const keys = resp.headers;
-      if (this.inventid != undefined) {
-        this.agencias.forEach(element => {
-          if (this.compareThem(element, this.inventid.Agencia[0])) {
-            this.ubicacionFormG.controls["ag"].setValue(element)
-          }
-        });
-      }
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    
+      const blob: any = new Blob([resp.body], { type: keys.getAll("content-type").toString() });
+      const file = new File([blob], "inventario" + '.xlsx', { type: keys.getAll("content-type").toString() });
+      saveAs(file);
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -301,14 +191,15 @@ export class TableListComponent implements OnInit {
       this.modeloFormG.controls["nombre"].setValue(this.inventid.nombre)
       this.networkFormG.controls["ip"].setValue(this.inventid.ip)
       this.networkFormG.controls["so"].setValue(this.inventid.so)
-      this.networkFormG.controls["ecritico"].setValue(this.inventid.critico)
-      this.adicionalFormG.controls["bpac"].setValue(this.inventid.bacp)
-      this.adicionalFormG.controls["opm"].setValue(this.inventid.opmger)
+      this.networkFormG.controls["ecritico"].setValue(this.inventid.critico == undefined ? false : this.inventid.critico)
+      this.adicionalFormG.controls["bpac"].setValue(this.inventid.bpac == undefined ? false : this.inventid.bpac)
+      this.adicionalFormG.controls["opm"].setValue(this.inventid.opmger == undefined ? false : this.inventid.opmger)
       this.adicionalFormG.controls["serie"].setValue(this.inventid.serie)
       this.adicionalFormG.controls["inv"].setValue(this.inventid.inventario)
       this.adicionalFormG.controls["util"].setValue(this.inventid.util)
       this.ubicacionFormG.controls["piso"].setValue(this.inventid.piso)
       this.ubicacionFormG.controls["rack"].setValue(this.inventid.rack)
+      /*
       this.ambientes.forEach(element => {
         if (this.compareThem(element, this.inventid.Ambiente[0])) {
           this.ambienteFormG.controls["ambiente"].setValue(element)
@@ -322,8 +213,10 @@ export class TableListComponent implements OnInit {
         }
       });
       this.orion.forEach(element => {
-        if (this.compareThem(element, this.inventid.Orion[0])) {
-          this.networkFormG.controls["orion"].setValue(element)
+        if (this.inventid.Orion != undefined) {
+          if (this.compareThem(element, this.inventid.Orion[0])) {
+            this.networkFormG.controls["orion"].setValue(element)
+          }
         }
       });
       this.modelos.forEach(element => {
@@ -335,25 +228,54 @@ export class TableListComponent implements OnInit {
         if (this.compareThem(element, this.inventid.Propietario[0])) {
           this.adicionalFormG.controls["propietario"].setValue(element)
         }
-      });
-      //this.obtenerInfoTipos();
-      this.openDialogEdit();
+      });*/
+      this.openDialogEdit(n);
+    },err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
     });
 
   }
 
-  openDialogEdit(): void {
+  openDialogEdit(n): void {
     //this.editado1 = undefined;
     //this.nombre = "";
+    this.isnew = false;
     const dialogRef = this.dialog.open(FormComponentEdit2, {
       width: '1000px',
       data: {
+        idedit: n,
+        isnew: this.isnew,
+        activado:this.activado,
         ambienteFormG: this.ambienteFormG,
         adicionalFormG: this.adicionalFormG,
         ubicacionFormG: this.ubicacionFormG,
         networkFormG: this.networkFormG,
         modeloFormG: this.modeloFormG,
-        inventid: this.inventid,
+        inventid: this.inventid/*,
         ambientes: this.ambientes,
         cities: this.cities,
         modelos: this.modelos,
@@ -362,10 +284,12 @@ export class TableListComponent implements OnInit {
         tipos: this.tipos,
         orion: this.orion,
         agc: this.agc,
-        tp: this.tp
+        tp: this.tp*/
       }
     });
     dialogRef.afterClosed().subscribe(result => {
+      this.pageIndex = 0;
+      this.obtenerInfoInventario();
       //this.informacionService.insertambiente(result.nombre).subscribe(resp => {
       //  this.obtenerInfoAmbientes();
       //});
@@ -375,6 +299,7 @@ export class TableListComponent implements OnInit {
   openDialogNew(): void {
     //this.editado1 = undefined;
     //this.nombre = "";
+    this.isnew = true;
     this.modeloFormG.reset();
     this.ambienteFormG.reset();
     this.ubicacionFormG.reset();
@@ -383,12 +308,14 @@ export class TableListComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit2, {
       width: '1000px',
       data: {
+        isnew: this.isnew,
+        activado:this.activado,
         ambienteFormG: this.ambienteFormG,
         adicionalFormG: this.adicionalFormG,
         ubicacionFormG: this.ubicacionFormG,
         networkFormG: this.networkFormG,
         modeloFormG: this.modeloFormG,
-        inventid: undefined,
+        inventid: undefined/*,
         ambientes: this.ambientes,
         cities: this.cities,
         modelos: this.modelos,
@@ -397,14 +324,21 @@ export class TableListComponent implements OnInit {
         tipos: this.tipos,
         orion: this.orion,
         agc: this.agc,
-        tp: this.tp
+        tp: this.tp*/
       }
     });
     dialogRef.afterClosed().subscribe(result => {
+      this.obtenerInfoInventario();
       //this.informacionService.insertambiente(result.nombre).subscribe(resp => {
       //  this.obtenerInfoAmbientes();
       //});
     });
+  }
+
+  Page(event) {
+    this.pageIndex = event.pageIndex;
+    this.inventario.pindex = this.pageIndex + 1;
+    this.obtenerInfoInventario();
   }
 }
 
@@ -417,10 +351,36 @@ export class TableListComponent implements OnInit {
 export class FormComponentEdit2 implements OnInit {
 
   stepperOrientation: Observable<StepperOrientation>;
-  public modelSelected:any;
+  public modelSelected: any;
+  public boolcity:boolean;
+  public inventcheck:boolean;
+  public infoeq: any = { "nombre": "", "estado": 1, "idLink": 2, "pindex": 1 };
+  filteredOptionsModelo: Observable<any[]>;
 
+  public ambientes: any[]=[];
+  public cities: any[]=[];
+  public agencias: any[]=[];
+  public tipos: any[]=[];
+  public modelos: any[]=[];
+  public propietarios: any[]=[];
+  public orion: any[]=[];
+
+  public amb = { "nombre": "", "estado": 1 }
+  public ct = { "nombre": "", "estado": 1 }
+  public tp = { "nombre": "", "idlink": 1 }
+  public agc = { "nombre": "", "idlink": 1 }
+  public mdl = { "nombre": "", "estado": 1 }
+  public mr = { "nombre": "", "estado": 1 }
+  public eq = { "nombre": "", "idlink": 1 }
+  public prp = { "nombre": "", "estado": 1 }
+  public on = { "nombre": "", "estado": 1 }
 
   ngOnInit() {
+    this.obtenerInfoAmbientes();
+    this.obtenerInfoCiudades();
+    this.obtenerInfoModelos();
+    this.obtenerInfoOrion();
+    this.obtenerInfoPropietarios();
 
     this.data.modeloFormG.controls["equipo"].disable();
     this.data.modeloFormG.controls["marca"].disable();
@@ -429,11 +389,41 @@ export class FormComponentEdit2 implements OnInit {
     this.data.modeloFormG.controls["fecha"].disable();
     this.data.adicionalFormG.controls["bpac"].disable();
     this.data.adicionalFormG.controls["util"].disable()
-    
+    this.boolcity=true;
+    this.inventcheck=false;
+
+    this.data.adicionalFormG.controls["boolinvent"].enable();
+    this.data.adicionalFormG.controls["inv"].enable();
+    this.data.adicionalFormG.controls["boolinvent"].setValue(false)
+
     if (this.data.inventid != undefined) {
-      this.obtenerInfoTipos();
+      //SETEAR INVENTARIO DEBIDO A PROPIETARIO
+      let prop=this.data.adicionalFormG.controls["propietario"].value;
       this.obtenerInfoModelo(this.data.inventid.Modelo[0].id);
+      this.data.estado=(this.data.inventid.estado)?1:0;
+      if(!prop.nombre.toLowerCase().includes("banco")){
+        this.data.adicionalFormG.controls["inv"].disable();
+        this.data.adicionalFormG.controls["inv"].setValue(undefined)
+        this.data.adicionalFormG.controls["boolinvent"].disable();
+        this.data.adicionalFormG.controls["boolinvent"].setValue(true)
+      }else{
+        this.data.adicionalFormG.controls["boolinvent"].enable();
+        if(this.data.adicionalFormG.controls["inv"].value==undefined){
+          this.data.adicionalFormG.controls["inv"].disable();
+          this.data.adicionalFormG.controls["boolinvent"].setValue(true);
+          this.data.adicionalFormG.controls["inv"].setValue(undefined);
+        }else{
+          this.data.adicionalFormG.controls["boolinvent"].setValue(false);
+          this.data.adicionalFormG.controls["inv"].enable();
+        }
+      }
     }
+
+    this.filteredOptionsModelo = this.data.modeloFormG.controls["modelo"].valueChanges.pipe(
+      startWith(''),
+      map(value => (typeof value === 'string' ? value : value.nombre)),
+      map(nombre => (nombre ? this._filter(nombre) : this.modelos.slice())),
+    );
   }
 
   constructor(
@@ -445,10 +435,8 @@ export class FormComponentEdit2 implements OnInit {
       .pipe(map(({ matches }) => matches ? 'horizontal' : 'vertical'));
   }
 
-  compareThem(o1, o2): boolean {
-    return o1.id === o2.id;
-  }
 
+/*
   obtenerInfoTipos() {
 
     this.informacionService.listtiposNombre(this.data.tp).subscribe(resp => {
@@ -465,17 +453,30 @@ export class FormComponentEdit2 implements OnInit {
       }
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -493,41 +494,385 @@ export class FormComponentEdit2 implements OnInit {
       }
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
-
+*/
   obtenerInfoModelo(n) {
     this.informacionService.getmodelobyid(n).subscribe(resp => {
       this.modelSelected = resp["info"];
       //const keys = resp.headers;
       this.data.modeloFormG.controls["equipo"].setValue(this.modelSelected.Equipo[0].nombre)
       this.data.modeloFormG.controls["marca"].setValue(this.modelSelected.Marca[0].nombre)
-      this.data.modeloFormG.controls["flash"].setValue(this.modelSelected.Flash==undefined? undefined:this.modelSelected.Flash[0].nombre)
-      this.data.modeloFormG.controls["ram"].setValue(this.modelSelected.Ram==undefined? undefined:this.modelSelected.Ram[0].nombre)
-      this.data.modeloFormG.controls["fecha"].setValue(this.modelSelected.fechafin==undefined? undefined:this.modelSelected.fechafin)
-      
+      this.data.modeloFormG.controls["flash"].setValue(this.modelSelected.Flash == undefined ? undefined : this.modelSelected.Flash[0].nombre)
+      this.data.modeloFormG.controls["ram"].setValue(this.modelSelected.Ram == undefined ? undefined : this.modelSelected.Ram[0].nombre)
+      this.data.modeloFormG.controls["fecha"].setValue(this.modelSelected.fechafin == undefined ? undefined : this.modelSelected.fechafin)
+
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    },err=> {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+
+  obtenerInfoAmbientes() {
+    this.informacionService.listambientesNombre(this.amb).subscribe(resp => {
+      this.ambientes = resp.body["info"];
+      const keys = resp.headers;
+      if(this.data.inventid!=undefined){
+        this.ambientes.forEach(element => {
+          if (this.compareThem(element, this.data.inventid.Ambiente[0])) {
+            this.data.ambienteFormG.controls["ambiente"].setValue(element)
+          }
+        });
+      }
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    }
+    )
+  }
+
+  obtenerInfoCiudades() {
+    this.informacionService.listciudadesNombre(this.ct).subscribe(resp => {
+      this.cities = resp.body["info"];
+      const keys = resp.headers;
+      if(this.data.inventid!=undefined){
+        this.cities.forEach(element => {
+          if (this.compareThem(element, this.data.inventid.Agencia[0].Tipo[0].Ciudad[0])) {
+            this.tp.idlink = this.data.inventid.Agencia[0].Tipo[0].Ciudad[0].id;
+            this.data.ubicacionFormG.controls["city"].setValue(element)
+            this.obtenerInfoTipos();
+          }
+        });
+      }
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+  
+  obtenerInfoPropietarios() {
+    this.informacionService.listpropietariosNombre(this.prp).subscribe(resp => {
+      this.propietarios = resp.body["info"];
+      const keys = resp.headers;
+      if (this.data.inventid != undefined) {
+
+        this.propietarios.forEach(element => {
+          if (this.compareThem(element, this.data.inventid.Propietario[0])) {
+            this.data.adicionalFormG.controls["propietario"].setValue(element)
+          }
+        });
+      }
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+
+  obtenerInfoOrion() {
+    this.informacionService.listorionNombre(this.on).subscribe(resp => {
+      this.orion = resp.body["info"];
+      const keys = resp.headers;
+      if (this.data.inventid != undefined) {
+    
+        this.orion.forEach(element => {
+          if (this.data.inventid.Orion != undefined) {
+            if (this.compareThem(element, this.data.inventid.Orion[0])) {
+              this.data.networkFormG.controls["orion"].setValue(element)
+            }
+          }
+        });
+      }
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+
+  obtenerInfoModelos() {
+    this.informacionService.listmodelosNombre(this.mdl).subscribe(resp => {
+      this.modelos = resp.body["info"];
+      const keys = resp.headers;
+      if (this.data.inventid != undefined) {
+
+        this.modelos.forEach(element => {
+          if (this.compareThem(element, this.data.inventid.Modelo[0])) {
+            this.data.modeloFormG.controls["modelo"].setValue(element)
+          }
+        });
+      }
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+
+  obtenerInfoTipos() {
+
+    this.informacionService.listtiposNombre(this.tp).subscribe(resp => {
+      this.tipos = resp.body["info"];
+      const keys = resp.headers;
+      if (this.data.inventid != undefined) {
+        this.tipos.forEach(element => {
+          if (this.compareThem(element, this.data.inventid.Agencia[0].Tipo[0])) {
+            this.agc.idlink = this.data.inventid.Agencia[0].Tipo[0].id;
+            this.data.ubicacionFormG.controls["tipo"].setValue(element)
+            this.obtenerInfoAgencias();
+          }
+        });
+      }
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+
+  obtenerInfoAgencias() {
+    this.informacionService.listagenciasNombre(this.agc).subscribe(resp => {
+      this.agencias = resp.body["info"];
+      const keys = resp.headers;
+      if (this.data.inventid != undefined) {
+        this.agencias.forEach(element => {
+          if (this.compareThem(element, this.data.inventid.Agencia[0])) {
+            this.data.ubicacionFormG.controls["ag"].setValue(element)
+          }
+        });
+      }
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
     });
   }
 
   selectionamb(value) {
     this.data.ubicacionFormG.reset();
-    this.data.modeloFormG.reset();
+    this.data.modeloFormG.controls["nombre"].reset();
+    this.data.modeloFormG.controls["equipo"].reset();
+    this.data.modeloFormG.controls["marca"].reset();
+    this.data.modeloFormG.controls["flash"].reset();
+    this.data.modeloFormG.controls["ram"].reset();
+    this.data.modeloFormG.controls["fecha"].reset();
+    this.data.modeloFormG.controls["modelo"].setValue({id:0,nombre:''});
+
     this.data.adicionalFormG.reset();
     this.data.networkFormG.reset();
-    if (value.id === 52) {
+    if (value.id === 4) {
       this.data.networkFormG.controls["orion"].setValue(undefined);
       this.data.networkFormG.controls["orion"].disable()
       this.data.networkFormG.controls["ecritico"].setValue(false);
@@ -536,25 +881,30 @@ export class FormComponentEdit2 implements OnInit {
       this.data.adicionalFormG.controls["opm"].disable()
       this.data.adicionalFormG.controls["bpac"].setValue(false);
       this.data.adicionalFormG.controls["util"].setValue(false);
-
     } else {
       this.data.adicionalFormG.controls["util"].setValue(true);
       this.data.adicionalFormG.controls["opm"].enable();
       this.data.networkFormG.controls["ecritico"].enable();
-      this.data.networkFormG.controls["orion"].enable()
+      this.data.networkFormG.controls["orion"].enable();
     }
+    if(value.id == 3){
+      this.boolcity=true;
+    }else{
+      this.boolcity=false;
+    }
+
   }
 
   selectioncity(value) {
     this.data.ubicacionFormG.controls["tipo"].setValue(undefined);
     this.data.ubicacionFormG.controls["ag"].setValue(undefined);
-    this.data.tp.idlink = value.id;
+    this.tp.idlink = value.id;
     this.obtenerInfoTipos();
   }
 
   selectiontipo(value) {
     this.data.ubicacionFormG.controls["ag"].setValue(undefined);
-    this.data.agc.idlink = value.id;
+    this.agc.idlink = value.id;
     this.obtenerInfoAgencias();
   }
 
@@ -562,21 +912,154 @@ export class FormComponentEdit2 implements OnInit {
     if (value) {
       this.data.adicionalFormG.controls["bpac"].setValue(true);
     } else {
-        this.data.adicionalFormG.controls["bpac"].setValue(false);
+      this.data.adicionalFormG.controls["bpac"].setValue(false);
     }
   }
 
-  selectionequipo(value) {
+  selectionmodelo(value) {
     this.obtenerInfoModelo(value.id)
   }
 
-  selectionag(value) {
+  selectionprop(value) {
+    if(!value.nombre.toLowerCase().includes("banco")){
+      this.data.adicionalFormG.controls["inv"].disable();
+      this.data.adicionalFormG.controls["inv"].setValue(undefined)
+      this.data.adicionalFormG.controls["boolinvent"].disable();
+      this.data.adicionalFormG.controls["boolinvent"].setValue(true)
+    }else{
+      this.data.adicionalFormG.controls["boolinvent"].enable();
+    }
   }
-  selectionubi(value) {
+
+  selectionboolinvent(value){
+    if(value){
+      this.data.adicionalFormG.controls["inv"].disable();
+      this.data.adicionalFormG.controls["inv"].setValue(undefined)
+    }else{
+      this.data.adicionalFormG.controls["inv"].enable();
+    }
+    
+
+  }
+
+  sendinfo() {
+    if (this.data.isnew) {
+      this.informacionService.insertinventario(this.data).subscribe(resp => {
+        //const keys = resp.headers;
+        //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+        $.notify({
+          icon: "notifications",
+          message: "El equipo se ha agregado"
+        }, {
+          type: "success",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }, err => {
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
+      });
+    } else {
+      this.informacionService.editarinventario(this.data).subscribe(resp => {
+        //const keys = resp.headers;
+        //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+        $.notify({
+          icon: "notifications",
+          message: "El equipo se ha editado"
+        }, {
+          type: "success",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }, err => {
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
+      });
+    }
+  }
+
+  private _filter(nombre: string): any[] {
+    const filterValue = nombre.toLowerCase();
+    return this.modelos.filter(option => option.nombre.toLowerCase().includes(filterValue));
   }
   
-  selectionprop(value) {
+  compareThem(o1, o2): boolean {
+    return o1.id === o2.id;
   }
-  selectionorion(value) {
+
+  displayFn(value) {
+    return value ? value.nombre : undefined;
   }
 }

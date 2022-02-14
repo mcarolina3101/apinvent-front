@@ -1,14 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import * as Chartist from 'chartist';
-
+import { InformacionService } from '../servicios/informacion/informacion.service';
+declare var $:any;
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-
-  constructor() { }
+  public total=0;
+  public tcritico=0;
+  public topmger=0;
+  public tbpac=0;
+  public tutil=0;
+  public tfecha=0;
+  constructor( 
+    private informacionService: InformacionService) { }
   /*startAnimationForLineChart(chart){
       let seq: any, delays: any, durations: any;
       seq = 0;
@@ -66,6 +72,7 @@ export class DashboardComponent implements OnInit {
       seq2 = 0;
   };*/
   ngOnInit() {
+    this.obtenerInfo();
   /*
       const dataDailySalesChart: any = {
           labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
@@ -143,6 +150,45 @@ export class DashboardComponent implements OnInit {
       //start animation for the Emails Subscription Chart
       this.startAnimationForBarChart(websiteViewsChart);
       */
+    }
+
+    obtenerInfo() {
+      this.informacionService.dashboard().subscribe(resp => {
+        this.total = resp["total"];
+        this.tcritico = resp["tcritico"];
+        this.tbpac = resp["tbpac"];
+        this.topmger = resp["topmger"];
+        this.tutil = resp["tutil"];
+        this.tfecha = resp["tfecha"];
+        const keys = resp.headers;
+        //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+      }, err => {
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
+      });
     }
   
 }

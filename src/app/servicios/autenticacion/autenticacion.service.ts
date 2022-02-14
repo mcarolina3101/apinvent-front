@@ -8,7 +8,7 @@ import * as global from "../../global";
 export class AutenticacionService implements CanActivate {
   private ruta = '';
   private cabeceraReq: any = new HttpHeaders({
-    'Content-type': "application/json",
+    'Content-type': "application/json"
     });
    
   constructor(private router : Router, private http: HttpClient){}

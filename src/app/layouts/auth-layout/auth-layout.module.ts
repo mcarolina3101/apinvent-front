@@ -5,12 +5,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AuthLayoutRoutes } from './auth-layout.routing';
 //import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginComponent } from '../../../../src/app/login/login.component';
+import {MatIconModule} from '@angular/material/icon';
 
 @NgModule({
   imports: [
     CommonModule,
     RouterModule.forChild(AuthLayoutRoutes),
-    FormsModule
+    FormsModule,
+    MatIconModule
     // NgbModule
   ],
   declarations: [

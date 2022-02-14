@@ -37,13 +37,17 @@
     "bootstrap-notify": "3.1.3",
     "chartist": "0.11.4",
     "classlist.js": "1.1.20150312",
+    "common": "^0.2.5",
     "core-js": "3.15.2",
     "eslint": "^7.30.0",
-    "express": "4.17.1",
+    "express": "^4.17.1",
+    "file-saver": "^2.0.5",
     "googleapis": "81.0.0",
     "hammerjs": "2.0.8",
     "jquery": "3.6.0",
     "material": "^0.4.3",
+    "material-design-icons": "^3.0.1",
+    "material-icons": "^1.10.4",
     "moment": "^2.29.1",
     "ngx-cookie-service": "^12.0.3",
     "perfect-scrollbar": "1.5.0",
@@ -78,5 +82,17 @@
     "ts-node": "10.1.0",
     "tslint": "6.1.3",
     "typescript": "4.3.5"
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false,
+    "crypto": false,
+    "stream": false,
+    "http": false,
+    "tls": false,
+    "zlib": false,
+    "https": false,
+    "net": false
   }
 }

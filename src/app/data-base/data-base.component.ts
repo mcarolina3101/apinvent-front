@@ -2,13 +2,12 @@ import { Component, OnInit, Inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { InformacionService } from '../servicios/informacion/informacion.service';
 import 'rxjs/add/observable/interval';
-import { FormControl, ValidationErrors, ValidatorFn, AbstractControl } from '@angular/forms';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+//import { FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, Validators, ValidationErrors, ValidatorFn, AbstractControl } from '@angular/forms';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import * as _moment from 'moment';
-
+declare var $:any;
 //import _rollupMoment from 'moment';
 
 const moment = _moment;
@@ -45,9 +44,9 @@ export const CharacterSelectionRequiredValidator: ValidatorFn = (control: Abstra
 export class DataBaseComponent implements OnInit {
 
   public displayedColumns: string[] = [ //Ambientes, Orion, Propietarios
-    'demo-nombre',
-    'demo-estado',
-    'demo-action'];
+    'demo-nombre1',
+    'demo-estado1',
+    'demo-action1'];
 
   public displayedColumns2: string[] = [ //Ciudad, Hardware
     'demo-nombre2',
@@ -67,12 +66,17 @@ export class DataBaseComponent implements OnInit {
     'demo-fecha4',
     'demo-estado4',
     'demo-action4'];
-  
-  public myControlEquipo = new FormControl();
-  public myControlMarca = new FormControl();
-  public myControlFlash = new FormControl();
-  public myControlRam = new FormControl();
+
   public date = new FormControl(moment());
+
+  modeloFormG = this._formBuilder.group({
+
+    equipo: new FormControl(undefined, [Validators.required]),
+    marca: new FormControl(undefined, [Validators.required]),
+    flash: new FormControl(undefined),
+    ram: new FormControl(undefined),
+    date: new FormControl(undefined)
+  });
 
   public ambientes: any[];
   public ambiente: any;
@@ -92,8 +96,9 @@ export class DataBaseComponent implements OnInit {
 
   public hardwares: any[];
   public hardware: any;
+  public hardwareOp: any;
   public tipohardware: any;
-  public prefixmem:any;
+  public prefixmem: any;
 
   public tipos: any[];
   public tipo;
@@ -103,6 +108,8 @@ export class DataBaseComponent implements OnInit {
 
   public modelo: any;
   public modelos: any[];
+  public modelomarca:any[];
+  public modeloequipo:any[]; 
 
   public nombre: string = "";
   public id: number = 0;
@@ -111,13 +118,21 @@ export class DataBaseComponent implements OnInit {
     { id: 0, nombre: 'No' }
   ];
 
+  public equipos: any[] = [];
+  public marcas: any[] = [];
+  public flashs: any[] = [];
+  public rams: any[] = [];
+
   public selectedact: number;
   public selectedtipo: number;
   public accion: string = '';
   //Formulario Editar
   public editado1: any; //info de editado
 
-  constructor(public dialog: MatDialog, private informacionService: InformacionService) { }
+  constructor(
+    private _formBuilder: FormBuilder,
+    public dialog: MatDialog,
+    private informacionService: InformacionService) { }
 
   ngOnInit(): void {
     this.ambiente = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
@@ -126,6 +141,7 @@ export class DataBaseComponent implements OnInit {
     this.orion = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.propietario = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.hardware = { "nombre": "", "estado": 1, "idLink": null, "pindex": this.pageIndex + 1 }
+    this.hardwareOp = { "nombre": "", "estado": 1, "idLink": null, "pindex": this.pageIndex + 1 }
     this.modelo = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
 
     this.tipohardware = [
@@ -183,7 +199,33 @@ export class DataBaseComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertambiente(result.nombre).subscribe(resp => {
         this.obtenerInfoAmbientes();
-      });;
+      },err => {
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
+      });
     });
   }
   openDialogAmbientesEdit(n: number) {
@@ -203,21 +245,33 @@ export class DataBaseComponent implements OnInit {
         this.informacionService.editarambiente({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
           this.obtenerInfoAmbientes();
 
-        });
+        }, err => {      
+          if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }});
       });
-    }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
-      }
     });
   }
   obtenerInfoAmbientes() {
@@ -226,17 +280,30 @@ export class DataBaseComponent implements OnInit {
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -255,17 +322,30 @@ export class DataBaseComponent implements OnInit {
       });
     }, err => {
       this.ciudades = this.ciudades;
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -290,17 +370,30 @@ export class DataBaseComponent implements OnInit {
         }
       });
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -325,6 +418,32 @@ export class DataBaseComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.inserttipo(result.nombre, n).subscribe(resp => {
         this.obtenerInfoCiudades();
+      }, err =>{
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
       });
     });
 
@@ -346,19 +465,59 @@ export class DataBaseComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editartipo({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
           this.obtenerInfoCiudades();
+        }, err => {
+          if (err.status === 400) {
+            //const type = ['', 'info', 'success', 'warning', 'danger'];
+            //const color = Math.floor((Math.random() * 4) + 1);
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
         });
       });
     }, err => {
-      if (err.status === 401) {
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -390,7 +549,31 @@ export class DataBaseComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertciudad(result.nombre).subscribe(resp => {
         this.obtenerInfoCiudades();
-      });
+      }, err => {      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }});
     });
 
   }
@@ -411,19 +594,59 @@ export class DataBaseComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarciudad({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
           this.obtenerInfoCiudades();
+        }, err => {
+          if (err.status === 400) {
+            //const type = ['', 'info', 'success', 'warning', 'danger'];
+            //const color = Math.floor((Math.random() * 4) + 1);
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
         });
       });
     }, err => {
-      if (err.status === 401) {
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -437,6 +660,32 @@ export class DataBaseComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertagencia(result.nombre, n).subscribe(resp => {
         this.obtenerInfoCiudades();
+      }, err => {
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
       });
     });
 
@@ -458,19 +707,59 @@ export class DataBaseComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editaragencia({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
           this.obtenerInfoCiudades();
+        }, err => {
+          if (err.status === 400) {
+            //const type = ['', 'info', 'success', 'warning', 'danger'];
+            //const color = Math.floor((Math.random() * 4) + 1);
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
         });
       });
     }, err => {
-      if (err.status === 401) {
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -481,87 +770,241 @@ export class DataBaseComponent implements OnInit {
     this.obtenerInfoHardware();
   }
   obtenerInfoHardware() {
+    //this.hardware.pindex = 1;
     this.informacionService.listhardware(this.hardware).subscribe(resp => {
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
       this.hardwares = resp.body["info"];
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
+    });
+  }
+  obtenerInfoHardwareMarca() {
+    this.hardwareOp.idLink=1;
+    //this.hardware.pindex = 1;
+    this.informacionService.listhardwareOpciones(this.hardwareOp).subscribe(resp => {
+      const keys = resp.headers;
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+      this.modelomarca=resp.body["info"];
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+    });
+  }
+  obtenerInfoHardwareEquipo() {
+    this.hardwareOp.idLink=2;
+    //this.hardware.pindex = 1;
+    this.informacionService.listhardwareOpciones(this.hardwareOp).subscribe(resp => {
+      const keys = resp.headers;
+      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+      this.modeloequipo=resp.body["info"];
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
   openDialogHardware(): any {
     this.editado1 = undefined;
     this.nombre = "";
-    this.selectedtipo= undefined;
+    this.selectedtipo = undefined;
     const dialogRef = this.dialog.open(FormHardwareComponent, {
       width: '400px',
-      data: { nombre: this.nombre, tipohardware: this.tipohardware, 
-        selectedtipo: this.selectedtipo, prefixmem:this.prefixmem}
+      data: {
+        nombre: this.nombre, tipohardware: this.tipohardware,
+        selectedtipo: this.selectedtipo, prefixmem: this.prefixmem
+      }
     });
     dialogRef.afterClosed().subscribe(result => {
-      if(result.selectedtipo==3 && result.prefixmem !=undefined){
-        result.nombre=result.nombre+result.prefixmem
+      if (result.selectedtipo == 3 && result.prefixmem != undefined) {
+        result.nombre = result.nombre + result.prefixmem
       }
       this.informacionService.inserthardware(result.nombre, result.selectedtipo).subscribe(resp => {
         this.obtenerInfoHardware();
+      },err => {      
+        if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+
       });
     });
   }
   openDialogHardwareEdit(n: number) {
     this.editado1 = undefined;
     this.nombre = "";
-    this.prefixmem=undefined;
+    this.prefixmem = undefined;
     this.informacionService.gethardwarebyid(n).subscribe(resp => {
       this.editado1 = resp["info"];
       this.nombre = this.editado1.nombre;
       this.selectedact = this.editado1.estado ? 1 : 0;
       this.selectedtipo = this.editado1.idhw;
       let digito;
-      if(this.selectedtipo==3){
-        digito=Number((this.nombre.match("[0-9]*.[0-9]*"))[0])
-        this.prefixmem=(this.nombre.match("[A-Z]+"))==null?undefined:(this.nombre.match("[A-Z]+"))[0];
-        if(!digito){
-          digito=Number((this.nombre.match("[0-9]*"))[0])
+      if (this.selectedtipo == 3) {
+        digito = Number((this.nombre.match("[0-9]*.[0-9]*"))[0])
+        this.prefixmem = (this.nombre.match("[A-Z]+")) == null ? undefined : (this.nombre.match("[A-Z]+"))[0];
+        if (!digito) {
+          digito = Number((this.nombre.match("[0-9]*"))[0])
         }
-        this.nombre=digito
+        this.nombre = digito
       }
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormHardwareEditComponent, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, prefixmem:this.prefixmem,
-          tipohardware: this.tipohardware, selectedtipo: this.selectedtipo, id: this.id }
+        data: {
+          nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, prefixmem: this.prefixmem,
+          tipohardware: this.tipohardware, selectedtipo: this.selectedtipo, id: this.id
+        }
       });
       dialogRef.afterClosed().subscribe(result => {
-        if(result.selectedtipo==3){
-          result.nombre=result.nombre+result.prefixmem
+        if (result.selectedtipo == 3) {
+          result.nombre = result.nombre + result.prefixmem
         }
         this.informacionService.editarhardware({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact, "idLink": this.selectedtipo }).subscribe(resp => {
           this.obtenerInfoHardware();
+        }, err => {
+          if (err.status === 400) {
+            //const type = ['', 'info', 'success', 'warning', 'danger'];
+            //const color = Math.floor((Math.random() * 4) + 1);
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
         });
       });
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -570,6 +1013,11 @@ export class DataBaseComponent implements OnInit {
   clickListadoModelos() {
     this.pageIndex = 0;
     this.obtenerInfoModelos();
+    this.obtenerInfoHardwareMarca();
+    this.obtenerInfoHardwareEquipo();
+    console.log(this.modeloequipo)
+    console.log(this.modelomarca)
+
   }
   obtenerInfoModelos() {
     this.informacionService.listmodelos(this.modelo).subscribe(resp => {
@@ -577,25 +1025,38 @@ export class DataBaseComponent implements OnInit {
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
       this.modelos = resp.body["info"];
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
   openDialogModelo(): void {
     this.editado1 = {
       "Equipo": [{ "id": null, "nombre": "" }],
-      "Marca": [{ "id": null, "nombre": "" }]
-      , "Flash": [{ "id": null, "nombre": "" }],
+      "Marca": [{ "id": null, "nombre": "" }],
+      "Flash": [{ "id": null, "nombre": "" }],
       "Ram": [{ "id": null, "nombre": "" }]
     }
     this.nombre = "";
@@ -607,13 +1068,15 @@ export class DataBaseComponent implements OnInit {
       width: '400px',
       data: {
         accion: "Ingresar",
-        nombre: this.nombre, activado: this.activado,
-        selectedact: this.selectedact, editado1: this.editado1,
-        myControlEquipo: new FormControl(null, CharacterSelectionRequiredValidator),
-        myControlMarca: new FormControl(null, CharacterSelectionRequiredValidator),
-        myControlFlash: new FormControl(null, CharacterSelectionRequiredValidator),
-        myControlRam: new FormControl(null, CharacterSelectionRequiredValidator),
-        date: this.date
+        nombre: this.nombre,
+        activado: this.activado,
+        selectedact: this.selectedact,
+        editado1: this.editado1,
+        date: this.date,
+        equipos: this.equipos,
+        marcas: this.marcas,
+        flashs: this.flashs,
+        rams: this.rams
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -621,10 +1084,10 @@ export class DataBaseComponent implements OnInit {
         "nombre": result.nombre,
         "id": this.id,
         "estado": result.selectedact,
-        "idEquipo": result.myControlEquipo.value.id,
-        "idMarca": result.myControlMarca.value.id,
-        "idFlash": result.myControlFlash.value.id,
-        "idRam": result.myControlRam.value.id,
+        "idEquipo": result.editado1.Equipo[0].id,
+        "idMarca": result.editado1.Marca[0].id,
+        "idFlash": result.editado1.Flash[0].id,
+        "idRam": result.editado1.Ram[0].id,
         "fecha": moment(result.date.value).format('YYYY-MM-DD')
       }).subscribe(resp => {
         this.obtenerInfoModelos();
@@ -644,41 +1107,83 @@ export class DataBaseComponent implements OnInit {
         width: '400px',
         data: {
           accion: "Editar",
-          nombre: this.nombre, activado: this.activado,
-          selectedact: this.selectedact, editado1: this.editado1,
-          myControlEquipo: this.myControlEquipo,
-          myControlMarca: this.myControlMarca,
-          myControlFlash: this.myControlFlash,
-          myControlRam: this.myControlRam,
-          date: this.date
+          nombre: this.nombre,
+          activado: this.activado,
+          selectedact: this.selectedact,
+          editado1: this.editado1,
+          date: this.date,
+          equipos: this.equipos,
+          marcas: this.marcas,
+          flashs: this.flashs,
+          rams: this.rams
         }
       });
       dialogRef.afterClosed().subscribe(result => {
+        console.log(result)
         this.informacionService.editarmodelo({
           "nombre": result.nombre,
           "id": this.id,
           "estado": result.selectedact,
-          "idEquipo": result.myControlEquipo.value.id,
-          "idMarca": result.myControlMarca.value.id,
-          "idFlash": result.myControlFlash.value.id,
-          "idRam": result.myControlRam.value.id,
+          "idEquipo": result.editado1.Equipo[0].id,
+          "idMarca": result.editado1.Marca[0].id,
+          "idFlash": result.editado1.Flash[0].id,
+          "idRam": result.editado1.Ram[0].id,
           "fecha": moment(result.date.value).format('YYYY-MM-DD')
         }).subscribe(resp => {
           this.obtenerInfoModelos();
+        },err => {
+          if (err.status === 400) {
+            //const type = ['', 'info', 'success', 'warning', 'danger'];
+            //const color = Math.floor((Math.random() * 4) + 1);
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
         });
       });
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -693,17 +1198,30 @@ export class DataBaseComponent implements OnInit {
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -735,20 +1253,59 @@ export class DataBaseComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarorion({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
           this.obtenerInfoOrion();
+        }, err =>{
+          if (err.status === 400) {
+            //const type = ['', 'info', 'success', 'warning', 'danger'];
+            //const color = Math.floor((Math.random() * 4) + 1);
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
         });
       });
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -763,17 +1320,30 @@ export class DataBaseComponent implements OnInit {
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
@@ -787,6 +1357,32 @@ export class DataBaseComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertpropietario(result.nombre).subscribe(resp => {
         this.obtenerInfoPropietarios();
+      },err => {
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
       });
     });
   }
@@ -805,23 +1401,63 @@ export class DataBaseComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarpropietario({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
           this.obtenerInfoPropietarios();
+        }, err => {
+          if (err.status === 400) {
+            //const type = ['', 'info', 'success', 'warning', 'danger'];
+            //const color = Math.floor((Math.random() * 4) + 1);
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
         });
       });
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
+
 
 
 }
@@ -855,18 +1491,18 @@ export class FormComponent {
   templateUrl: './formhardware.html',
 })
 export class FormHardwareComponent implements OnInit {
-  
-  public tipomem:string[]=["B","KB","MB","GB","TB","PB"];
-  
+
+  public tipomem: string[] = ["B", "KB", "MB", "GB", "TB", "PB"];
+
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DataBaseComponent) { }
-  
+
   ngOnInit() {
 
   }
-  changetipo(){
-    this.data.nombre=undefined;
+  changetipo() {
+    this.data.nombre = undefined;
   }
 
 }
@@ -876,7 +1512,7 @@ export class FormHardwareComponent implements OnInit {
   templateUrl: './formhardwareedit.html',
 })
 export class FormHardwareEditComponent {
-  public tipomem:string[]=["B","KB","MB","GB","TB","PB"];
+  public tipomem: string[] = ["B", "KB", "MB", "GB", "TB", "PB"];
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
@@ -901,23 +1537,17 @@ export interface Hw {
   ]
 })
 export class FormModeloComponent implements OnInit {
+
+  public accionmems;
+  public disabled: boolean;
+  public fsop: boolean;
+  public fs:boolean;
+
   public infoeq: any = { "nombre": "", "estado": 1, "idLink": 2, "pindex": 1 };
   public infomarca: any = { "nombre": "", "estado": 1, "idLink": 1, "pindex": 1 };
   public infoflash: any = { "nombre": "", "estado": 1, "idLink": 3, "pindex": 1 };
   public inforam: any = { "nombre": "", "estado": 1, "idLink": 3, "pindex": 1 };
 
-  public hardwares: any[] = [];
-  public equipos: any[] = [];
-  public marcas: any[] = [];
-  public flashs: any[] = [];
-  public rams: any[] = [];
-
-  public disabled: boolean;
-
-  filteredOptionsEquipo: Observable<Hw[]>;
-  filteredOptionsMarca: Observable<Hw[]>;
-  filteredOptionsFlash: Observable<Hw[]>;
-  filteredOptionsRam: Observable<Hw[]>;
 
   constructor(
     public dialogRef: MatDialogRef<FormComponent>,
@@ -926,209 +1556,194 @@ export class FormModeloComponent implements OnInit {
 
   ngOnInit() {
     this.disabled = true;
-    this.obtenerInfoEquipos()
-    this.obtenerInfoMarcas()
-    this.obtenerInfoFlash()
-    this.obtenerInfoRam()
-    this.data.myControlFlash.disable();
-    this.data.myControlRam.disable();
+    this.accionmems = true;
+    this.fsop = false;
+    this.fs=true;
+
+    this.obtenerInfoEquipos();
+    this.obtenerInfoFlash();
+    this.obtenerInfoMarcas();
+    this.obtenerInfoRam();
+
     if (this.data.editado1 != undefined) {
-      this.data.myControlEquipo.setValue(this.data.editado1.Equipo[0]);
-      this.data.myControlMarca.setValue(this.data.editado1.Marca[0]);
-      //this.data.myControlFlash.setValue(this.data.editado1.Flash[0]);
-      //this.data.myControlRam.setValue(this.data.editado1.Ram[0]);
       this.data.date.setValue(moment(this.data.editado1.fechafin, 'YYYY-MM-DD'));
-    } if (this.data.editado1.Flash != undefined) {
-      this.data.myControlFlash.setValue(this.data.editado1.Flash[0]);
-    } else {
-      this.data.myControlFlash.setValue({ id: 0, nombre: "N/A" });
-    } if (this.data.editado1.Ram != undefined) {
-      this.data.myControlRam.setValue(this.data.editado1.Ram[0]);
-    } else {
-      this.data.myControlRam.setValue({ id: 0, nombre: "N/A" });
     }
-    if (this.data.editado1.Marca[0] != undefined && this.data.editado1.Marca[0].id == 4) {
-      this.data.myControlFlash.enable();
-      this.data.myControlRam.enable();
+    if (this.data.editado1.Flash == undefined) {
+      this.data.editado1.Flash = [{ id: 0, nombre: "N/A" }];
     }
-    this.filteredOptionsEquipo = this.data.myControlEquipo.valueChanges.pipe(
-      startWith(''),
-      map(value => (typeof value === 'string' ? value : value.nombre)),
-      map(nombre => (nombre ? this._filterEquipo(nombre) : this.equipos.slice()))
-    );
-    this.filteredOptionsMarca = this.data.myControlMarca.valueChanges.pipe(
-      startWith(''),
-      map(value => (typeof value === 'string' ? value : value.nombre)),
-      map(nombre => (nombre ? this._filterMarca(nombre) : this.marcas.slice()))
-    );
-    this.filteredOptionsFlash = this.data.myControlFlash.valueChanges.pipe(
-      startWith(''),
-      map(value => (typeof value === 'string' ? value : value.nombre)),
-      map(nombre => (nombre ? this._filterFlash(nombre) : this.flashs.slice()))
-    );
-    this.filteredOptionsRam = this.data.myControlRam.valueChanges.pipe(
-      startWith(''),
-      map(value => (typeof value === 'string' ? value : value.nombre)),
-      map(nombre => (nombre ? this._filterRam(nombre) : this.rams.slice()))
-    );
+    if (this.data.editado1.Ram == undefined) {
+      this.data.editado1.Ram = [{ id: 0, nombre: "N/A" }];
+    }
+    if (this.data.editado1.Marca[0] != undefined && this.data.editado1.Marca[0].id == 13) {
+      this.accionmems = false;
+    } else {
+      this.accionmems = true;
+    }
+    //console.log(this.data.editado1)
+    if(this.data.editado1.fechafin != undefined){//HAY FECHA
+      this.fs=false;
+      this.fsop = true;
+    }
   }
+
+
   displayFn(value) {
     return value ? value.nombre : undefined;
   }
-  //EQUIPO
-  setEquipoAutocomplete() {
-    const value = this.data.myControlEquipo.value;
-    if (typeof value == 'string') {
-        this.equipos.forEach(element => {
-          if (element.nombre.toLowerCase() === value.trim().toLowerCase()) {
-            this.data.myControlEquipo.setValue(element);
-          }
-        });
+
+  selectsoporte(value) {
+    if (value) {
+      this.fsop = false;
+      this.data.date.reset();
+      console.log(this.data.date)
+    } else {
+      this.fsop = true;
+      this.data.date.setValue(moment(this.data.editado1.fechafin, 'YYYY-MM-DD'));
+      console.log(this.data.date)
+      //soporte
     }
   }
-  private _filterEquipo(value: string): Hw[] {
-    const filterValue = value.toLowerCase();
-    this.infoeq.nombre = value;
-    this.obtenerInfoEquipos();
 
-    return this.equipos.filter(option => option.nombre.toLowerCase().includes(filterValue));
+  selectionMarcas() {
+    if (this.data.editado1.Marca[0] != undefined && this.data.editado1.Marca[0].id == 13) {
+      this.data.editado1.Flash = [{ id: 0, nombre: "N/A" }];
+      this.data.editado1.Ram = [{ id: 0, nombre: "N/A" }];
+      this.accionmems = false;
+
+    } else {
+      this.data.editado1.Flash = [{ id: 0, nombre: "" }];
+      this.data.editado1.Ram = [{ id: 0, nombre: "" }];
+      this.accionmems = true;
+    }
   }
+  //EQUIPO
   obtenerInfoEquipos() {
     this.informacionService.listhardwarebyNombre(this.infoeq).subscribe(resp => {
-      this.equipos = resp["info"];
+      this.data.equipos = resp["info"];
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
   //MARCA
-  setMarcaAutocomplete() {
-    const value = this.data.myControlMarca.value;
-    if (typeof value == 'string') {
-      this.marcas.forEach(element => {
-        if (element.nombre.toLowerCase() === value.trim().toLowerCase()) {
-          this.data.myControlMarca.setValue(element);
-        }
-      });
-    }
-  }
-  private _filterMarca(value: string): Hw[] {
-    const filterValue = value.toLowerCase();
-    this.infomarca.nombre = value;
-    this.obtenerInfoMarcas();
-    if (this.data.myControlMarca.value != undefined && this.data.myControlMarca.value.id != 4) {
-      this.data.myControlFlash.disable();
-      this.data.myControlFlash.setValue({ id: 0, nombre: "N/A" });
-      this.data.myControlRam.disable();
-      this.data.myControlRam.setValue({ id: 0, nombre: "N/A" });
-    } else {
-      this.data.myControlFlash.enable();
-      this.data.myControlRam.enable();
-      this.data.myControlRam.setValue({ id: 0, nombre: "" });
-      this.data.myControlFlash.setValue({ id: 0, nombre: "" });
-    }
-    return this.marcas.filter(option => option.nombre.toLowerCase().includes(filterValue));
-  }
   obtenerInfoMarcas() {
     this.informacionService.listhardwarebyNombre(this.infomarca).subscribe(resp => {
-      this.marcas = resp["info"];
+      this.data.marcas = resp["info"];
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
-
   //FLASH
-  setFlashAutocomplete() {
-    const value = this.data.myControlFlash.value;
-    if (typeof value == 'string') {
-      this.flashs.forEach(element => {
-        if (element.nombre.toLowerCase() === value.trim().toLowerCase()) {
-          this.data.myControlFlash.setValue(element);
-        }
-      });
-    }
-  }
-  private _filterFlash(value: string): Hw[] {
-    const filterValue = value.toLowerCase();
-    this.infoflash.nombre = value;
-    this.obtenerInfoFlash();
-    return this.flashs.filter(option => option.nombre.toLowerCase().includes(filterValue));
-  }
   obtenerInfoFlash() {
     this.informacionService.listhardwarebyNombre(this.infoflash).subscribe(resp => {
-      this.flashs = resp["info"];
+      this.data.flashs = resp["info"];
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
   //RAM
-  setRamAutocomplete() {
-    const value = this.data.myControlRam.value;
-    if (typeof value == 'string') {
-      this.rams.forEach(element => {
-        if (element.nombre.toLowerCase() === value.trim().toLowerCase()) {
-          this.data.myControlRam.setValue(element);
-        }
-      });
-    }
-  }
-  private _filterRam(value: string): Hw[] {
-    const filterValue = value.toLowerCase();
-    this.inforam.nombre = value;
-    this.obtenerInfoRam();
-    return this.rams.filter(option => option.nombre.toLowerCase().includes(filterValue));
-  }
   obtenerInfoRam() {
     this.informacionService.listhardwarebyNombre(this.inforam).subscribe(resp => {
-      this.rams = resp["info"];
+      this.data.rams = resp["info"];
     }, err => {
-      if (err.status === 401) {
-
-        setTimeout(() => {
-          //this.mensaje.add({ severity: 'info', summary: 'Sesión caducada', detail: 'La sesión ha caducado, será redirigido al portal. Por favor, recargue la página y vuelva a iniciar sesión', life: 5500 });
-        }, 4500);
-      }
-      else if (err.status === 400) {
-        //this.mensaje.add({ severity: 'warn', summary: 'Alerta', detail: err.error.log, life: 5500 });
-      }
-      else {
-        //this.mensaje.add({ severity: 'error', summary: 'Error', detail: err.error.log, life: 5500 });
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
       }
     });
   }
-
 }
 
 

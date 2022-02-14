@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Editar</h1>
+<h1 mat-dialog-title>Inventario</h1>
 <div mat-dialog-content>
     <ng-container [ngSwitch]="stepperOrientation | async">
         <div *ngSwitchCase="'horizontal'"></div>
@@ -12,8 +12,8 @@
                         <mat-form-field class="example-full-width">
                             <mat-label>Ambiente</mat-label>
                             <mat-select (selectionChange)="selectionamb($event.value)" id="a" name="a"
-                                formControlName="ambiente" required >
-                                <mat-option *ngFor="let a of data.ambientes" [value]="a">
+                                formControlName="ambiente" required>
+                                <mat-option *ngFor="let a of ambientes" [value]="a">
                                     {{a.nombre}}
                                 </mat-option>
                             </mat-select>
@@ -34,7 +34,8 @@
                             <mat-label>Ciudad</mat-label>
                             <mat-select (selectionChange)="selectioncity($event.value)" id="c" name="c"
                                 formControlName="city" required>
-                                <mat-option *ngFor="let c of data.cities" [value]="c">
+                                <mat-option *ngFor="let c of cities" [value]="c"
+                                    [disabled]="boolcity&&(c.nombre.toLowerCase()!='guayaquil' && c.nombre.toLowerCase()!='quito') ">
                                     {{c.nombre}}
                                 </mat-option>
                             </mat-select>
@@ -45,7 +46,7 @@
                             <mat-label>Tipo</mat-label>
                             <mat-select (selectionChange)="selectiontipo($event.value)" id="t" name="t"
                                 formControlName="tipo" required>
-                                <mat-option *ngFor="let t of data.tipos" [value]="t">
+                                <mat-option *ngFor="let t of tipos" [value]="t">
                                     {{t.nombre}}
                                 </mat-option>
                             </mat-select>
@@ -54,9 +55,9 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Agencia</mat-label>
-                            <mat-select (selectionChange)="selectionag($event.value)" id="ag" name="ag"
+                            <mat-select id="ag" name="ag"
                                 formControlName="ag" required>
-                                <mat-option *ngFor="let ag of data.agencias" [value]="ag">
+                                <mat-option *ngFor="let ag of agencias" [value]="ag">
                                     {{ag.nombre}}
                                 </mat-option>
                             </mat-select>
@@ -95,12 +96,20 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Modelo</mat-label>
-                            <mat-select (selectionChange)="selectionequipo($event.value)" id="e" name="e"
+                            <input matInput [matAutocomplete]="marca" formControlName="modelo" >                           
+                                <mat-autocomplete #marca="matAutocomplete"
+                                (optionSelected)="selectionmodelo($event.option.value)"
+                                 [displayWith]="displayFn.bind(this)">
+                                    <mat-option *ngFor="let e of filteredOptionsModelo | async" [value]="e">
+                                        {{e.nombre}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            <!--mat-select (selectionChange)="selectionmodelo($event.value)" id="e" name="e"
                                 formControlName="modelo" required>
                                 <mat-option *ngFor="let e of data.modelos" [value]="e">
                                     {{e.nombre}}
                                 </mat-option>
-                            </mat-select>
+                            </mat-select-->
                         </mat-form-field>
                     </div>
                 </div>
@@ -156,9 +165,9 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Carpeta Orion</mat-label>
-                            <mat-select (selectionChange)="selectionorion($event.value)" id="o" name="o"
+                            <mat-select id="o" name="o"
                                 formControlName="orion" required>
-                                <mat-option *ngFor="let o of data.orion" [value]="o">
+                                <mat-option *ngFor="let o of orion" [value]="o">
                                     {{o.nombre}}
                                 </mat-option>
                             </mat-select>
@@ -187,11 +196,35 @@
         </mat-step>
         <mat-step [stepControl]="data.adicionalFormG" label="Gestion">
             <form [formGroup]="data.adicionalFormG">
-                <div class="row">
+                <div class=""ng-container> 
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-checkbox id="opm" name="opm" formControlName="opm" (change)="selectionopm($event.checked)">
+                                NCM OP Manager</mat-checkbox>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-checkbox id="bpac" name="bpac" formControlName="bpac">Gestion BPAC</mat-checkbox>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-checkbox id="util" name="util" formControlName="util">Utilizado</mat-checkbox>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-checkbox id="boolinvent" name="boolinvent" formControlName="boolinvent" (change)="selectionboolinvent($event.checked)">
+                                No tiene inventario</mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">                  
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
-                            <mat-label>Inventario</mat-label>
-                            <input matInput fid="inv" name="inv" formControlName="inv" required>
+                            <mat-label>Propietario</mat-label>
+                            <mat-select (selectionChange)="selectionprop($event.value)" id="p" name="p"
+                                formControlName="propietario" required>
+                                <mat-option *ngFor="let p of propietarios" [value]="p">
+                                    {{p.nombre}}
+                                </mat-option>
+                            </mat-select>
                         </mat-form-field>
                     </div>
                     <div class="col-md-4">
@@ -199,30 +232,15 @@
                             <mat-label>Serie</mat-label>
                             <input matInput id="serie" name="serie" formControlName="serie" required>
                         </mat-form-field>
-                    </div>
+                    </div>   
                     <div class="col-md-4">
-                        <mat-form-field class="example-full-width">
-                            <mat-label>Propietario</mat-label>
-                            <mat-select (selectionChange)="selectionprop($event.value)" id="p" name="p"
-                                formControlName="propietario" required>
-                                <mat-option *ngFor="let p of data.propietarios" [value]="p">
-                                    {{p.nombre}}
-                                </mat-option>
-                            </mat-select>
+                        <mat-form-field class="example-full-width" >
+                            <mat-label>Inventario</mat-label>
+                            <input type="number" matInput fid="inv" name="inv" formControlName="inv">
                         </mat-form-field>
-                    </div>
+                    </div>                
                 </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <mat-checkbox id="opm" name="opm" formControlName="opm" (change)="selectionopm($event.checked)">NCM OP Manager</mat-checkbox>
-                    </div>
-                    <div class="col-md-4">
-                        <mat-checkbox id="bpac" name="bpac" formControlName="bpac">Gestion BPAC</mat-checkbox>
-                    </div>
-                    <div class="col-md-4">
-                        <mat-checkbox id="util" name="util" formControlName="util">Utilizado</mat-checkbox>
-                    </div>
-                </div>
+                
                 <div>
                     <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
                         matStepperPrevious>Regresar</button>
@@ -233,13 +251,27 @@
         </mat-step>
         <mat-step>
             <ng-template matStepLabel>Enviar</ng-template>
-            <p>Ingresar equipo</p>
-            <p></p>
-            <div>
+            <div class="row">
+                <div class="col-lg-8 col-md-6 col-sm-6">
+                    <p [hidden]="data.isnew">ACTUALIZAR INFORMACION </p>
+                    <p [hidden]="!data.isnew">INGRESAR INFORMACION </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-6" [hidden]="data.isnew">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Activado</mat-label>
+                        <mat-select  [(value)]="data.estado">
+                          <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
                 <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
-                    matStepperPrevious>Regresar</button>
+                        matStepperPrevious>Regresar</button>
                 <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
-                    [disabled]="!data.adicionalFormG.valid">Enviar</button>
+                        [disabled]="!data.adicionalFormG.valid" (click)="sendinfo()">Enviar</button>
             </div>
         </mat-step>
     </mat-stepper>

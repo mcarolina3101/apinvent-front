@@ -9,6 +9,7 @@ import { AppComponent } from './app.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 import { AutenticacionService } from './servicios/autenticacion/autenticacion.service';
+import { UsuariosService } from './servicios/database/servicios/usuarios.service';
 
 @NgModule({
   imports: [
@@ -25,7 +26,7 @@ import { AutenticacionService } from './servicios/autenticacion/autenticacion.se
     AdminLayoutComponent,
     AuthLayoutComponent
   ],
-  providers: [AutenticacionService],
+  providers: [AutenticacionService,UsuariosService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

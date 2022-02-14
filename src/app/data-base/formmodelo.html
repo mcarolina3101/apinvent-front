@@ -7,62 +7,94 @@
 
     <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Equipo</mat-label>
-        <input matInput [matAutocomplete]="equipo" [formControl]="data.myControlEquipo"
+        <!--input matInput [matAutocomplete]="equipo" [formControl]="data.myControlEquipo"
             (keyup)="setEquipoAutocomplete()">
         <mat-autocomplete #equipo="matAutocomplete" [displayWith]="displayFn.bind(this)">
             <mat-option *ngFor="let e of filteredOptionsEquipo | async" [value]="e">
                 {{e.nombre}}
             </mat-option>
-        </mat-autocomplete>
+        </mat-autocomplete-->
+        <mat-select id="e" name="e" [(value)]="data.editado1.Equipo[0].id" required>
+            <mat-option *ngFor="let e of data.equipos" [value]="e.id">
+                {{e.nombre}}
+            </mat-option>
+        </mat-select>
     </mat-form-field>
     <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Marca</mat-label>
-        <input matInput [matAutocomplete]="marca" [formControl]="data.myControlMarca" (keyup)="setMarcaAutocomplete()">
+        <!--input matInput [matAutocomplete]="marca" [formControl]="data.myControlMarca" (keyup)="setMarcaAutocomplete()">
         <mat-autocomplete #marca="matAutocomplete" [displayWith]="displayFn.bind(this)">
             <mat-option *ngFor="let e of filteredOptionsMarca | async" [value]="e">
                 {{e.nombre}}
             </mat-option>
-        </mat-autocomplete>
+        </mat-autocomplete-->
+        <mat-select id="m" name="m" (selectionChange)="selectionMarcas()" [(value)]="data.editado1.Marca[0].id"
+            required>
+            <mat-option *ngFor="let m of data.marcas" [value]="m.id">
+                {{m.nombre}}
+            </mat-option>
+        </mat-select>
     </mat-form-field>
-    <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>Flash</mat-label>
-        <input matInput [matAutocomplete]="flash" [formControl]="data.myControlFlash"
-            (keyup)="setFlashAutocomplete()">
+    <div [hidden]="accionmems">
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Flash</mat-label>
+            <!--input matInput [matAutocomplete]="flash" [formControl]="data.myControlFlash" (keyup)="setFlashAutocomplete()">
         <mat-autocomplete #flash="matAutocomplete" [displayWith]="displayFn.bind(this)">
             <mat-option *ngFor="let e of filteredOptionsFlash | async" [value]="e">
                 {{e.nombre}}
             </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
+        </mat-autocomplete-->
+            <mat-select id="f" name="f" [(value)]="data.editado1.Flash[0].id" required>
+                <mat-option *ngFor="let f of data.flashs" [value]="f.id">
+                    {{f.nombre}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
 
-    <mat-form-field class="example-full-width" appearance="fill">
-        <mat-label>Ram</mat-label>
-        <input matInput  [matAutocomplete]="ram" [formControl]="data.myControlRam"
-            (keyup)="setRamAutocomplete()">
+    <div [hidden]="accionmems">
+        <mat-form-field class="example-full-width" appearance="fill">
+            <mat-label>Ram</mat-label>
+            <!--input matInput [matAutocomplete]="ram" [formControl]="data.myControlRam" (keyup)="setRamAutocomplete()">
         <mat-autocomplete #ram="matAutocomplete" [displayWith]="displayFn.bind(this)">
             <mat-option *ngFor="let e of filteredOptionsRam | async" [value]="e">
                 {{e.nombre}}
             </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
+        </mat-autocomplete-->
+            <mat-select id="r" name="r" [(value)]="data.editado1.Ram[0].id" required>
+                <mat-option *ngFor="let r of data.rams" [value]="r.id">
+                    {{r.nombre}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
 
-    <mat-form-field appearance="fill">
-        <mat-label>Fecha fin de soporte</mat-label>
-        <input matInput [matDatepicker]="dp" [formControl]="data.date">
-        <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
-        <mat-datepicker #dp></mat-datepicker>
-    </mat-form-field>
+    <div class="row">
+        <div class="col-md-4">
+            <mat-checkbox id="fs" name="fs" [(ngModel)]="fs" (change)="selectsoporte($event.checked)">Fecha fin de soporte: NO ANUNCIADO
+            </mat-checkbox>
+        </div>
+    </div>
+
+    <div [hidden]="!fsop">
+        <mat-form-field appearance="fill">
+            <mat-label>Fecha fin de soporte</mat-label>
+            <input matInput [matDatepicker]="dp" [formControl]="data.date">
+            <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+            <mat-datepicker #dp></mat-datepicker>
+        </mat-form-field>
+    </div>
+
     <div [hidden]="data.accion!='Editar'">
         <mat-form-field class="example-full-width" appearance="fill">
             <mat-label>Activado</mat-label>
-            <mat-select  [(value)]="data.selectedact">
+            <mat-select [(value)]="data.selectedact">
                 <mat-option *ngFor="let a of data.activado" [value]="a.id">{{
                     a.nombre }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
     </div>
-
 
 </div>
 <div mat-dialog-actions>

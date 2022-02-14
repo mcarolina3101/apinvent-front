@@ -2,8 +2,8 @@
 // Card resting elevation: 2dp
 .card {
   border: 0;
-  margin-bottom: 30px;
-  margin-top: 30px;
+  margin-bottom: 3px;
+  margin-top: 3px;
   border-radius: $border-radius-large;
   color: $gray-dark;
   background: $white-color;
@@ -349,7 +349,7 @@
   }
 
   .card-body{
-    padding: $padding-card-body-y 20px;
+    padding: $padding-card-body-y 2px;
     position: relative;
 
   }
@@ -398,7 +398,7 @@
         }
         .nav-tabs-title {
             float: left;
-            padding: 10px 10px 10px 0;
+            padding: 1px 1px 1px 0;
             line-height: 24px;
         }
     }
@@ -451,8 +451,8 @@
   .card-body + .card-footer,
   .card-footer{
     padding: 0;
-    padding-top: 10px;
-    margin: 0 15px 10px;
+    padding-top: 1px;
+    margin: 0 15px 1px;
     border-radius: 0;
     justify-content: space-between;
     align-items: center;

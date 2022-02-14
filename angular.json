@@ -11,6 +11,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": ["crypto"],
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -149,7 +150,8 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "material-dashboard-angular:serve"
+            "devServerTarget": "material-dashboard-angular:serve",
+            "proxyConfig": "src/proxy.conf.json"
           }
         },
         "lint": {
