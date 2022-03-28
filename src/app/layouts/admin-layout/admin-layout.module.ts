@@ -11,9 +11,12 @@ import { FormComponentEdit } from '../../data-base/data-base.component';
 import { FormHardwareComponent } from '../../data-base/data-base.component';
 import { FormModeloComponent } from '../../data-base/data-base.component';
 import { FormHardwareEditComponent } from '../../data-base/data-base.component';
-import { NewDeviceComponent } from '../../new-device/new-device.component';
 import { TableListComponent } from '../../table-list/table-list.component';
 import { FormComponentEdit2 } from '../../table-list/table-list.component';
+import { EnlacesComponent } from '../../enlaces/enlaces.component';
+import { FormComponentEnlaces } from '../../enlaces/enlaces.component';
+import { TicketsComponent } from '../../tickets/tickets.component';
+import { FormComponentTickets } from '../../tickets/tickets.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 import {MatRippleModule} from '@angular/material/core';
@@ -63,7 +66,6 @@ import {MatExpansionModule} from '@angular/material/expansion';
   ],
   declarations: [
     DashboardComponent,
-    NewDeviceComponent,
     TableListComponent,
     DataBaseComponent,
     AdministracionComponent,
@@ -72,7 +74,11 @@ import {MatExpansionModule} from '@angular/material/expansion';
     FormHardwareComponent,
     FormComponentEdit,
     FormHardwareEditComponent,
-    FormModeloComponent
+    FormModeloComponent,
+    EnlacesComponent,
+    TicketsComponent,
+    FormComponentTickets,
+    FormComponentEnlaces
   ]
 })
 

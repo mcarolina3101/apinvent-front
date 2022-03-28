@@ -1,0 +1,278 @@
+<h1 mat-dialog-title>Inventario</h1>
+<div mat-dialog-content>
+    <ng-container [ngSwitch]="stepperOrientation | async">
+        <div *ngSwitchCase="'horizontal'"></div>
+        <div *ngSwitchCase="'vertical'"></div>
+    </ng-container>
+    <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!">
+        <mat-step [stepControl]="data.ambienteFormG" label="Ambiente">
+            <form [formGroup]="data.ambienteFormG">
+                <div class="row">
+                    <div class="col-md-5">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Ambiente</mat-label>
+                            <mat-select (selectionChange)="selectionamb($event.value)" id="a" name="a"
+                                formControlName="ambiente" required>
+                                <mat-option *ngFor="let a of ambientes" [value]="a">
+                                    {{a.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
+                        [disabled]="!data.ambienteFormG.valid">Siguiente</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="data.ubicacionFormG" label="Ubicacion">
+            <form [formGroup]="data.ubicacionFormG">
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Ciudad</mat-label>
+                            <mat-select (selectionChange)="selectioncity($event.value)" id="c" name="c"
+                                formControlName="city" required>
+                                <mat-option *ngFor="let c of cities" [value]="c"
+                                    [disabled]="boolcity&&(c.nombre.toLowerCase()!='guayaquil' && c.nombre.toLowerCase()!='quito') ">
+                                    {{c.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Tipo</mat-label>
+                            <mat-select (selectionChange)="selectiontipo($event.value)" id="t" name="t"
+                                formControlName="tipo" required>
+                                <mat-option *ngFor="let t of tipos" [value]="t">
+                                    {{t.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Agencia</mat-label>
+                            <mat-select id="ag" name="ag"
+                                formControlName="ag" required>
+                                <mat-option *ngFor="let ag of agencias" [value]="ag">
+                                    {{ag.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Piso</mat-label>
+                            <input type="number" matInput formControlName="piso">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Rack</mat-label>
+                            <input type="number" matInput formControlName="rack">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
+                        matStepperPrevious>Regresar</button>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
+                        [disabled]="!data.ubicacionFormG.valid">Siguiente</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="data.modeloFormG" label="Modelo" required>
+            <form [formGroup]="data.modeloFormG">
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Nombre</mat-label>
+                            <input matInput formControlName="nombre" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Modelo</mat-label>
+                            <input matInput [matAutocomplete]="marca" formControlName="modelo" >                           
+                                <mat-autocomplete #marca="matAutocomplete"
+                                (optionSelected)="selectionmodelo($event.option.value)"
+                                 [displayWith]="displayFn.bind(this)">
+                                    <mat-option *ngFor="let e of filteredOptionsModelo | async" [value]="e">
+                                        {{e.nombre}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            <!--mat-select (selectionChange)="selectionmodelo($event.value)" id="e" name="e"
+                                formControlName="modelo" required>
+                                <mat-option *ngFor="let e of data.modelos" [value]="e">
+                                    {{e.nombre}}
+                                </mat-option>
+                            </mat-select-->
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>EQUIPO</mat-label>
+                            <input matInput formControlName="equipo">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>MARCA</mat-label>
+                            <input matInput formControlName="marca">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>RAM</mat-label>
+                            <input matInput formControlName="ram">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>FLASH</mat-label>
+                            <input matInput formControlName="flash">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>FECHA FIN</mat-label>
+                            <input matInput formControlName="fecha">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
+                        matStepperPrevious>Regresar</button>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
+                        [disabled]="!data.modeloFormG.valid">Siguiente</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="data.networkFormG" label="Network" required>
+            <form [formGroup]="data.networkFormG">
+                <div class="row">
+                    <div class="col-md-3">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Ip</mat-label>
+                            <input matInput id="ip" name="ip" formControlName="ip" required>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Carpeta Orion</mat-label>
+                            <mat-select id="o" name="o"
+                                formControlName="orion" required>
+                                <mat-option *ngFor="let o of orion" [value]="o">
+                                    {{o.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-5">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Sistema Operativo</mat-label>
+                            <input matInput id="so" name="so" formControlName="so" required>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <mat-checkbox id="ecritico" name="ecritico" formControlName="ecritico">Equipo Critico
+                        </mat-checkbox>
+                    </div>
+                </div>
+                <div>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
+                        matStepperPrevious>Regresar</button>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
+                        [disabled]="!data.networkFormG.valid">Siguiente</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="data.adicionalFormG" label="Gestion">
+            <form [formGroup]="data.adicionalFormG">
+                <div class=""ng-container> 
+                    <div class="row">
+                        <div class="col-md-3">
+                            <mat-checkbox id="opm" name="opm" formControlName="opm" (change)="selectionopm($event.checked)">
+                                NCM OP Manager</mat-checkbox>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-checkbox id="bpac" name="bpac" formControlName="bpac">Gestion BPAC</mat-checkbox>
+                        </div>
+                        <div class="col-md-3">
+                            <mat-checkbox id="util" name="util" formControlName="util">Utilizado</mat-checkbox>
+                        </div>
+                        <div class="col-md-3" >
+                            <mat-checkbox id="boolinvent" name="boolinvent" formControlName="boolinvent" (change)="selectionboolinvent($event.checked)">
+                                No tiene inventario</mat-checkbox>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">                  
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Propietario</mat-label>
+                            <mat-select (selectionChange)="selectionprop($event.value)" id="p" name="p"
+                                formControlName="propietario" required>
+                                <mat-option *ngFor="let p of propietarios" [value]="p">
+                                    {{p.nombre}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-4" >
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Serie</mat-label>
+                            <input matInput id="serie" name="serie" formControlName="serie" required>
+                        </mat-form-field>
+                    </div>   
+                    <div class="col-md-4" >
+                        <mat-form-field class="example-full-width" >
+                            <mat-label>Inventario</mat-label>
+                            <input type="number" matInput fid="inv" name="inv" formControlName="inv">
+                        </mat-form-field>
+                    </div>                
+                </div>
+                
+                <div>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
+                        matStepperPrevious>Regresar</button>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
+                        [disabled]="!data.adicionalFormG.valid">Siguiente</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Enviar</ng-template>
+            <div class="row">
+                <div class="col-lg-8 col-md-6 col-sm-6">
+                    <p [hidden]="data.isnew">ACTUALIZAR INFORMACION </p>
+                    <p [hidden]="!data.isnew">INGRESAR INFORMACION </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-6 col-sm-6" [hidden]="data.isnew">
+                    <mat-form-field class="example-full-width" appearance="fill">
+                        <mat-label>Activado</mat-label>
+                        <mat-select  [(value)]="data.estado">
+                          <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+                <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
+                        matStepperPrevious>Regresar</button>
+                <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
+                        [disabled]="!data.adicionalFormG.valid" (click)="sendinfo()">Enviar</button>
+            </div>
+        </mat-step>
+    </mat-stepper>
+</div>

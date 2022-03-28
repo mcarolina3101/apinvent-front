@@ -208,7 +208,7 @@
                         <div class="col-md-3">
                             <mat-checkbox id="util" name="util" formControlName="util">Utilizado</mat-checkbox>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3" >
                             <mat-checkbox id="boolinvent" name="boolinvent" formControlName="boolinvent" (change)="selectionboolinvent($event.checked)">
                                 No tiene inventario</mat-checkbox>
                         </div>
@@ -227,13 +227,13 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" >
                         <mat-form-field class="example-full-width">
                             <mat-label>Serie</mat-label>
                             <input matInput id="serie" name="serie" formControlName="serie" required>
                         </mat-form-field>
                     </div>   
-                    <div class="col-md-4">
+                    <div class="col-md-4" >
                         <mat-form-field class="example-full-width" >
                             <mat-label>Inventario</mat-label>
                             <input type="number" matInput fid="inv" name="inv" formControlName="inv">
@@ -245,7 +245,7 @@
                     <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
                         matStepperPrevious>Regresar</button>
                     <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
-                        [disabled]="!data.adicionalFormG.valid">Siguiente</button>
+                        >Siguiente</button>
                 </div>
             </form>
         </mat-step>
@@ -271,7 +271,7 @@
                 <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
                         matStepperPrevious>Regresar</button>
                 <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
-                        [disabled]="!data.adicionalFormG.valid" (click)="sendinfo()">Enviar</button>
+                         (click)="sendinfo()">Enviar</button>
             </div>
         </mat-step>
     </mat-stepper>

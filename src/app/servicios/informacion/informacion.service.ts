@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Host, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ignoreElements } from 'rxjs-compat/operator/ignoreElements';
 import * as global from "../../global";
@@ -168,8 +168,8 @@ export class InformacionService {
       nombre:info.nombre,
       idLink:info.idLink,
       estado:info.estado,
-      pageSize: 1000, 
-      pageIndex: 1,
+      pageSize: global.pageSize, 
+      pageIndex: info.pindex,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response'});
@@ -446,7 +446,7 @@ export class InformacionService {
       nAmbiente:info.nAmbiente==""?null:info.nAmbiente,
       nModelo:info.nModelo==""?null:info.nModelo,
       nPropietario:info.nPropietario==""?null:info.nPropietario,
-      nOrion:info.nOrion==""?null:info.nOrion,
+      norion:info.norion==""?null:info.norion,
       nagencia:info.nagencia==""?null:info.nagencia,
       ntipo:info.ntipo==""?null:info.ntipo,
       nciudad:info.nciudad==""?null:info.nciudad,
@@ -516,10 +516,98 @@ export class InformacionService {
   }
   editarinventario(info:any):Observable<HttpResponse<any>> {
     this.ruta = 'inventario/actualizar';
+    console.log(info.adicionalFormG)
     let body = JSON.stringify({ 
       //nombre:info.nombre,
       //estado:info.estado,
       id:info.idedit,
+      ip:info.networkFormG.value.ip,
+      so:info.networkFormG.value.so,
+      serie:info.inventid.serie, //NO CAMBIA
+      inventario:info.adicionalFormG.controls["inv"].value, //CAMBIA
+      critico:info.networkFormG.value.ecritico?1:0,
+      opmger:info.adicionalFormG.value.opm?1:0,
+      idAmbiente: info.ambienteFormG.value.ambiente.id,
+      nombre: info.modeloFormG.value.nombre,
+      idModelo: info.inventid.Modelo[0].id, //NO CAMBIA
+      idPropietario: info.inventid.Propietario[0].id, //NO CAMBIA
+      idOrion:info.networkFormG.value.orion==undefined?null:info.networkFormG.value.orion.id,
+      agencia:info.ubicacionFormG.value.ag.id,
+      tipo:info.ubicacionFormG.value.tipo.id,
+      ciudad:info.ubicacionFormG.value.city.id,
+      piso:info.ubicacionFormG.value.piso,
+      rack:info.ubicacionFormG.value.rack,
+      util:info.ubicacionFormG.value.util==undefined?0:info.ubicacionFormG.value.util,
+      estado:info.estado,
+      username: localStorage.getItem("username")
+      
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
+
+  //ENLACES
+
+  listenlace(info: any):Observable<HttpResponse<any>> {
+    this.ruta = 'enlace/list';
+    let body = JSON.stringify({ 
+      idproveedor:info.idproveedor,
+      proveedor:info.proveedor==""?null:info.proveedor,
+      idpropiedad:info.propiedad,
+      propiedad:info.propiedad==""?null:info.propiedad,
+      idpunto:info.idpunto,
+      punto:info.punto==""?null:info.punto,
+      idagencia:info.idagencia,
+      agencia:info.nagencia==""?null:info.nagencia,
+      idtipo:info.idtipo,
+      tipo:info.ntipo==""?null:info.ntipo,
+      idciudad:info.idciudad,
+      ciudad:info.nciudad==""?null:info.nciudad,
+      bw:info.bw==""?null:info.bw,     
+      tunel:info.ip==""?null:info.ip,
+      codigo:info.codigo==""?null:info.codigo,
+      payfor:info.payfor==""?null:info.payfor,
+      medio:info.medio==""?null:info.medio,
+      estado:info.estado==null?1:info.estado,
+      pageSize: global.pageSize, 
+      pageIndex: info.pindex,
+      username: localStorage.getItem("username") 
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response'});
+    //return this.http.post(global.ruta + ruta, {}, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
+
+    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
+  downloadenlace(info: any):Observable<HttpResponse<Blob>> {
+    this.ruta = 'enlace/download';
+    let body = JSON.stringify({ 
+      serie:info.serie,
+      estado:info.estado,
+      pageSize: global.pageSize, 
+      pageIndex: info.pindex,
+      username: localStorage.getItem("username") 
+    });
+    return this.http.post(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob'});
+    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
+  getenlacebyid(n:number):Observable<HttpResponse<any>> {
+    this.ruta = 'enlace/id';
+    let body = JSON.stringify({ 
+      id:n,
+      username: localStorage.getItem("username")
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
+  dashboardenlace():Observable<HttpResponse<any>> {
+    this.ruta = 'enlace/dashboard';
+    let body = JSON.stringify({ 
+      username: localStorage.getItem("username")
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
+  insertenlace(info:any):Observable<HttpResponse<any>> {
+    this.ruta = 'enlace/crear';
+    let body = JSON.stringify({ 
+      //id:info.idedit,      
       ip:info.networkFormG.value.ip,
       so:info.networkFormG.value.so,
       serie:info.adicionalFormG.value.serie,
@@ -536,13 +624,41 @@ export class InformacionService {
       ciudad:info.ubicacionFormG.value.city.id,
       piso:info.ubicacionFormG.value.piso,
       rack:info.ubicacionFormG.value.rack,
+      util:info.adicionalFormG.value.util==undefined?0:info.ubicacionFormG.value.util,
+      //estado:1,
+      username: localStorage.getItem("username")    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
+  editarenlace(info:any):Observable<HttpResponse<any>> {
+    this.ruta = 'enlace/actualizar';
+    console.log(info.adicionalFormG)
+    let body = JSON.stringify({ 
+      //nombre:info.nombre,
+      //estado:info.estado,
+      id:info.idedit,
+      ip:info.networkFormG.value.ip,
+      so:info.networkFormG.value.so,
+      serie:info.inventid.serie, //NO CAMBIA
+      inventario:info.adicionalFormG.controls["inv"].value, //CAMBIA
+      critico:info.networkFormG.value.ecritico?1:0,
+      opmger:info.adicionalFormG.value.opm?1:0,
+      idAmbiente: info.ambienteFormG.value.ambiente.id,
+      nombre: info.modeloFormG.value.nombre,
+      idModelo: info.inventid.Modelo[0].id, //NO CAMBIA
+      idPropietario: info.inventid.Propietario[0].id, //NO CAMBIA
+      idOrion:info.networkFormG.value.orion==undefined?null:info.networkFormG.value.orion.id,
+      agencia:info.ubicacionFormG.value.ag.id,
+      tipo:info.ubicacionFormG.value.tipo.id,
+      ciudad:info.ubicacionFormG.value.city.id,
+      piso:info.ubicacionFormG.value.piso,
+      rack:info.ubicacionFormG.value.rack,
       util:info.ubicacionFormG.value.util==undefined?0:info.ubicacionFormG.value.util,
       estado:info.estado,
       username: localStorage.getItem("username")
+      
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
-
   //USUARIO
   listusuarios(info: any):Observable<HttpResponse<any>> {
     this.ruta = 'usuario/list';

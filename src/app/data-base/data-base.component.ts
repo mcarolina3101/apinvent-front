@@ -2,13 +2,12 @@ import { Component, OnInit, Inject, Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { InformacionService } from '../servicios/informacion/informacion.service';
 import 'rxjs/add/observable/interval';
-//import { FormBuilder, Validators, FormControl } from '@angular/forms';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import { FormBuilder, FormControl, Validators, ValidationErrors, ValidatorFn, AbstractControl } from '@angular/forms';
 import { MomentDateAdapter, MAT_MOMENT_DATE_ADAPTER_OPTIONS } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import * as _moment from 'moment';
 declare var $:any;
-//import _rollupMoment from 'moment';
 
 const moment = _moment;
 export const MY_FORMATS = {
@@ -39,25 +38,35 @@ export const CharacterSelectionRequiredValidator: ValidatorFn = (control: Abstra
 @Component({
   selector: 'app-data-base',
   templateUrl: './data-base.component.html',
-  styleUrls: ['./data-base.component.css']
+  styleUrls: ['./data-base.component.css'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({height: '0px', minHeight: '0 '})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class DataBaseComponent implements OnInit {
 
   public displayedColumns: string[] = [ //Ambientes, Orion, Propietarios
     'demo-nombre1',
     'demo-estado1',
-    'demo-action1'];
+    'demo-action1'
+  ];
 
   public displayedColumns2: string[] = [ //Ciudad, Hardware
     'demo-nombre2',
     'demo-link2',
     'demo-estado2',
-    'demo-action2'];
+    'demo-action2'
+  ];
 
   public displayedColumns3: string[] = [ //Ciudad, Hardware
     'demo-nombre3',
     'demo-estado3',
-    'demo-action3'];
+    'demo-action3'
+  ];
 
   public displayedColumns4: string[] = [ //Ciudad, Hardware
     'demo-nombre4',
@@ -65,7 +74,8 @@ export class DataBaseComponent implements OnInit {
     'demo-marca4',
     'demo-fecha4',
     'demo-estado4',
-    'demo-action4'];
+    'demo-action4'
+  ];
 
   public date = new FormControl(moment());
 
@@ -85,8 +95,10 @@ export class DataBaseComponent implements OnInit {
   public ciudad: any;
   public expansion: any;
   public totalenght = 1000;
-  public pageIndex = 0;
+  public totalenght2 = 1000;
 
+  public pageIndex = 0;
+  public pageIndex2 = 0;
 
   public orions: any[];
   public orion: any;
@@ -103,7 +115,7 @@ export class DataBaseComponent implements OnInit {
   public tipos: any[];
   public tipo;
 
-  public agencias: any[];
+  public agencias: any[] = [];
   public agencia: any;
 
   public modelo: any;
@@ -128,6 +140,12 @@ export class DataBaseComponent implements OnInit {
   public accion: string = '';
   //Formulario Editar
   public editado1: any; //info de editado
+  public blockednombre:any;
+
+  //expansion example
+  expandedElement: any | null;
+  expandedElement2: any | null;
+
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -143,6 +161,7 @@ export class DataBaseComponent implements OnInit {
     this.hardware = { "nombre": "", "estado": 1, "idLink": null, "pindex": this.pageIndex + 1 }
     this.hardwareOp = { "nombre": "", "estado": 1, "idLink": null, "pindex": this.pageIndex + 1 }
     this.modelo = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
+    this.agencia = { "nombre": "", "estado": null, "pindex": 1, "idLink": 0 }
 
     this.tipohardware = [
       { id: 1, nombre: 'Marca' },
@@ -183,10 +202,15 @@ export class DataBaseComponent implements OnInit {
     this.propietario.pindex = this.pageIndex + 1;
     this.obtenerInfoPropietarios()
   }
-
+  PageAgencias(event) {
+    this.pageIndex2 = event.pageIndex;
+    this.agencia.pindex = this.pageIndex2 + 1;
+    this.obtenerInfoAgencias()
+  }
   //AMBIENTE
   clickListadoAmbientes() {
     this.pageIndex = 0;
+    this.ambiente.pindex=1;
     this.obtenerInfoAmbientes();
   }
   openDialogAmbientes(): void {
@@ -239,7 +263,7 @@ export class DataBaseComponent implements OnInit {
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id }
+        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id, blockednombre:true }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarambiente({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -310,6 +334,7 @@ export class DataBaseComponent implements OnInit {
   //CIUDAD
   clickListadoCiudades() {
     this.pageIndex = 0;
+    this.ciudad.pindex=1;
     this.obtenerInfoCiudades();
   }
   obtenerInfoCiudades() {
@@ -349,26 +374,22 @@ export class DataBaseComponent implements OnInit {
       }
     });
   }
-  expandTipo(n: number, c: number) {
+  expandTipo(n: number) {
     this.agencias = [];
+    this.pageIndex2=0;
     this.agencia = { "nombre": "", "estado": null, "pindex": 1, "idLink": n }
+    this.obtenerInfoAgencias();
+  }
+  clickListadoAgencias(){
+    this.pageIndex = 0;
+    this.agencia.pindex=1;
+    this.obtenerInfoAgencias();
+  }
+  obtenerInfoAgencias(){
     this.informacionService.listagencias(this.agencia).subscribe(resp => {
       this.agencias = resp.body["info"];
-      let t = 0;
-      if (this.agencias.length > 0) {
-        t = this.agencias[0].idtipo;
-      }
-      this.ciudades.forEach(city => {
-        if (city.id == c) {
-          city.TipoCiudad.forEach(tc => {
-            if (tc.id == n) {
-              tc.exmod = true;
-            } else {
-              tc.exmod = false;
-            }
-          });
-        }
-      });
+      const keys = resp.headers;
+      this.totalenght2 = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
       if (err.status === 400) {
         //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -460,7 +481,7 @@ export class DataBaseComponent implements OnInit {
       //this.tipociudad = this.editado1.TipoCiudad;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id }
+        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id, blockednombre:true }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editartipo({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -589,7 +610,7 @@ export class DataBaseComponent implements OnInit {
       //this.tipociudad = this.editado1.TipoCiudad;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id }
+        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id, blockednombre:true }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarciudad({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -702,7 +723,7 @@ export class DataBaseComponent implements OnInit {
       //this.tipociudad = this.editado1.TipoCiudad;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id }
+        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id, blockednombre:false }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editaragencia({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -767,6 +788,7 @@ export class DataBaseComponent implements OnInit {
   //HARDWARE
   clickListadoHardwares() {
     this.pageIndex = 0;
+    this.hardware.pindex=1;
     this.obtenerInfoHardware();
   }
   obtenerInfoHardware() {
@@ -1012,11 +1034,10 @@ export class DataBaseComponent implements OnInit {
 
   clickListadoModelos() {
     this.pageIndex = 0;
+    this.modelo.pindex=1;
     this.obtenerInfoModelos();
     this.obtenerInfoHardwareMarca();
     this.obtenerInfoHardwareEquipo();
-    console.log(this.modeloequipo)
-    console.log(this.modelomarca)
 
   }
   obtenerInfoModelos() {
@@ -1190,6 +1211,7 @@ export class DataBaseComponent implements OnInit {
   //ORION
   clickListadoOrions() {
     this.pageIndex = 0;
+    this.orion.pindex=1;
     this.obtenerInfoOrion();
   }
   obtenerInfoOrion() {
@@ -1248,7 +1270,7 @@ export class DataBaseComponent implements OnInit {
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id }
+        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id , blockednombre:false }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarorion({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -1312,6 +1334,7 @@ export class DataBaseComponent implements OnInit {
   //PROPIETARIOS
   clickListadoPropietarios() {
     this.pageIndex = 0;
+    this.propietario.pindex=1;
     this.obtenerInfoPropietarios();
   }
   obtenerInfoPropietarios() {
@@ -1396,7 +1419,7 @@ export class DataBaseComponent implements OnInit {
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id }
+        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id , blockednombre:true }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarpropietario({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {

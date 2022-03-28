@@ -29,6 +29,7 @@ export class TableListComponent implements OnInit {
     'demo-serie',
     'demo-inv',
     'demo-so',
+    'demo-orion',
     'demo-fecha',
     'demo-estado',
     'demo-action'];
@@ -53,8 +54,8 @@ export class TableListComponent implements OnInit {
     city: [undefined, Validators.required],
     tipo: [undefined, Validators.required],
     ag: [undefined, Validators.required],
-    piso: [undefined, Validators.required],
-    rack: [undefined, Validators.required]
+    piso: [undefined],
+    rack: [undefined]
   });
   modeloFormG = this._formBuilder.group({
     nombre: ['', Validators.minLength(1)],
@@ -75,10 +76,10 @@ export class TableListComponent implements OnInit {
     opm: [undefined],
     bpac: [undefined],
     boolinvent:[undefined],
-    util: [undefined, Validators.required],
-    inv: ['', Validators.minLength(1)],
-    propietario: [undefined, Validators.required],
-    serie: ['', Validators.minLength(1)]
+    util: [undefined],
+    inv: [undefined],
+    propietario: [undefined],
+    serie: [undefined]
   });
   
   public pageIndex = 0;
@@ -101,7 +102,7 @@ export class TableListComponent implements OnInit {
       "nAmbiente": "", 
       "nModelo": "", 
       "nPropietario": "", 
-      "nOrion": "", 
+      "norion": "", 
       "nagencia": "", 
       "ntipo": "", 
       "nciudad": "", 
@@ -111,6 +112,12 @@ export class TableListComponent implements OnInit {
 
     this.obtenerInfoInventario();
     
+  }
+
+  obtenerInfoInventario_p1(){
+    this.pageIndex=0;
+    this.inventario.pindex=1;
+    this.obtenerInfoInventario();
   }
 
   obtenerInfoInventario() {
@@ -334,6 +341,7 @@ export class TableListComponent implements OnInit {
       //});
     });
   }
+  
 
   Page(event) {
     this.pageIndex = event.pageIndex;
@@ -391,34 +399,16 @@ export class FormComponentEdit2 implements OnInit {
     this.data.adicionalFormG.controls["util"].disable()
     this.boolcity=true;
     this.inventcheck=false;
-
     this.data.adicionalFormG.controls["boolinvent"].enable();
     this.data.adicionalFormG.controls["inv"].enable();
     this.data.adicionalFormG.controls["boolinvent"].setValue(false)
-
     if (this.data.inventid != undefined) {
-      //SETEAR INVENTARIO DEBIDO A PROPIETARIO
-      let prop=this.data.adicionalFormG.controls["propietario"].value;
-      this.obtenerInfoModelo(this.data.inventid.Modelo[0].id);
       this.data.estado=(this.data.inventid.estado)?1:0;
-      if(!prop.nombre.toLowerCase().includes("banco")){
-        this.data.adicionalFormG.controls["inv"].disable();
-        this.data.adicionalFormG.controls["inv"].setValue(undefined)
-        this.data.adicionalFormG.controls["boolinvent"].disable();
-        this.data.adicionalFormG.controls["boolinvent"].setValue(true)
-      }else{
-        this.data.adicionalFormG.controls["boolinvent"].enable();
-        if(this.data.adicionalFormG.controls["inv"].value==undefined){
-          this.data.adicionalFormG.controls["inv"].disable();
-          this.data.adicionalFormG.controls["boolinvent"].setValue(true);
-          this.data.adicionalFormG.controls["inv"].setValue(undefined);
-        }else{
-          this.data.adicionalFormG.controls["boolinvent"].setValue(false);
-          this.data.adicionalFormG.controls["inv"].enable();
-        }
-      }
+      this.data.adicionalFormG.controls["serie"].disable();
+      this.data.adicionalFormG.controls["inv"].setValue(this.data.inventid.inventario)
+    }else{
+      this.data.adicionalFormG.controls["serie"].enable();
     }
-
     this.filteredOptionsModelo = this.data.modeloFormG.controls["modelo"].valueChanges.pipe(
       startWith(''),
       map(value => (typeof value === 'string' ? value : value.nombre)),
@@ -570,6 +560,16 @@ export class FormComponentEdit2 implements OnInit {
         this.ambientes.forEach(element => {
           if (this.compareThem(element, this.data.inventid.Ambiente[0])) {
             this.data.ambienteFormG.controls["ambiente"].setValue(element)
+            
+            
+            if(this.data.ambienteFormG.controls["ambiente"].value.id==4){
+              this.data.ubicacionFormG.controls["piso"].disable();
+              this.data.ubicacionFormG.controls["rack"].disable();
+            } else {
+              this.data.ubicacionFormG.controls["piso"].enable();
+              this.data.ubicacionFormG.controls["rack"].enable();
+            }
+            
           }
         });
       }
@@ -652,12 +652,41 @@ export class FormComponentEdit2 implements OnInit {
       this.propietarios = resp.body["info"];
       const keys = resp.headers;
       if (this.data.inventid != undefined) {
-
         this.propietarios.forEach(element => {
           if (this.compareThem(element, this.data.inventid.Propietario[0])) {
             this.data.adicionalFormG.controls["propietario"].setValue(element)
           }
         });
+
+        this.data.adicionalFormG.controls["boolinvent"].disable();
+        this.data.adicionalFormG.controls["inv"].disable();
+        this.data.adicionalFormG.controls["propietario"].disable();
+
+        if(!this.data.adicionalFormG.controls["propietario"].value.nombre.toLowerCase().includes("banco")){
+          this.data.adicionalFormG.controls["inv"].disable();
+          this.data.adicionalFormG.controls["inv"].setValue(undefined)
+          this.data.adicionalFormG.controls["boolinvent"].disable();
+          this.data.adicionalFormG.controls["boolinvent"].setValue(true)
+        }else{
+          if(this.data.inventid.inventario==undefined){
+            this.data.adicionalFormG.controls["boolinvent"].enable();
+          }else{
+            this.data.adicionalFormG.controls["boolinvent"].disable();
+          }
+          if(this.data.adicionalFormG.controls["inv"].value==undefined){
+            this.data.adicionalFormG.controls["inv"].disable();
+            this.data.adicionalFormG.controls["boolinvent"].setValue(true);
+            this.data.adicionalFormG.controls["inv"].setValue(undefined);
+          }else{
+            this.data.adicionalFormG.controls["boolinvent"].setValue(false);
+            //this.data.adicionalFormG.controls["inv"].enable();
+          }
+        }
+      }
+      else{
+        this.data.adicionalFormG.controls["boolinvent"].enable();
+        this.data.adicionalFormG.controls["inv"].enable();
+        this.data.adicionalFormG.controls["propietario"].enable();
       }
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
@@ -738,12 +767,17 @@ export class FormComponentEdit2 implements OnInit {
       this.modelos = resp.body["info"];
       const keys = resp.headers;
       if (this.data.inventid != undefined) {
-
         this.modelos.forEach(element => {
           if (this.compareThem(element, this.data.inventid.Modelo[0])) {
             this.data.modeloFormG.controls["modelo"].setValue(element)
           }
         });
+        this.data.modeloFormG.controls["modelo"].disable();
+        this.obtenerInfoModelo(this.data.inventid.Modelo[0].id);
+
+      }else{
+        this.data.modeloFormG.controls["modelo"].setValue({id:undefined,nombre:''})
+        this.data.modeloFormG.controls["modelo"].enable();
       }
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
@@ -861,17 +895,18 @@ export class FormComponentEdit2 implements OnInit {
   }
 
   selectionamb(value) {
-    this.data.ubicacionFormG.reset();
-    this.data.modeloFormG.controls["nombre"].reset();
-    this.data.modeloFormG.controls["equipo"].reset();
-    this.data.modeloFormG.controls["marca"].reset();
-    this.data.modeloFormG.controls["flash"].reset();
-    this.data.modeloFormG.controls["ram"].reset();
-    this.data.modeloFormG.controls["fecha"].reset();
-    this.data.modeloFormG.controls["modelo"].setValue({id:0,nombre:''});
-
-    this.data.adicionalFormG.reset();
-    this.data.networkFormG.reset();
+    if(this.data.isnew){
+      this.data.ubicacionFormG.reset();
+      this.data.modeloFormG.controls["nombre"].reset();
+      this.data.modeloFormG.controls["equipo"].reset();
+      this.data.modeloFormG.controls["marca"].reset();
+      this.data.modeloFormG.controls["flash"].reset();
+      this.data.modeloFormG.controls["ram"].reset();
+      this.data.modeloFormG.controls["fecha"].reset();
+      this.data.modeloFormG.controls["modelo"].setValue({id:0,nombre:''});
+      this.data.adicionalFormG.reset();
+      this.data.networkFormG.reset();
+    }
     if (value.id === 4) {
       this.data.networkFormG.controls["orion"].setValue(undefined);
       this.data.networkFormG.controls["orion"].disable()
@@ -881,17 +916,26 @@ export class FormComponentEdit2 implements OnInit {
       this.data.adicionalFormG.controls["opm"].disable()
       this.data.adicionalFormG.controls["bpac"].setValue(false);
       this.data.adicionalFormG.controls["util"].setValue(false);
+      this.data.ubicacionFormG.controls["piso"].reset();
+      this.data.ubicacionFormG.controls["rack"].reset();
+      this.data.ubicacionFormG.controls["piso"].disable();
+      this.data.ubicacionFormG.controls["rack"].disable();
+
     } else {
       this.data.adicionalFormG.controls["util"].setValue(true);
       this.data.adicionalFormG.controls["opm"].enable();
       this.data.networkFormG.controls["ecritico"].enable();
       this.data.networkFormG.controls["orion"].enable();
+      this.data.ubicacionFormG.controls["piso"].enable();
+      this.data.ubicacionFormG.controls["rack"].enable();
     }
     if(value.id == 3){
       this.boolcity=true;
     }else{
       this.boolcity=false;
     }
+    console.log(this.data.adicionalFormG.valid)
+    console.log(this.data.adicionalFormG)
 
   }
 

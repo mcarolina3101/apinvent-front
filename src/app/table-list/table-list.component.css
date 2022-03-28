@@ -25,10 +25,6 @@
     max-width: 200px;
   }
 
-  th.mat-column-demo-ciudad, td.mat-column-demo-ciudad {
-    padding-left: 5px;
-  }
-
   ::ng-deep .mat-column-demo-agencia {
     font-style: italic;
     width: 10% !important;
@@ -45,16 +41,14 @@
   ::ng-deep .mat-column-demo-ubicacion {
     font-style: italic;
     width: 10% !important;
-    max-width: 100px;
+    max-width: 150px;
 
   }
+
   ::ng-deep .mat-column-demo-ambiente {
     font-style: italic;
     width: 10% !important;
     max-width: 100px;
-  }
-  th.mat-column-demo-ambiente, td.mat-column-demo-ambiente {
-    padding-left: 8px;
   }
 
   ::ng-deep .mat-column-demo-ip {
@@ -65,18 +59,10 @@
     font-size: smaller;
   }
 
-  th.mat-column-demo-ip, td.mat-column-demo-ip {
-    padding-left: 5px;
-  }
-
   ::ng-deep .mat-column-demo-equipo {
     font-style: italic;
     width: 10% !important;
     max-width: 300px !important;;
-  }
-
-  th.mat-column-demo-equipo, td.mat-column-demo-equipo {
-    padding-left: 5px;
   }
 
   ::ng-deep .mat-column-demo-serie {
@@ -85,27 +71,33 @@
     max-width: 150px;
 
   }
+
   ::ng-deep .mat-column-demo-so {
     font-style: italic;
-    width: 10% !important;
-    max-width: 200px;
+    width: 20% !important;
+    max-width: 400px !important;
+    font-size: small;
 
   }
+
   ::ng-deep .mat-column-demo-inv {
     font-style: italic;
     width: 10% !important;
     max-width: 100px;
 
   }
+
+  ::ng-deep .mat-column-demo-orion {
+    font-style: italic;
+    width: 10% !important;
+    max-width: 200px;
+  }
+
   ::ng-deep .mat-column-demo-fecha {
     font-style: italic;
     width: 20% !important;
-    max-width: 100px;
+    max-width: 150px;
     font-size: small;
-  }
-
-  th.mat-column-demo-fecha, td.mat-column-demo-fecha {
-    padding-left: 5px;
   }
 
   ::ng-deep .mat-column-demo-estado {
@@ -117,8 +109,29 @@
     width: 10%;
     max-width: 70px;
   }
+
+  th.mat-column-demo-ciudad, td.mat-column-demo-ciudad {
+    padding-left: 5px;
+  }
+
+  th.mat-column-demo-ip, td.mat-column-demo-ip {
+    padding-left: 5px;
+  }
+
+  th.mat-column-demo-ambiente, td.mat-column-demo-ambiente {
+    padding-left: 8px;
+  }
+
   th.mat-column-demo-fecha, td.mat-column-demo-fecha {
-    padding-left: 10px;
+    padding-left: 8px;
+  }
+
+  th.mat-column-demo-orion, td.mat-column-demo-orion {
+    padding-left: 8px;
+  }
+  
+  th.mat-column-demo-equipo, td.mat-column-demo-equipo {
+    padding-left: 5px;
   }
 
   ::ng-deep .mat-form-field .mat-form-field-label{

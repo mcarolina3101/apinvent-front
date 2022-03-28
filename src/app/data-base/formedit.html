@@ -2,7 +2,7 @@
 <div mat-dialog-content>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Nombre</mat-label>
-    <input matInput [(ngModel)]="data.nombre">
+    <input matInput [(ngModel)]="data.nombre" [disabled]="data.blockednombre">
   </mat-form-field>
   <mat-form-field class="example-full-width" appearance="fill">
     <mat-label>Activado</mat-label>
