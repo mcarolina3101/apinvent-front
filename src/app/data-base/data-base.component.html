@@ -45,7 +45,14 @@
                                     <li class="nav-item">
                                         <a mat-button class="nav-link" data-toggle="tab" href="#propietarios"
                                             (click)="clickListadoPropietarios()">
-                                            <i class="material-icons">engineering</i> Propietarios
+                                            <i class="material-icons">engineering</i> Proveedores
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" data-toggle="tab" href="#entidades"
+                                            (click)="clickListadoEntidades()">
+                                            <i class="material-icons">apartment</i> Entidades
                                             <div class="ripple-container"></div>
                                         </a>
                                     </li>
@@ -643,6 +650,66 @@
                                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                                 </table>
                                 <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PagePropietarios($event)" [pageIndex]="pageIndex"
+                                    aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                            <div class="tab-pane" id="entidades">
+                                <table mat-table [dataSource]="entidades" class="demo-table">
+
+                                    <ng-container matColumnDef="demo-nombre1">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [(ngModel)]="entidad.nombre"
+                                                    (change)="clickListadoEntidades()">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-estado1">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Activado</mat-label>
+                                                <mat-select id="a" name="a" [(ngModel)]="entidad.estado"
+                                                    (selectionChange)="obtenerInfoEntidades()">
+                                                    <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                        {{a.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">check_circle
+                                            </mat-icon>
+                                        </td>
+
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-action1">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Agregar"
+                                                    [matTooltipPosition]="'above'" (click)="openDialogEntidad()">
+                                                    <mat-icon>add_circle_outline</mat-icon>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Editar"
+                                                    [matTooltipPosition]="'above'"
+                                                    (click)="openDialogEntidadEdit(element.id)">
+                                                    <mat-icon>mode_edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                </table>
+                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageEntidades($event)" [pageIndex]="pageIndex"
                                     aria-label="Select page">
                                 </mat-paginator>
                             </div>

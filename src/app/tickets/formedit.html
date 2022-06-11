@@ -1,28 +1,32 @@
-<h1 mat-dialog-title>Inventario</h1>
+<h1 mat-dialog-title style="display:flex !important ;justify-content: flex-end !important;">{{data.titulo}}</h1>
 <div mat-dialog-content>
     <ng-container [ngSwitch]="stepperOrientation | async">
         <div *ngSwitchCase="'horizontal'"></div>
         <div *ngSwitchCase="'vertical'"></div>
     </ng-container>
     <mat-stepper class="example-stepper" [orientation]="(stepperOrientation | async)!">
-        <mat-step [stepControl]="data.ambienteFormG" label="Ambiente">
-            <form [formGroup]="data.ambienteFormG">
+        <mat-step [stepControl]="data.ticketFormG" label="Asignar Ticket">
+            <form [formGroup]="data.ticketFormG">
                 <div class="row">
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <mat-form-field class="example-full-width">
-                            <mat-label>Ambiente</mat-label>
-                            <mat-select (selectionChange)="selectionamb($event.value)" id="a" name="a"
-                                formControlName="ambiente" required>
-                                <mat-option *ngFor="let a of ambientes" [value]="a">
-                                    {{a.nombre}}
-                                </mat-option>
-                            </mat-select>
+                            <mat-label>Fecha de Ticket</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="fechai">
+                            <mat-hint>MM/DD/YYYY</mat-hint>
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-2">
+                        <mat-form-field class="example-full-width">
+                            <mat-label>Numero de Ticket</mat-label>
+                            <input type="number" matInput formControlName="numero">
                         </mat-form-field>
                     </div>
                 </div>
                 <div>
                     <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
-                        [disabled]="!data.ambienteFormG.valid">Siguiente</button>
+                        [disabled]="!data.ticketFormG.valid">Siguiente</button>
                 </div>
             </form>
         </mat-step>
@@ -55,8 +59,7 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Agencia</mat-label>
-                            <mat-select id="ag" name="ag"
-                                formControlName="ag" required>
+                            <mat-select id="ag" name="ag" formControlName="ag" required>
                                 <mat-option *ngFor="let ag of agencias" [value]="ag">
                                     {{ag.nombre}}
                                 </mat-option>
@@ -96,14 +99,14 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Modelo</mat-label>
-                            <input matInput [matAutocomplete]="marca" formControlName="modelo" >                           
-                                <mat-autocomplete #marca="matAutocomplete"
+                            <input matInput [matAutocomplete]="marca" formControlName="modelo">
+                            <mat-autocomplete #marca="matAutocomplete"
                                 (optionSelected)="selectionmodelo($event.option.value)"
-                                 [displayWith]="displayFn.bind(this)">
-                                    <mat-option *ngFor="let e of filteredOptionsModelo | async" [value]="e">
-                                        {{e.nombre}}
-                                    </mat-option>
-                                </mat-autocomplete>
+                                [displayWith]="displayFn.bind(this)">
+                                <mat-option *ngFor="let e of filteredOptionsModelo | async" [value]="e">
+                                    {{e.nombre}}
+                                </mat-option>
+                            </mat-autocomplete>
                             <!--mat-select (selectionChange)="selectionmodelo($event.value)" id="e" name="e"
                                 formControlName="modelo" required>
                                 <mat-option *ngFor="let e of data.modelos" [value]="e">
@@ -165,8 +168,7 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Carpeta Orion</mat-label>
-                            <mat-select id="o" name="o"
-                                formControlName="orion" required>
+                            <mat-select id="o" name="o" formControlName="orion" required>
                                 <mat-option *ngFor="let o of orion" [value]="o">
                                     {{o.nombre}}
                                 </mat-option>
@@ -196,10 +198,11 @@
         </mat-step>
         <mat-step [stepControl]="data.adicionalFormG" label="Gestion">
             <form [formGroup]="data.adicionalFormG">
-                <div class=""ng-container> 
+                <div class="" ng-container>
                     <div class="row">
                         <div class="col-md-3">
-                            <mat-checkbox id="opm" name="opm" formControlName="opm" (change)="selectionopm($event.checked)">
+                            <mat-checkbox id="opm" name="opm" formControlName="opm"
+                                (change)="selectionopm($event.checked)">
                                 NCM OP Manager</mat-checkbox>
                         </div>
                         <div class="col-md-3">
@@ -208,14 +211,15 @@
                         <div class="col-md-3">
                             <mat-checkbox id="util" name="util" formControlName="util">Utilizado</mat-checkbox>
                         </div>
-                        <div class="col-md-3" >
-                            <mat-checkbox id="boolinvent" name="boolinvent" formControlName="boolinvent" (change)="selectionboolinvent($event.checked)">
+                        <div class="col-md-3">
+                            <mat-checkbox id="boolinvent" name="boolinvent" formControlName="boolinvent"
+                                (change)="selectionboolinvent($event.checked)">
                                 No tiene inventario</mat-checkbox>
                         </div>
                     </div>
                 </div>
-                
-                <div class="row">                  
+
+                <div class="row">
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Propietario</mat-label>
@@ -227,20 +231,20 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-md-4" >
+                    <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Serie</mat-label>
                             <input matInput id="serie" name="serie" formControlName="serie" required>
                         </mat-form-field>
-                    </div>   
-                    <div class="col-md-4" >
-                        <mat-form-field class="example-full-width" >
+                    </div>
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
                             <mat-label>Inventario</mat-label>
                             <input type="number" matInput fid="inv" name="inv" formControlName="inv">
                         </mat-form-field>
-                    </div>                
+                    </div>
                 </div>
-                
+
                 <div>
                     <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
                         matStepperPrevious>Regresar</button>
@@ -261,17 +265,17 @@
                 <div class="col-lg-4 col-md-6 col-sm-6" [hidden]="data.isnew">
                     <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>Activado</mat-label>
-                        <mat-select  [(value)]="data.estado">
-                          <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
+                        <mat-select [(value)]="data.estado">
+                            <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
             </div>
             <div class="row">
                 <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
-                        matStepperPrevious>Regresar</button>
+                    matStepperPrevious>Regresar</button>
                 <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
-                        [disabled]="!data.adicionalFormG.valid" (click)="sendinfo()">Enviar</button>
+                    [disabled]="!data.adicionalFormG.valid" (click)="sendinfo()">Enviar</button>
             </div>
         </mat-step>
     </mat-stepper>

@@ -45,6 +45,8 @@
     "googleapis": "81.0.0",
     "hammerjs": "2.0.8",
     "jquery": "3.6.0",
+    "ldap-authentication": "^2.2.9",
+    "mat-select-filter": "^2.4.1",
     "material": "^0.4.3",
     "material-design-icons": "^3.0.1",
     "material-icons": "^1.10.4",

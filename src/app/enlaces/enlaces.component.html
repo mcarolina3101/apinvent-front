@@ -6,7 +6,7 @@
                     <div class="card-header card-header-danger">
                         <div class="row">
                             <div class="col-lg-10 col-md-8 col-sm-6">
-                                <h4 class="card-title mt-0"> Inventario de equipos
+                                <h4 class="card-title mt-0"> Inventario de enlaces
                                 </h4>
                             </div>
                             <div class="col-lg-2 col-md-4 col-sm-6">
@@ -28,61 +28,71 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Ciudad</mat-label>
-                                            <input matInput [(ngModel)]="inventario.nciudad"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="citiescontrol" multiple>
+                                                <mat-option *ngFor="let c of cities" [value]="c">{{c.nombre}}
+                                                </mat-option>
+                                            </mat-select>
+
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        {{element.Modelo[0].Ambiente[0].Ciudad[0].nombreciudad}}</td>
+                                        {{element.Proveedor[0].Propiedad[0].Ciudad[0].nombreciudad}}</td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-tipo">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Tipo</mat-label>
-                                            <input matInput [(ngModel)]="inventario.ntipo"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="tiposcontrol" multiple>
+                                                <mat-option *ngFor="let t of tipos" [value]="t">{{t.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        {{element.Modelo[0].Ambiente[0].Ciudad[0].Tipo[0].nombretipo}} </td>
+                                        {{element.Proveedor[0].Propiedad[0].Ciudad[0].Tipo[0].nombretipo}} </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-agencia"sticky>
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
-                                            <mat-label>Agencia</mat-label>
-                                            <input matInput [(ngModel)]="inventario.nagencia"
+                                            <mat-label>Punto A</mat-label>
+                                            <input matInput [(ngModel)]="inventario.agencia"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        {{element.Modelo[0].Ambiente[0].Ciudad[0].Tipo[0].Agencia[0].nombreagencia}}
+                                        {{element.Proveedor[0].Propiedad[0].Ciudad[0].Tipo[0].Agencia[0].nombreagencia}}
                                     </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-punto">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
-                                            <mat-label>Punto</mat-label>
-                                            <input matInput [(ngModel)]="inventario.nAmbiente"
+                                            <mat-label>Punto B</mat-label>
+                                            <input matInput [(ngModel)]="inventario.punto"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        {{element.Modelo[0].Ambiente[0].nombreambiente}} </td>
+                                        {{element.Proveedor[0].Propiedad[0].Ciudad[0].Tipo[0].Agencia[0].Punto[0].nombrepunto}} </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-proveedor">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Proveedor</mat-label>
-                                            <input matInput [(ngModel)]="inventario.nAmbiente"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="propietarioscontrol" multiple>
+                                                <mat-option *ngFor="let p of propietarios" [value]="p">{{p.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        {{element.Modelo[0].Ambiente[0].nombreambiente}} </td>
+                                        {{element.Proveedor[0].nombreproveedor}} </td>
                                 </ng-container>
 
 
@@ -90,69 +100,74 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Medio</mat-label>
-                                            <input matInput [(ngModel)]="inventario.nAmbiente"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="medioscontrol" multiple>
+                                                <mat-option *ngFor="let p of medios" [value]="p">{{p.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        {{element.Modelo[0].Ambiente[0].nombreambiente}} </td>
+                                        {{element.Proveedor[0].Propiedad[0].Ciudad[0].Tipo[0].Agencia[0].Punto[0].Hardware[0].nombremedio}} </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-ip">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>IP Tunnel</mat-label>
-                                            <input matInput [(ngModel)]="inventario.ip"
+                                            <input matInput [(ngModel)]="inventario.tunel"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.ip}} </td>
+                                    <td mat-cell *matCellDef="let element"> {{element.tunel}} </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-bw">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>BW(Kbps)</mat-label>
-                                            <input matInput [(ngModel)]="inventario.nModelo"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <input matInput [(ngModel)]="inventario.bw"
+                                                (change)="obtenerInfoInventario_p1()" disabled>
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.Modelo[0].nombremodelo}} </td>
+                                    <td mat-cell *matCellDef="let element"> {{element.bw}} </td>
                                 </ng-container>
 
-                                <ng-container matColumnDef="demo-codigo">
+                                <!--ng-container matColumnDef="demo-codigo">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Codigo</mat-label>
-                                            <input matInput [(ngModel)]="inventario.serie"
+                                            <input matInput [(ngModel)]="inventario.codigo"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.serie}} </td>
-                                </ng-container>
+                                    <td mat-cell *matCellDef="let element"> {{element.codigo}} </td>
+                                </ng-container-->
 
                                 <ng-container matColumnDef="demo-propiedad">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Propiedad</mat-label>
-                                            <input matInput [(ngModel)]="inventario.so"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="entidadescontrol" multiple>
+                                                <mat-option *ngFor="let p of entidades" [value]="p">{{p.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.so}} </td>
+                                    <td mat-cell *matCellDef="let element"> {{element.Proveedor[0].Propiedad[0].nombrepropiedad}} </td>
                                 </ng-container>
 
-                                <ng-container matColumnDef="demo-doble">
+                                <!--ng-container matColumnDef="demo-doble">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Doble Enlace</mat-label>
-                                            <input matInput [(ngModel)]="inventario.inv"
+                                            <input matInput [(ngModel)]="inventario.doble"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.inventario == undefined? 'N/A':
-                                        element.inventario }}</td>
-                                </ng-container>
+                                    <td mat-cell *matCellDef="let element"> {{element.doble == 1? 'SI':'NO' }}</td>
+                                </ng-container-->
                                 <!--ng-container matColumnDef="demo-marca">
                                         <th mat-header-cell *matHeaderCellDef>
                                             <mat-form-field class="example-full-width" appearance="none">

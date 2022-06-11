@@ -11,8 +11,9 @@ import { FormComponentEdit } from '../../data-base/data-base.component';
 import { FormHardwareComponent } from '../../data-base/data-base.component';
 import { FormModeloComponent } from '../../data-base/data-base.component';
 import { FormHardwareEditComponent } from '../../data-base/data-base.component';
-import { TableListComponent } from '../../table-list/table-list.component';
-import { FormComponentEdit2 } from '../../table-list/table-list.component';
+import { TableListComponent } from '../../table/table-list.component';
+import { FormComponentEdit2 } from '../../table/table-list.component';
+import { HistoryComponent } from '../../table/history-component';
 import { EnlacesComponent } from '../../enlaces/enlaces.component';
 import { FormComponentEnlaces } from '../../enlaces/enlaces.component';
 import { TicketsComponent } from '../../tickets/tickets.component';
@@ -34,7 +35,10 @@ import {MatListModule} from '@angular/material/list';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import {MatExpansionModule} from '@angular/material/expansion';
+import { MatSelectFilterModule } from 'mat-select-filter';
+
 
 
 
@@ -58,10 +62,12 @@ import {MatExpansionModule} from '@angular/material/expansion';
     MatInputModule,
     MatChipsModule,
     MatSelectModule,
+    MatSelectFilterModule,
     MatTooltipModule,
     MatCheckboxModule,
     MatStepperModule,
     MatExpansionModule,
+    MatNativeDateModule,
     MatDatepickerModule
   ],
   declarations: [
@@ -71,6 +77,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
     AdministracionComponent,
     FormComponent,
     FormComponentEdit2,
+    HistoryComponent,
     FormHardwareComponent,
     FormComponentEdit,
     FormHardwareEditComponent,

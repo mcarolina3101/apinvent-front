@@ -106,6 +106,9 @@ export class DataBaseComponent implements OnInit {
   public propietarios: any[];
   public propietario: any;
 
+  public entidades: any[];
+  public entidad: any;
+
   public hardwares: any[];
   public hardware: any;
   public hardwareOp: any;
@@ -157,6 +160,7 @@ export class DataBaseComponent implements OnInit {
     this.ciudad = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.tipo = { "nombre": "", "estado": null, "pindex": this.pageIndex + 1 }
     this.orion = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
+    this.entidad = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.propietario = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.hardware = { "nombre": "", "estado": 1, "idLink": null, "pindex": this.pageIndex + 1 }
     this.hardwareOp = { "nombre": "", "estado": 1, "idLink": null, "pindex": this.pageIndex + 1 }
@@ -166,7 +170,8 @@ export class DataBaseComponent implements OnInit {
     this.tipohardware = [
       { id: 1, nombre: 'Marca' },
       { id: 2, nombre: 'Equipo' },
-      { id: 3, nombre: 'Memoria' }
+      { id: 3, nombre: 'Memoria' },
+      { id: 70, nombre: 'Medio' }
     ]
 
     this.obtenerInfoAmbientes()
@@ -202,6 +207,11 @@ export class DataBaseComponent implements OnInit {
     this.propietario.pindex = this.pageIndex + 1;
     this.obtenerInfoPropietarios()
   }
+  PageEntidades(event) {
+    this.pageIndex = event.pageIndex;
+    this.entidad.pindex = this.pageIndex + 1;
+    this.obtenerInfoEntidades()
+  }
   PageAgencias(event) {
     this.pageIndex2 = event.pageIndex;
     this.agencia.pindex = this.pageIndex2 + 1;
@@ -218,7 +228,8 @@ export class DataBaseComponent implements OnInit {
     this.nombre = "";
     const dialogRef = this.dialog.open(FormComponent, {
       width: '400px',
-      data: { nombre: this.nombre }
+      data: { nombre: this.nombre ,
+        accion:'Ambiente',}
     });
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertambiente(result.nombre).subscribe(resp => {
@@ -263,7 +274,12 @@ export class DataBaseComponent implements OnInit {
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id, blockednombre:true }
+        data: { nombre: this.nombre, 
+          activado: this.activado,
+           selectedact: this.selectedact, 
+           id: this.id, 
+           accion:'Ambiente',
+           blockednombre:true }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarambiente({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -434,7 +450,8 @@ export class DataBaseComponent implements OnInit {
     this.nombre = "";
     const dialogRef = this.dialog.open(FormComponent, {
       width: '400px',
-      data: { nombre: this.nombre }
+      data: { nombre: this.nombre,
+        accion:'Tipo' }
     });
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.inserttipo(result.nombre, n).subscribe(resp => {
@@ -481,7 +498,12 @@ export class DataBaseComponent implements OnInit {
       //this.tipociudad = this.editado1.TipoCiudad;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id, blockednombre:true }
+        data: { nombre: this.nombre, 
+          activado: this.activado, 
+          selectedact: this.selectedact, 
+          id: this.id, 
+          accion:'Tipo',
+          blockednombre:true }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editartipo({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -565,7 +587,8 @@ export class DataBaseComponent implements OnInit {
     this.nombre = "";
     const dialogRef = this.dialog.open(FormComponent, {
       width: '400px',
-      data: { nombre: this.nombre }
+      data: { nombre: this.nombre,
+        accion:'Ciudad', }
     });
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertciudad(result.nombre).subscribe(resp => {
@@ -610,7 +633,12 @@ export class DataBaseComponent implements OnInit {
       //this.tipociudad = this.editado1.TipoCiudad;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id, blockednombre:true }
+        data: { nombre: this.nombre, 
+          activado: this.activado, 
+          selectedact: this.selectedact, 
+          id: this.id, 
+          accion:'Ciudad',
+          blockednombre:true }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarciudad({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -676,7 +704,8 @@ export class DataBaseComponent implements OnInit {
     this.nombre = "";
     const dialogRef = this.dialog.open(FormComponent, {
       width: '400px',
-      data: { nombre: this.nombre }
+      data: { nombre: this.nombre,
+        accion:'Agencia', }
     });
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertagencia(result.nombre, n).subscribe(resp => {
@@ -723,7 +752,12 @@ export class DataBaseComponent implements OnInit {
       //this.tipociudad = this.editado1.TipoCiudad;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id, blockednombre:false }
+        data: { nombre: this.nombre, 
+          activado: this.activado,
+           selectedact: this.selectedact, 
+           id: this.id, 
+           accion:'Agencia',
+           blockednombre:false }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editaragencia({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -1252,7 +1286,8 @@ export class DataBaseComponent implements OnInit {
     this.nombre = "";
     const dialogRef = this.dialog.open(FormComponent, {
       width: '400px',
-      data: { nombre: this.nombre }
+      data: { nombre: this.nombre,
+        accion:'Orion', }
     });
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertorion(result.nombre).subscribe(resp => {
@@ -1270,7 +1305,12 @@ export class DataBaseComponent implements OnInit {
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id , blockednombre:false }
+        data: { nombre: this.nombre, 
+          activado: this.activado, 
+          selectedact: this.selectedact, 
+          id: this.id , 
+          accion:'Orion',
+          blockednombre:false }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarorion({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -1375,7 +1415,8 @@ export class DataBaseComponent implements OnInit {
     this.nombre = "";
     const dialogRef = this.dialog.open(FormComponent, {
       width: '400px',
-      data: { nombre: this.nombre }
+      data: { nombre: this.nombre,
+        accion:'Propietario', }
     });
     dialogRef.afterClosed().subscribe(result => {
       this.informacionService.insertpropietario(result.nombre).subscribe(resp => {
@@ -1419,7 +1460,12 @@ export class DataBaseComponent implements OnInit {
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
-        data: { nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, id: this.id , blockednombre:true }
+        data: { nombre: this.nombre, 
+          activado: this.activado, 
+          selectedact: this.selectedact, 
+          id: this.id , 
+          accion:'Propietario',
+          blockednombre:true }
       });
       dialogRef.afterClosed().subscribe(result => {
         this.informacionService.editarpropietario({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
@@ -1480,6 +1526,162 @@ export class DataBaseComponent implements OnInit {
       }
     });
   }
+    //ENTIDADES
+    clickListadoEntidades() {
+      console.log('entidades')
+      this.pageIndex = 0;
+      this.entidad.pindex=1;
+      this.obtenerInfoEntidades();
+    }
+    obtenerInfoEntidades() {
+      this.informacionService.listentidades(this.entidad).subscribe(resp => {
+        this.entidades = resp.body["info"];
+        const keys = resp.headers;
+        this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+      }, err => {
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
+      });
+    }
+    openDialogEntidad(): void {
+      this.editado1 = undefined;
+      this.nombre = "";
+      const dialogRef = this.dialog.open(FormComponent, {
+        width: '400px',
+        data: { nombre: this.nombre,
+          accion:'Entidad', }
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        this.informacionService.insertentidades(result.nombre).subscribe(resp => {
+          this.obtenerInfoEntidades();
+        },err => {
+          if (err.status === 400) {
+            //const type = ['', 'info', 'success', 'warning', 'danger'];
+            //const color = Math.floor((Math.random() * 4) + 1);
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
+        });
+      });
+    }
+    openDialogEntidadEdit(n: number) {
+      this.editado1 = undefined;
+      this.nombre = "";
+      this.informacionService.getentidadesbyid(n).subscribe(resp => {
+        this.editado1 = resp["info"];
+        this.nombre = this.editado1.nombre;
+        this.selectedact = this.editado1.estado ? 1 : 0;
+        this.id = this.editado1.id;
+        const dialogRef = this.dialog.open(FormComponentEdit, {
+          width: '400px',
+          data: { nombre: this.nombre, 
+            activado: this.activado, 
+            selectedact: this.selectedact, 
+            id: this.id , 
+            accion:'Entidad',
+            blockednombre:true }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          this.informacionService.editarentidades({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
+            this.obtenerInfoEntidades();
+          }, err => {
+            if (err.status === 400) {
+              //const type = ['', 'info', 'success', 'warning', 'danger'];
+              //const color = Math.floor((Math.random() * 4) + 1);
+              $.notify({
+                icon: "notifications",
+                message: err.error.log
+              }, {
+                type: "warning",
+                timer: 4000,
+                placement: {
+                  from: 'top',
+                  align: 'center'
+                },
+                template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                  '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                  '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                  '<span data-notify="title">{1}</span> ' +
+                  '<span data-notify="message">{2}</span>' +
+                  '<div class="progress" data-notify="progressbar">' +
+                  '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                  '</div>' +
+                  '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                  '</div>'
+              });
+            }
+          });
+        });
+      }, err => {
+        if (err.status === 400) {
+          //const type = ['', 'info', 'success', 'warning', 'danger'];
+          //const color = Math.floor((Math.random() * 4) + 1);
+          $.notify({
+            icon: "notifications",
+            message: err.error.log
+          }, {
+            type: "warning",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        }
+      });
+    }
 
 
 

@@ -1,21 +1,13 @@
 <div class="logo">
-    <a  class="simple-text">
+    <a class="simple-text">
         INVENTARIO
     </a>
+
 </div>
 <div class="sidebar-wrapper">
-  <div *ngIf="isMobileMenu()">
-    <form class="navbar-form">
-      <span class="bmd-form-group">
-        <div class="input-group no-border">
-          <button mat-raised-button  (click)="logout()" class="btn btn-white btn-round btn-just-icon">
-            <i class="material-icons">logout</i>
-            <div class="ripple-container"></div>
-          </button>
-        </div>
-      </span>
-    </form>
-    <!--ul class="nav navbar-nav nav-mobile-menu">
+    <div *ngIf="isMobileMenu()">
+       
+        <!--ul class="nav navbar-nav nav-mobile-menu">
         <li class="nav-item">
             <a class="nav-link" href="javascript:void(0)">
                 <i class="material-icons">dashboard</i>
@@ -49,7 +41,7 @@
             </a>
         </li>
     </ul-->
-  </div>
+    </div>
     <ul class="nav">
         <li routerLinkActive="active" *ngFor="let menuItem of menuItems" class="{{menuItem.class}} nav-item">
             <a class="nav-link" [routerLink]="[menuItem.path]">
@@ -58,4 +50,12 @@
             </a>
         </li>
     </ul>
+    <form class="navbar-form">
+        <span class="bmd-form-group">
+            <button mat-raised-button (click)="logout()" class="btn btn-white btn-round btn-just-icon">
+                <i class="material-icons">logout</i>
+                <div class="ripple-container"></div>
+            </button>
+        </span>
+    </form>
 </div>

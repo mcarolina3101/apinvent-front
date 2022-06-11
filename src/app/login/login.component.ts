@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AutenticacionService } from '../servicios/autenticacion/autenticacion.service';
 import { Router, ActivatedRoute } from '@angular/router';
+
 //import { AuthService } from '../service/auth.service';
 declare var $:any
 @Component({
@@ -34,6 +35,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       if (this.user != undefined) {
         if (this.user.estado) {
           localStorage.setItem("username", this.user.usuario);
+          localStorage.setItem("perfil", this.user.perfil);
           this.router.navigate(['/dashboard']);
         } else {
           this.router.navigate(['/login']);

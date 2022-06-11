@@ -18,19 +18,19 @@ import { saveAs } from 'file-saver';
 export class TicketsComponent implements OnInit {
 
   public displayedColumns: string[] = [
-    'demo-nombre',
-    'demo-ciudad',
+    'demo-ticket',
     'demo-agencia',
     'demo-tipo',
-    'demo-ubicacion',
-    'demo-ambiente',
-    'demo-ip',
-    'demo-equipo',
-    'demo-serie',
-    'demo-inv',
-    'demo-so',
-    'demo-orion',
-    'demo-fecha',
+    'demo-ciudad',
+    'demo-lan', 
+    'demo-problema',
+    'demo-proveedor',
+    'demo-tcompleto',
+    'demo-tiempo0',
+    'demo-tiempo1',
+    'demo-tiempo2',
+    'demo-tiempo',
+    'demo-tiempom',
     'demo-estado',
     'demo-action'];
   public dataDevices: any[]=[];
@@ -47,9 +47,16 @@ export class TicketsComponent implements OnInit {
     { id: 0, nombre: 'No' }
   ];
 
-  ambienteFormG = this._formBuilder.group({
-    ambiente: [undefined, Validators.required]
+  public titulo="";
+
+  ticketFormG = this._formBuilder.group({
+    fechai: [undefined, Validators.required],
+    numero: [undefined, Validators.required]
   });
+
+  //BORRAR AL ULTIMO
+
+
   ubicacionFormG = this._formBuilder.group({
     city: [undefined, Validators.required],
     tipo: [undefined, Validators.required],
@@ -93,25 +100,31 @@ export class TicketsComponent implements OnInit {
 
   ngOnInit() {
     this.inventario = { 
-      "nombre": "", 
-      "fecha":"",
-      "ip": "", 
-      "serie": "", 
-      "so": "", 
-      "inv": "",  
-      "nAmbiente": "", 
-      "nModelo": "", 
-      "nPropietario": "", 
-      "norion": "", 
-      "nagencia": "", 
-      "ntipo": "", 
-      "nciudad": "", 
+      "ticket": "", 
+      "agencia": "", 
+      "tipo": "", 
+      "ciudad": "", 
+
+      "lan": "", 
+      "problema": "", 
+      "proveedor": "", 
+
+      "tcompleto": "", 
+      "time0": "", 
+      "time1": "", 
+      "time2": "", 
+      "tdias": "", 
+      "tmins": "", 
+
+      "soporte": "", 
+      "descripcion": "", 
+
       "estado": 1,
       "nubicacion":"", 
       "pindex": this.pageIndex + 1}
 
     this.obtenerInfoInventario();
-    
+    console.log(this.inventario)
   }
 
   obtenerInfoInventario_p1(){
@@ -121,7 +134,7 @@ export class TicketsComponent implements OnInit {
   }
 
   obtenerInfoInventario() {
-    this.informacionService.listinventario(this.inventario).subscribe(resp => {
+    this.informacionService.listticket(this.inventario).subscribe(resp => {
       this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
@@ -206,36 +219,7 @@ export class TicketsComponent implements OnInit {
       this.adicionalFormG.controls["util"].setValue(this.inventid.util)
       this.ubicacionFormG.controls["piso"].setValue(this.inventid.piso)
       this.ubicacionFormG.controls["rack"].setValue(this.inventid.rack)
-      /*
-      this.ambientes.forEach(element => {
-        if (this.compareThem(element, this.inventid.Ambiente[0])) {
-          this.ambienteFormG.controls["ambiente"].setValue(element)
-        }
-      });
-      this.cities.forEach(element => {
-        if (this.compareThem(element, this.inventid.Agencia[0].Tipo[0].Ciudad[0])) {
-          this.tp.idlink = this.inventid.Agencia[0].Tipo[0].Ciudad[0].id;
-          this.ubicacionFormG.controls["city"].setValue(element)
-          //this.obtenerInfoTipos();
-        }
-      });
-      this.orion.forEach(element => {
-        if (this.inventid.Orion != undefined) {
-          if (this.compareThem(element, this.inventid.Orion[0])) {
-            this.networkFormG.controls["orion"].setValue(element)
-          }
-        }
-      });
-      this.modelos.forEach(element => {
-        if (this.compareThem(element, this.inventid.Modelo[0])) {
-          this.modeloFormG.controls["modelo"].setValue(element)
-        }
-      });
-      this.propietarios.forEach(element => {
-        if (this.compareThem(element, this.inventid.Propietario[0])) {
-          this.adicionalFormG.controls["propietario"].setValue(element)
-        }
-      });*/
+      
       this.openDialogEdit(n);
     },err => {
       if (err.status === 400) {
@@ -268,77 +252,61 @@ export class TicketsComponent implements OnInit {
   }
 
   openDialogEdit(n): void {
-    //this.editado1 = undefined;
-    //this.nombre = "";
     this.isnew = false;
     const dialogRef = this.dialog.open(FormComponentTickets, {
-      width: '1000px',
+      width: '1200px',
+      height: '800px',
+      position: {
+        top: '0px',
+        left: '200px'
+      },
       data: {
         idedit: n,
         isnew: this.isnew,
+        titulo:"Editar",
         activado:this.activado,
-        ambienteFormG: this.ambienteFormG,
+        ticketFormG: this.ticketFormG,
         adicionalFormG: this.adicionalFormG,
         ubicacionFormG: this.ubicacionFormG,
         networkFormG: this.networkFormG,
         modeloFormG: this.modeloFormG,
-        inventid: this.inventid/*,
-        ambientes: this.ambientes,
-        cities: this.cities,
-        modelos: this.modelos,
-        propietarios: this.propietarios,
-        agencias: this.agencias,
-        tipos: this.tipos,
-        orion: this.orion,
-        agc: this.agc,
-        tp: this.tp*/
+        inventid: this.inventid
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       this.pageIndex = 0;
       this.obtenerInfoInventario();
-      //this.informacionService.insertambiente(result.nombre).subscribe(resp => {
-      //  this.obtenerInfoAmbientes();
-      //});
     });
   }
 
   openDialogNew(): void {
-    //this.editado1 = undefined;
-    //this.nombre = "";
     this.isnew = true;
     this.modeloFormG.reset();
-    this.ambienteFormG.reset();
+    this.ticketFormG.reset();
     this.ubicacionFormG.reset();
     this.adicionalFormG.reset();
     this.networkFormG.reset();
     const dialogRef = this.dialog.open(FormComponentTickets, {
-      width: '1000px',
+      width: '1200px',
+      height: '800px',
+      position: {
+        top: '0px',
+        left: '200px'
+      },
       data: {
         isnew: this.isnew,
+        titulo:"Crear Ticket",
         activado:this.activado,
-        ambienteFormG: this.ambienteFormG,
+        ticketFormG: this.ticketFormG,
         adicionalFormG: this.adicionalFormG,
         ubicacionFormG: this.ubicacionFormG,
         networkFormG: this.networkFormG,
         modeloFormG: this.modeloFormG,
-        inventid: undefined/*,
-        ambientes: this.ambientes,
-        cities: this.cities,
-        modelos: this.modelos,
-        propietarios: this.propietarios,
-        agencias: this.agencias,
-        tipos: this.tipos,
-        orion: this.orion,
-        agc: this.agc,
-        tp: this.tp*/
+        inventid: undefined
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       this.obtenerInfoInventario();
-      //this.informacionService.insertambiente(result.nombre).subscribe(resp => {
-      //  this.obtenerInfoAmbientes();
-      //});
     });
   }
   
@@ -365,7 +333,6 @@ export class FormComponentTickets implements OnInit {
   public infoeq: any = { "nombre": "", "estado": 1, "idLink": 2, "pindex": 1 };
   filteredOptionsModelo: Observable<any[]>;
 
-  public ambientes: any[]=[];
   public cities: any[]=[];
   public agencias: any[]=[];
   public tipos: any[]=[];
@@ -373,7 +340,6 @@ export class FormComponentTickets implements OnInit {
   public propietarios: any[]=[];
   public orion: any[]=[];
 
-  public amb = { "nombre": "", "estado": 1 }
   public ct = { "nombre": "", "estado": 1 }
   public tp = { "nombre": "", "idlink": 1 }
   public agc = { "nombre": "", "idlink": 1 }
@@ -384,7 +350,6 @@ export class FormComponentTickets implements OnInit {
   public on = { "nombre": "", "estado": 1 }
 
   ngOnInit() {
-    this.obtenerInfoAmbientes();
     this.obtenerInfoCiudades();
     this.obtenerInfoModelos();
     this.obtenerInfoOrion();
@@ -404,8 +369,6 @@ export class FormComponentTickets implements OnInit {
     this.data.adicionalFormG.controls["inv"].enable();
     this.data.adicionalFormG.controls["boolinvent"].setValue(false)
     if (this.data.inventid != undefined) {
-      //SETEAR INVENTARIO DEBIDO A PROPIETARIO
-      //let prop=this.data.adicionalFormG.controls["propietario"].value;
       this.data.estado=(this.data.inventid.estado)?1:0;
       this.data.adicionalFormG.controls["serie"].disable();
       console.log(this.data.inventid)
@@ -426,112 +389,21 @@ export class FormComponentTickets implements OnInit {
     breakpointObserver: BreakpointObserver,
     private informacionService: InformacionService,
     @Inject(MAT_DIALOG_DATA) public data: TicketsComponent) {
-    this.stepperOrientation = breakpointObserver.observe('(min-width: 1000px)')
+    this.stepperOrientation = breakpointObserver.observe('(min-width: 1200px,min-height:800px)')
       .pipe(map(({ matches }) => matches ? 'horizontal' : 'vertical'));
   }
 
-
-/*
-  obtenerInfoTipos() {
-
-    this.informacionService.listtiposNombre(this.data.tp).subscribe(resp => {
-      this.data.tipos = resp.body["info"];
-      const keys = resp.headers;
-      if (this.data.inventid != undefined) {
-        this.data.tipos.forEach(element => {
-          if (this.compareThem(element, this.data.inventid.Agencia[0].Tipo[0])) {
-            this.data.agc.idlink = this.data.inventid.Agencia[0].Tipo[0].id;
-            this.data.ubicacionFormG.controls["tipo"].setValue(element)
-            this.obtenerInfoAgencias();
-          }
-        });
-      }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    }, err => {
-      if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-
-  obtenerInfoAgencias() {
-    this.informacionService.listagenciasNombre(this.data.agc).subscribe(resp => {
-      this.data.agencias = resp.body["info"];
-      const keys = resp.headers;
-      if (this.data.inventid != undefined) {
-        this.data.agencias.forEach(element => {
-          if (this.compareThem(element, this.data.inventid.Agencia[0])) {
-            this.data.ubicacionFormG.controls["ag"].setValue(element)
-          }
-        });
-      }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    }, err => {
-      if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-*/
-  obtenerInfoModelo(n) {
+obtenerInfoModelo(n) {
     this.informacionService.getmodelobyid(n).subscribe(resp => {
       this.modelSelected = resp["info"];
-      //const keys = resp.headers;
       this.data.modeloFormG.controls["equipo"].setValue(this.modelSelected.Equipo[0].nombre)
       this.data.modeloFormG.controls["marca"].setValue(this.modelSelected.Marca[0].nombre)
       this.data.modeloFormG.controls["flash"].setValue(this.modelSelected.Flash == undefined ? undefined : this.modelSelected.Flash[0].nombre)
       this.data.modeloFormG.controls["ram"].setValue(this.modelSelected.Ram == undefined ? undefined : this.modelSelected.Ram[0].nombre)
       this.data.modeloFormG.controls["fecha"].setValue(this.modelSelected.fechafin == undefined ? undefined : this.modelSelected.fechafin)
 
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     },err=> {
       if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
         $.notify({
           icon: "notifications",
           message: err.error.log
@@ -557,47 +429,6 @@ export class FormComponentTickets implements OnInit {
     });
   }
 
-  obtenerInfoAmbientes() {
-    this.informacionService.listambientesNombre(this.amb).subscribe(resp => {
-      this.ambientes = resp.body["info"];
-      const keys = resp.headers;
-      if(this.data.inventid!=undefined){
-        this.ambientes.forEach(element => {
-          if (this.compareThem(element, this.data.inventid.Ambiente[0])) {
-            this.data.ambienteFormG.controls["ambiente"].setValue(element)
-          }
-        });
-      }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    }, err => {
-      if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    }
-    )
-  }
 
   obtenerInfoCiudades() {
     this.informacionService.listciudadesNombre(this.ct).subscribe(resp => {
@@ -612,11 +443,8 @@ export class FormComponentTickets implements OnInit {
           }
         });
       }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
       if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
         $.notify({
           icon: "notifications",
           message: err.error.log
@@ -683,11 +511,8 @@ export class FormComponentTickets implements OnInit {
         this.data.adicionalFormG.controls["inv"].enable();
         this.data.adicionalFormG.controls["propietario"].enable();
       }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
       if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
         $.notify({
           icon: "notifications",
           message: err.error.log
@@ -727,11 +552,8 @@ export class FormComponentTickets implements OnInit {
           }
         });
       }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
       if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
         $.notify({
           icon: "notifications",
           message: err.error.log
@@ -774,11 +596,8 @@ export class FormComponentTickets implements OnInit {
         this.data.modeloFormG.controls["modelo"].setValue({id:undefined,nombre:''})
         this.data.modeloFormG.controls["modelo"].enable();
       }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
       if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
         $.notify({
           icon: "notifications",
           message: err.error.log
@@ -818,11 +637,8 @@ export class FormComponentTickets implements OnInit {
           }
         });
       }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
       if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
         $.notify({
           icon: "notifications",
           message: err.error.log
@@ -859,11 +675,8 @@ export class FormComponentTickets implements OnInit {
           }
         });
       }
-      //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {
       if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
         $.notify({
           icon: "notifications",
           message: err.error.log

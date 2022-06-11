@@ -1,15 +1,9 @@
 ::ng-deep .demo-table {
     width: 100%;
-    height: 75%;
+    height: 100%;
     overflow: auto; 
   }
 
-  ::ng-deep .mat-column-demo-nombre {
-    font-style: italic;
-    width: 20% !important;
-    max-width: 200px;
-    font-weight: bold;
-  }
 
   .mat-table-sticky-border-elem-right-demo-table {
     border-left: 1px solid #e0e0e0;
@@ -19,120 +13,114 @@
     border-right: 1px solid #e0e0e0;
   }
 
-  ::ng-deep .mat-column-demo-ciudad {
+  ::ng-deep .mat-column-demo-ticket {
     font-style: italic;
-    width: 10% !important; 
-    max-width: 200px;
+    max-width: 100px;
+    font-size: small;
   }
 
-  ::ng-deep .mat-column-demo-agencia {
+  ::ng-deep .mat-column-demo-localidad {
     font-style: italic;
-    width: 10% !important;
-    max-width: 200px;
+    width: 200px !important;
+    font-size :xx-small;
+    font-weight: bold;
+
+  }
+  th.mat-column-demo-localidad, td.mat-column-demo-agencia {
+    padding-left: 5px;
+    width: 200px !important;
+  }
+
+  ::ng-deep .mat-column-demo-ciudad {
+    font-style: italic;
+    width: 100px;
   }
 
   ::ng-deep .mat-column-demo-tipo {
     font-style: italic;
-    width: 10% !important;
     max-width: 100px;
 
   }
 
-  ::ng-deep .mat-column-demo-ubicacion {
+  ::ng-deep .mat-column-demo-agencia {
     font-style: italic;
-    width: 10% !important;
-    max-width: 150px;
+    max-width: 200px;
+    font-size :xx-small;
+  }
+
+  ::ng-deep .mat-column-demo-tcompleto {
+    font-style: italic;
+    max-width: 135px;
+    font-size :small;
+  }
+
+  ::ng-deep .mat-column-demo-tiempo0 {
+    font-style: italic;
+    max-width: 200px;
+  }
+
+  ::ng-deep .mat-column-demo-tiempo1 {
+    font-style: italic;
+    max-width: 200px;
 
   }
 
-  ::ng-deep .mat-column-demo-ambiente {
+  ::ng-deep .mat-column-demo-tiempo2 {
     font-style: italic;
-    width: 10% !important;
-    max-width: 100px;
+    max-width: 200px;
   }
 
-  ::ng-deep .mat-column-demo-ip {
+  ::ng-deep .mat-column-demo-tiempo {
     font-style: italic;
-    width: 10% !important;
-    max-width: 100px;
+    max-width: 135px;
     font-weight: bold;
     font-size: smaller;
   }
 
-  ::ng-deep .mat-column-demo-equipo {
+  ::ng-deep .mat-column-demo-tiempom {
     font-style: italic;
-    width: 10% !important;
-    max-width: 300px !important;;
+    max-width: 100px ;
   }
 
-  ::ng-deep .mat-column-demo-serie {
+  ::ng-deep .mat-column-demo-lan {
     font-style: italic;
-    width: 10% !important;
-    max-width: 150px;
-
-  }
-
-  ::ng-deep .mat-column-demo-so {
-    font-style: italic;
-    width: 20% !important;
-    max-width: 400px !important;
-    font-size: small;
-
-  }
-
-  ::ng-deep .mat-column-demo-inv {
-    font-style: italic;
-    width: 10% !important;
     max-width: 100px;
+    font-size :small;
 
   }
 
-  ::ng-deep .mat-column-demo-orion {
+  ::ng-deep .mat-column-demo-problema {
     font-style: italic;
-    width: 10% !important;
-    max-width: 200px;
+    width: 300px !important;
+
+  }
+  ::ng-deep .mat-column-demo-proveedor {
+    font-style: italic;
+    width: 200px !important;
+
+  }
+  ::ng-deep .mat-column-demo-soporte {
+    font-style: italic;
+    width: 200px !important;
+
   }
 
-  ::ng-deep .mat-column-demo-fecha {
+  ::ng-deep .mat-column-demo-descripcion {
     font-style: italic;
-    width: 20% !important;
-    max-width: 150px;
-    font-size: small;
+    max-width: 400px;
+    font-size :xx-small;
+
   }
 
   ::ng-deep .mat-column-demo-estado {
-    width: 10%;
     max-width: 100px;
   }
 
   ::ng-deep .mat-column-demo-action {
-    width: 10%;
     max-width: 70px;
   }
 
-  th.mat-column-demo-ciudad, td.mat-column-demo-ciudad {
-    padding-left: 5px;
-  }
 
-  th.mat-column-demo-ip, td.mat-column-demo-ip {
-    padding-left: 5px;
-  }
-
-  th.mat-column-demo-ambiente, td.mat-column-demo-ambiente {
-    padding-left: 8px;
-  }
-
-  th.mat-column-demo-fecha, td.mat-column-demo-fecha {
-    padding-left: 8px;
-  }
-
-  th.mat-column-demo-orion, td.mat-column-demo-orion {
-    padding-left: 8px;
-  }
-  
-  th.mat-column-demo-equipo, td.mat-column-demo-equipo {
-    padding-left: 5px;
-  }
 
   ::ng-deep .mat-form-field .mat-form-field-label{
       font-size: 14px;

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { DashboardComponent } from '../../dashboard/dashboard.component';
-import { TableListComponent } from '../../table-list/table-list.component';
+import { TableListComponent } from '../../table/table-list.component';
 import { DataBaseComponent } from '../../data-base/data-base.component';
 import { EnlacesComponent } from '../../enlaces/enlaces.component';
 import { TicketsComponent } from '../../tickets/tickets.component';

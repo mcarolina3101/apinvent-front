@@ -22,13 +22,13 @@
   ::ng-deep .mat-column-demo-ciudad {
     font-style: italic;
     width: 10% !important; 
-    max-width: 200px;
+    max-width: 150px;
   }
 
   ::ng-deep .mat-column-demo-agencia {
     font-style: italic;
     width: 10% !important;
-    max-width: 200px;
+    max-width: 250px;
   }
 
   ::ng-deep .mat-column-demo-tipo {
@@ -37,18 +37,10 @@
     max-width: 100px;
 
   }
-
-  ::ng-deep .mat-column-demo-ubicacion {
+  ::ng-deep .mat-column-demo-punto {
     font-style: italic;
     width: 10% !important;
     max-width: 150px;
-
-  }
-
-  ::ng-deep .mat-column-demo-ambiente {
-    font-style: italic;
-    width: 10% !important;
-    max-width: 100px;
   }
 
   ::ng-deep .mat-column-demo-ip {
@@ -59,44 +51,44 @@
     font-size: smaller;
   }
 
-  ::ng-deep .mat-column-demo-equipo {
+  ::ng-deep .mat-column-demo-proveedor {
     font-style: italic;
     width: 10% !important;
-    max-width: 300px !important;;
+    max-width: 100px !important;;
   }
 
-  ::ng-deep .mat-column-demo-serie {
+  ::ng-deep .mat-column-demo-medio {
     font-style: italic;
     width: 10% !important;
-    max-width: 150px;
+    max-width: 75px;
 
   }
 
-  ::ng-deep .mat-column-demo-so {
+  ::ng-deep .mat-column-demo-bw {
     font-style: italic;
-    width: 20% !important;
-    max-width: 400px !important;
+    width: 10% !important;
+    max-width: 75px !important;
     font-size: small;
 
   }
 
-  ::ng-deep .mat-column-demo-inv {
+  ::ng-deep .mat-column-demo-codigo {
     font-style: italic;
     width: 10% !important;
     max-width: 100px;
 
   }
 
-  ::ng-deep .mat-column-demo-orion {
+  ::ng-deep .mat-column-demo-propiedad {
     font-style: italic;
     width: 10% !important;
     max-width: 200px;
   }
 
-  ::ng-deep .mat-column-demo-fecha {
+  ::ng-deep .mat-column-demo-doble {
     font-style: italic;
     width: 20% !important;
-    max-width: 150px;
+    max-width: 100px;
     font-size: small;
   }
 
@@ -145,11 +137,11 @@
     padding-left: 15px;
 
   }
-/*
+
   ::ng-deep .mat-step-header {
     pointer-events: none !important;
   }
-  */
+  
   ::ng-deep .mat-step-header .mat-step-icon-selected {
     background-color: indigo; 
  }

@@ -10,7 +10,7 @@
     bottom: 0;
     left: 0;
     z-index: 2;
-    width: 250px;
+    width: 200px;
     background: $white-color;
     @include shadow-big();
 
@@ -46,7 +46,7 @@
         position: relative;
         height: calc(100vh - 75px);
         overflow: auto;
-        width: 250px;
+        width: 200px;
         z-index: 4;
 
         padding-bottom: 30px;
@@ -167,7 +167,7 @@
                 margin: 15px 0;
 
                 &:after{
-                    width: calc(100% - 30px);
+                    width: 200px;
                     content: "";
                     position: absolute;
                     height: 1px;
@@ -219,7 +219,7 @@
         position: absolute;
         z-index: 1;
         height: 100%;
-        width: 100%;
+        width: 200px;
         display: block;
         top: 0;
         left: 0;
@@ -229,7 +229,7 @@
         &:after{
             position: absolute;
             z-index: 3;
-            width: 100%;
+            width: 200px;
             height: 100%;
             content: "";
             display: block;
@@ -251,7 +251,7 @@
             bottom: 0;
             right: 15px;
             height: 1px;
-            width: calc(100% - 30px);
+            width: 200px;
             background-color: rgba(180,180,180, .3);
 
         }
@@ -441,7 +441,7 @@
         }
 
         .main-panel{
-            width: $sidebar-mini-width;
+            width: 200px;
         }
 
         .sidebar{
@@ -495,7 +495,7 @@
       .nav .nav-item {
         &.active-pro {
           position: absolute;
-          width: 100%;
+          width: 200px;
           bottom: 13px;
         }
       }

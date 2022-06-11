@@ -32,6 +32,7 @@ export class AdministracionComponent implements OnInit {
   public ieliminar: boolean = false;
   public ieditar: boolean = false;
   public iadministrar: boolean = false;
+  public iestado1=0;
 
   public nusuario: boolean = true;
   public nperfil: boolean = true;
@@ -42,6 +43,12 @@ export class AdministracionComponent implements OnInit {
   public idactuser:any;
   public iuser: any;
   public iidperfil: any;
+  public iestado2 =0;
+
+  public activado: any = [
+    { id: 1, nombre: 'Si' },
+    { id: 0, nombre: 'No' }
+  ];
 
   constructor(
     private _formBuilder: FormBuilder,
@@ -147,7 +154,8 @@ export class AdministracionComponent implements OnInit {
     this.informacionService.editarusuario({
       "id":this.idactuser,
       "usuario": this.iuser,
-      "perfil": this.iidperfil
+      "perfil": this.iidperfil,
+      "estado":this.iestado2
     }).subscribe(resp => {
       this.obtenerInfoUsuarios();
     }, err =>{
@@ -187,6 +195,7 @@ export class AdministracionComponent implements OnInit {
     this.idactuser=a.id;
     this.iuser = a.usuario;
     this.iidperfil = a.perfil;
+    this.iestado2 = a.estado?1:0;
   }
 
   obtenerInfoPerfiles() {
@@ -322,7 +331,8 @@ export class AdministracionComponent implements OnInit {
       "administrar": this.iadministrar? 1:0,
       "crear": this.icrear? 1:0,
       "editar": this.ieditar? 1:0,
-      "eliminar": this.ieliminar? 1:0
+      "eliminar": this.ieliminar? 1:0,
+      "estado":this.iestado1
     }).subscribe(resp => {
       this.obtenerInfoPerfiles();
       this.obtenerInfoPerfilesNombre();
@@ -366,6 +376,7 @@ export class AdministracionComponent implements OnInit {
     this.ieditar = a.editar;
     this.ieliminar = a.eliminar;
     this.icrear = a.crear;
+    this.iestado1 = a.estado?1:0;
   }
 
 }
