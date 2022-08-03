@@ -1,12 +1,13 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { InformacionService } from '../servicios/informacion/informacion.service';
+import { InventarioService } from '../servicios/informacion/inventario.service';
+import { DashboardService } from '../servicios/apis/dashboard.service';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, Validators, FormControl } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { StepperOrientation } from '@angular/material/stepper';
 import { map, startWith } from 'rxjs/operators';
-declare var $: any;
 import { saveAs } from 'file-saver';
 import { HistoryComponent } from './history-component';
 import {
@@ -14,9 +15,11 @@ import {
   MomentDateAdapter,
   MAT_MOMENT_DATE_ADAPTER_OPTIONS,
 } from '@angular/material-moment-adapter';
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import 'moment/locale/es';
 import * as _moment from 'moment';
+declare var $: any;
+
 const moment = _moment;
 
 
@@ -35,7 +38,16 @@ export const MY_FORMATS = {
 @Component({
   selector: 'app-table-list',
   templateUrl: './table-list.component.html',
-  styleUrls: ['./table-list.component.css']
+  styleUrls: ['./table-list.component.css'],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'es' },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  ]
 })
 export class TableListComponent implements OnInit {
 
@@ -50,6 +62,7 @@ export class TableListComponent implements OnInit {
     'demo-serie',
     'demo-inv',
     'demo-fechab',
+    'demo-util',
     'demo-propiedad',
     'demo-equipo',
     'demo-equipo2',
@@ -58,24 +71,29 @@ export class TableListComponent implements OnInit {
     'demo-fecha',
     'demo-estado',
     'demo-action'];
-  public dataDevices: any[]=[];
+  public dataDevices: any[] = [];
   public inventario: any;
   public inventid: any;
-  public nombre:any;
-  public estado:any=1;
+  public nombre: any;
+  public estado: any = 1;
   public isnew: boolean = false;
-  public id:any;
+  public id: any;
   public pageIndex = 0;
   public totalenght = 0;
   public perfil;
   public usuario = '';
   public fecha = '';
-  public fechabanco:any;
+  public fechabanco: any;
+  public utildis = false;
   public activado: any = [
     { id: 1, nombre: 'Si' },
     { id: 0, nombre: 'No' }
   ];
 
+  range = new FormGroup({
+    start: new FormControl(undefined),
+    end: new FormControl(undefined),
+  });
   ambienteFormG = this._formBuilder.group({
     ambiente: [undefined, Validators.required]
   });
@@ -104,7 +122,7 @@ export class TableListComponent implements OnInit {
   adicionalFormG = this._formBuilder.group({
     opm: [undefined],
     bpac: [undefined],
-    boolinvent:[undefined],
+    boolinvent: [undefined],
     util: [undefined],
     inv: [undefined],
     fechab: [undefined],
@@ -112,15 +130,15 @@ export class TableListComponent implements OnInit {
     propietario: [undefined],
     serie: [undefined]
   });
-  
-  public cities: any[]=[];
-  public tipos: any[]=[];
-  public ambientes: any[]=[];
-  public agencias: any[]=[];
-  public modelos: any[]=[];
-  public propietarios: any[]=[];
-  public orion: any[]=[];
-  public equipos: any[]=[];
+
+  public cities: any[] = [];
+  public tipos: any[] = [];
+  public ambientes: any[] = [];
+  public agencias: any[] = [];
+  public modelos: any[] = [];
+  public propietarios: any[] = [];
+  public orion: any[] = [];
+  public equipos: any[] = [];
 
   citiescontrol = new FormControl();
   tiposcontrol = new FormControl();
@@ -128,7 +146,7 @@ export class TableListComponent implements OnInit {
   orioncontrol = new FormControl();
   modeloscontrol = new FormControl();
   ambientecontrol = new FormControl();
-  equiposcontrol  = new FormControl();
+  equiposcontrol = new FormControl();
 
   public cd = { "ciudades": "Guayaquil,Quito,Manta,Quevedo,Riobamba,Ibarra" }
   public amb = { "nombre": "", "estado": 1 }
@@ -143,34 +161,55 @@ export class TableListComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
-    private informacionService: InformacionService) { }
+    private informacionService: InformacionService,
+    private inventarioService: InventarioService,
+    private dashboardService: DashboardService
+
+  ) { }
 
   ngOnInit() {
-    this.inventario = { 
-      "nombre": "", 
-      "fecha":"",
-      "ip": "", 
-      "serie": "", 
-      "so": "", 
-      "inv": "",  
-      "fechab": "",  
-      "nAmbiente": "", 
-      "nModelo": "", 
-      "nPropietario": "", 
-      "norion": "", 
-      "nagencia": "", 
-      "ntipo": "", 
-      "nciudad": "", 
+    this.inventario = {
+      "nombre": "",
+      "fecha": "",
+      "ip": "",
+      "serie": "",
+      "so": "",
+      "inv": "",
+      "fechab": "",
+      "nAmbiente": "",
+      "nModelo": "",
+      "nPropietario": "",
+      "norion": "",
+      "nagencia": "",
+      "ntipo": "",
+      "nciudad": "",
       "estado": 1,
-      "nubicacion":"", 
-      "pindex": this.pageIndex + 1}
-
+      "nubicacion": "",
+      "pindex": this.pageIndex + 1
+    }
+    this.inventario.util=this.dashboardService.util;
+    if(this.dashboardService.fechalimite==1){
+      this.range.controls.start.reset()
+      this.range.controls.end.setValue(moment(this.dashboardService.todayf).format('YYYY-MM-DD'))
+      this.range.disable()
+    }else if(this.dashboardService.fecharango==1){
+      this.range.controls.end.setValue(moment(this.dashboardService.today1f).format('YYYY-MM-DD'))
+      this.range.controls.start.setValue(moment(this.dashboardService.todayf).format('YYYY-MM-DD'))
+      this.range.disable()
+    }else{
+      this.range.reset()
+      this.range.enable()
+    }
+    if(this.dashboardService.util !=undefined){
+      this.utildis = true;
+    }else{
+      this.utildis = false;
+    }
     this.obtenerInfoInventario();
-    this.obtenerInfoCiudades();
     this.obtenerInfoPropietarios();
     this.obtenerInfoOrion();
     this.obtenerInfoModelos();
-    this.obtenerInfoModelos();
+    this.obtenerInfoCiudades();
     this.obtenerInfoTipos(this.cd);
     this.obtenerInfoAmbientes();
     this.obtenerInfoEquipos();
@@ -183,14 +222,14 @@ export class TableListComponent implements OnInit {
       data: {
         idedit: n,
         isnew: this.isnew,
-        activado:this.activado,
+        activado: this.activado,
         ambienteFormG: this.ambienteFormG,
         adicionalFormG: this.adicionalFormG,
         ubicacionFormG: this.ubicacionFormG,
         networkFormG: this.networkFormG,
         modeloFormG: this.modeloFormG,
         inventid: this.inventid,
-        fechabanco:this.fechabanco
+        fechabanco: this.fechabanco
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -210,14 +249,14 @@ export class TableListComponent implements OnInit {
       width: '1000px',
       data: {
         isnew: this.isnew,
-        activado:this.activado,
+        activado: this.activado,
         ambienteFormG: this.ambienteFormG,
         adicionalFormG: this.adicionalFormG,
         ubicacionFormG: this.ubicacionFormG,
         networkFormG: this.networkFormG,
         modeloFormG: this.modeloFormG,
         inventid: undefined,
-        fechabanco:this.fechabanco
+        fechabanco: this.fechabanco
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -226,11 +265,11 @@ export class TableListComponent implements OnInit {
   }
 
   obtenerInventarioid(n) {
-    this.informacionService.getinventariobyid(n).subscribe(resp => {
+    this.inventarioService.getinventariobyid(n).subscribe(resp => {
       this.inventid = resp["info"];
-      this.usuario =  this.inventid.usuario,
-      this.fecha = this.inventid.fecha,
-      this.modeloFormG.controls["nombre"].setValue(this.inventid.nombre)
+      this.usuario = this.inventid.usuario,
+        this.fecha = this.inventid.fecha,
+        this.modeloFormG.controls["nombre"].setValue(this.inventid.nombre)
       this.networkFormG.controls["ip"].setValue(this.inventid.ip)
       this.networkFormG.controls["so"].setValue(this.inventid.so)
       this.networkFormG.controls["ecritico"].setValue(this.inventid.critico == undefined ? false : this.inventid.critico)
@@ -243,7 +282,7 @@ export class TableListComponent implements OnInit {
       this.ubicacionFormG.controls["piso"].setValue(this.inventid.piso)
       this.ubicacionFormG.controls["rack"].setValue(this.inventid.rack)
       this.openDialogEdit(n);
-    },err => {
+    }, err => {
       if (err.status === 400) {
         $.notify({
           icon: "notifications",
@@ -270,14 +309,14 @@ export class TableListComponent implements OnInit {
     });
 
   }
-  
+
   openDialogHistory(n): void {
     this.isnew = false;
     const dialogRef = this.dialog.open(HistoryComponent, {
-      width: '1200px',
+      width: '100%',
       height: '800px',
       position: {
-        top: '0px',
+        top: '50px',
         left: '200px'
       },
       data: {
@@ -289,7 +328,6 @@ export class TableListComponent implements OnInit {
       this.obtenerInfoInventario();
     });
   }
-  
 
   Page(event) {
     this.pageIndex = event.pageIndex;
@@ -297,98 +335,98 @@ export class TableListComponent implements OnInit {
     this.obtenerInfoInventario();
   }
 
-
-  obtenerInfoInventario_p1(){
-    let nc = this.inventario.nciudad;  
-    if(this.citiescontrol.value!=null && this.citiescontrol.value.length>0 ){
+  obtenerInfoInventario_p1() {
+    let nc = this.inventario.nciudad;
+    if (this.citiescontrol.value != null && this.citiescontrol.value.length > 0) {
       this.inventario.nciudad = '';
       this.citiescontrol.value.forEach(element => {
-        this.inventario.nciudad = this.inventario.nciudad +element.nombre+',';
-      });  
-      
-      if(nc != this.inventario.nciudad){
-        this.cd = { "ciudades": this.inventario.nciudad}
+        this.inventario.nciudad = this.inventario.nciudad + element.nombre + ',';
+      });
+
+      if (nc != this.inventario.nciudad) {
+        this.cd = { "ciudades": this.inventario.nciudad }
         this.tiposcontrol.reset();
         this.obtenerInfoTipos(this.cd);
       }
-    }else{
+    } else {
       this.inventario.nciudad = '';
-      
+
     }
 
-    if(this.tiposcontrol.value!=null && this.tiposcontrol.value.length>0 ){
+    if (this.tiposcontrol.value != null && this.tiposcontrol.value.length > 0) {
       this.inventario.ntipo = '';
       this.tiposcontrol.value.forEach(element => {
-        this.inventario.ntipo = this.inventario.ntipo +element.nombre+',';
-      });    
-    }else{
+        this.inventario.ntipo = this.inventario.ntipo + element.nombre + ',';
+      });
+    } else {
       this.inventario.ntipo = '';
-      if(this.citiescontrol.value!=null && this.citiescontrol.value.length>0 ){
-        this.cd = { "ciudades": this.inventario.nciudad}
+      if (this.citiescontrol.value != null && this.citiescontrol.value.length > 0) {
+        this.cd = { "ciudades": this.inventario.nciudad }
         this.obtenerInfoTipos(this.cd);
-      }else{
+      } else {
         this.obtenerInfoTipos({ "ciudades": "Guayaquil,Quito,Manta,Quevedo,Riobamba,Ibarra" })
       }
-      
+
     }
-    
-    if(this.propietarioscontrol.value!=null && this.propietarioscontrol.value.length>0 ){
+
+    if (this.propietarioscontrol.value != null && this.propietarioscontrol.value.length > 0) {
       this.inventario.nPropietario = '';
       this.propietarioscontrol.value.forEach(element => {
-        this.inventario.nPropietario = this.inventario.nPropietario +element.nombre+',';
-      });    
-      
-    }else{
+        this.inventario.nPropietario = this.inventario.nPropietario + element.nombre + ',';
+      });
+
+    } else {
       this.inventario.nPropietario = '';
     }
 
-    if(this.orioncontrol.value!=null && this.orioncontrol.value.length>0 ){
+    if (this.orioncontrol.value != null && this.orioncontrol.value.length > 0) {
       this.inventario.norion = '';
       this.orioncontrol.value.forEach(element => {
-        this.inventario.norion = this.inventario.norion +element.nombre+',';
-      });    
-      
-    }else{
+        this.inventario.norion = this.inventario.norion + element.nombre + ',';
+      });
+
+    } else {
       this.inventario.norion = '';
     }
 
-    if(this.ambientecontrol.value!=null && this.ambientecontrol.value.length>0 ){
+    if (this.ambientecontrol.value != null && this.ambientecontrol.value.length > 0) {
       this.inventario.nAmbiente = '';
       this.ambientecontrol.value.forEach(element => {
-        this.inventario.nAmbiente = this.inventario.nAmbiente +element.nombre+',';
-      });    
-      
-    }else{
+        this.inventario.nAmbiente = this.inventario.nAmbiente + element.nombre + ',';
+      });
+
+    } else {
       this.inventario.nAmbiente = '';
     }
 
-    if(this.modeloscontrol.value!=null && this.modeloscontrol.value.length>0 ){
+    if (this.modeloscontrol.value != null && this.modeloscontrol.value.length > 0) {
       this.inventario.nModelo = '';
       this.modeloscontrol.value.forEach(element => {
-        this.inventario.nModelo = this.inventario.nModelo +element.nombre+',';
-      });    
-      
-    }else{
+        this.inventario.nModelo = this.inventario.nModelo + element.nombre + ',';
+      });
+
+    } else {
       this.inventario.nModelo = '';
     }
 
-    if(this.equiposcontrol.value!=null && this.equiposcontrol.value.length>0 ){
+    if (this.equiposcontrol.value != null && this.equiposcontrol.value.length > 0) {
       this.inventario.nEquipo = '';
       this.equiposcontrol.value.forEach(element => {
-        this.inventario.nEquipo = this.inventario.nEquipo +element.nombre+',';
-      });    
-      
-    }else{
+        this.inventario.nEquipo = this.inventario.nEquipo + element.nombre + ',';
+      });
+
+    } else {
       this.inventario.nEquipo = '';
     }
 
-    this.pageIndex=0;
-    this.inventario.pindex=1;
+    this.pageIndex = 0;
+    this.inventario.pindex = 1;
     this.obtenerInfoInventario();
   }
 
   obtenerInfoInventario() {
-    this.informacionService.listinventario(this.inventario).subscribe(resp => {
+
+    this.inventarioService.listinventario(this.inventario).subscribe(resp => {
       this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
@@ -419,10 +457,79 @@ export class TableListComponent implements OnInit {
     });
   }
 
-  obtenerInfoInventarioExcel() {
-    this.informacionService.downloadinv(this.inventario).subscribe(resp => {
+  obtenerInfoInventarioClean() {
+    this.pageIndex = 0;
+    this.inventario = {
+      "nombre": "",
+      "fecha": "",
+      "ip": "",
+      "serie": "",
+      "so": "",
+      "inv": "",
+      "fechab": "",
+      "nAmbiente": "",
+      "nModelo": "",
+      "nPropietario": "",
+      "norion": "",
+      "nagencia": "",
+      "ntipo": "",
+      "nciudad": "",
+      "estado": 1,
+      "nubicacion": "",
+      "pindex": this.pageIndex + 1
+    }
+    this.range.reset();
+    this.dashboardService.setutil(undefined);
+    this.utildis = false;
+    this.dashboardService.setfechalimite(undefined)
+    this.dashboardService.setfecharango(undefined)
+    this.range.enable();
+
+    this.citiescontrol.reset();
+    this.tiposcontrol.reset();
+    this.propietarioscontrol.reset();
+    this.orioncontrol.reset();
+    this.modeloscontrol.reset();
+    this.ambientecontrol.reset();
+    this.equiposcontrol.reset();
+
+    /*this.informacionService.listinventario(this.inventario).subscribe(resp => {
+      this.dataDevices = resp.body["info"];
       const keys = resp.headers;
-    
+      this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });*/
+
+    this.obtenerInfoInventario();
+  }
+
+  obtenerInfoInventarioExcel() {
+    this.inventarioService.downloadinv(this.inventario).subscribe(resp => {
+      const keys = resp.headers;
+
       const blob: any = new Blob([resp.body], { type: keys.getAll("content-type").toString() });
       const file = new File([blob], "inventarioEquipos" + '.xlsx', { type: keys.getAll("content-type").toString() });
       saveAs(file);
@@ -484,6 +591,7 @@ export class TableListComponent implements OnInit {
       }
     });
   }
+  
   obtenerInfoTipos(cd) {
     this.informacionService.listtiposCiudades(cd).subscribe(resp => {
       this.tipos = resp.body["info"];
@@ -520,7 +628,7 @@ export class TableListComponent implements OnInit {
     this.informacionService.listpropietariosNombre(this.prp).subscribe(resp => {
       this.propietarios = resp.body["info"];
       const keys = resp.headers;
-      
+
     }, err => {
       if (err.status === 400) {
         $.notify({
@@ -552,7 +660,7 @@ export class TableListComponent implements OnInit {
     this.informacionService.listorionNombre(this.on).subscribe(resp => {
       this.orion = resp.body["info"];
       const keys = resp.headers;
-      
+
     }, err => {
       if (err.status === 400) {
         $.notify({
@@ -584,7 +692,7 @@ export class TableListComponent implements OnInit {
     this.informacionService.listmodelosNombre(this.mdl).subscribe(resp => {
       this.modelos = resp.body["info"];
       const keys = resp.headers;
-      
+
     }, err => {
       if (err.status === 400) {
         $.notify({
@@ -616,7 +724,7 @@ export class TableListComponent implements OnInit {
     this.informacionService.listambientesNombre(this.amb).subscribe(resp => {
       this.ambientes = resp.body["info"];
       const keys = resp.headers;
-      
+
     }, err => {
       if (err.status === 400) {
         $.notify({
@@ -675,6 +783,24 @@ export class TableListComponent implements OnInit {
     });
   }
 
+  dateEvent(event) {
+    let date1;
+    let date2;
+    if(this.range.controls.start.value !=null){
+      date1 =  moment(this.range.controls.start.value).format('YYYY-MM-DD');
+    }else{
+      date1 = undefined
+    }
+    if(this.range.controls.end.value !=null){
+      date2 =  moment(this.range.controls.end.value).format('YYYY-MM-DD');
+    }else{
+      date2 = undefined
+    }
+    this.inventario.fechaini=date1;
+    this.inventario.fechafin=date2;
+    this.obtenerInfoInventario_p1()
+  }
+
 }
 
 @Component({
@@ -682,13 +808,13 @@ export class TableListComponent implements OnInit {
   templateUrl: './formedit.html',
   styleUrls: ['./table-list.component.css'],
   providers: [
-    {provide: MAT_DATE_LOCALE, useValue: 'es'},
+    { provide: MAT_DATE_LOCALE, useValue: 'es' },
     {
       provide: DateAdapter,
       useClass: MomentDateAdapter,
       deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
     },
-    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
   ]
 
 })
@@ -698,21 +824,21 @@ export class FormComponentEdit2 implements OnInit {
   filteredOptionsModelo: Observable<any[]>;
 
   public modelSelected: any;
-  public boolcity:boolean;
-  public boolorion:boolean;
-  public inventcheck:boolean;
-  public usuariom:"";
-  public fecham:"";
-  public usuarioc:"";
-  public fechac:"";
+  public boolcity: boolean;
+  public boolorion: boolean;
+  public inventcheck: boolean;
+  public usuariom: "";
+  public fecham: "";
+  public usuarioc: "";
+  public fechac: "";
 
-  public ambientes: any[]=[];
-  public cities: any[]=[];
-  public agencias: any[]=[];
-  public tipos: any[]=[];
-  public modelos: any[]=[];
-  public propietarios: any[]=[];
-  public orion: any[]=[];
+  public ambientes: any[] = [];
+  public cities: any[] = [];
+  public agencias: any[] = [];
+  public tipos: any[] = [];
+  public modelos: any[] = [];
+  public propietarios: any[] = [];
+  public orion: any[] = [];
   public perfil;
 
 
@@ -728,13 +854,12 @@ export class FormComponentEdit2 implements OnInit {
   public on = { "nombre": "", "estado": 1 }
 
   ngOnInit() {
-
     this.obtenerInfoAmbientes();
     this.obtenerInfoCiudades();
     this.obtenerInfoModelos();
     this.obtenerInfoOrion();
     this.obtenerInfoPropietarios();
-    this.perfil=localStorage.getItem("perfil")
+    this.perfil = localStorage.getItem("perfil")
 
     this.data.modeloFormG.controls["equipo"].disable();
     this.data.modeloFormG.controls["marca"].disable();
@@ -748,33 +873,33 @@ export class FormComponentEdit2 implements OnInit {
     this.data.adicionalFormG.controls["boolfechab"].enable();
     this.data.adicionalFormG.controls["fechab"].enable();
 
-    this.boolcity=false;
-    this.boolorion=false;
-    this.inventcheck=false;
+    this.boolcity = false;
+    this.boolorion = false;
+    this.inventcheck = false;
 
     this.data.adicionalFormG.controls["boolfechab"].setValue(false)
-    
+
     this.data.adicionalFormG.controls["boolinvent"].setValue(false)
     if (this.data.inventid != undefined) {
-      this.usuariom=this.data.inventid.usuario;
-      this.usuarioc=this.data.inventid.usuarioc;
-      this.fecham=this.data.inventid.fecha;
-      this.fechac=this.data.inventid.fechac;
+      this.usuariom = this.data.inventid.usuario;
+      this.usuarioc = this.data.inventid.usuarioc;
+      this.fecham = this.data.inventid.fecha;
+      this.fechac = this.data.inventid.fechac;
 
-      this.data.estado=(this.data.inventid.estado)?1:0;
+      this.data.estado = (this.data.inventid.estado) ? 1 : 0;
       this.data.adicionalFormG.controls["serie"].disable();
       this.data.adicionalFormG.controls["inv"].setValue(this.data.inventid.inventario)
       this.data.adicionalFormG.controls["fechab"].setValue(this.data.inventid.fechabanco)
 
 
-    }else{
+    } else {
       this.data.adicionalFormG.controls["serie"].enable();
     }
-    
-    if(this.perfil==1){
+
+    if (this.perfil == 1) {
       this.habilitarAdministrador();
     }
-    
+
     this._locale = 'es';
     this._adapter.setLocale(this._locale);
 
@@ -786,13 +911,13 @@ export class FormComponentEdit2 implements OnInit {
 
     private _adapter: DateAdapter<any>,
     @Inject(MAT_DATE_LOCALE) private _locale: string,
-
+    private inventarioService: InventarioService,
     private informacionService: InformacionService,
     @Inject(MAT_DIALOG_DATA) public data: TableListComponent) {
     this.stepperOrientation = breakpointObserver.observe('(min-width: 1000px)')
       .pipe(map(({ matches }) => matches ? 'horizontal' : 'vertical'));
-    
-    }
+
+  }
 
 
 
@@ -804,7 +929,7 @@ export class FormComponentEdit2 implements OnInit {
       this.data.modeloFormG.controls["flash"].setValue(this.modelSelected.Flash == undefined ? undefined : this.modelSelected.Flash[0].nombre)
       this.data.modeloFormG.controls["ram"].setValue(this.modelSelected.Ram == undefined ? undefined : this.modelSelected.Ram[0].nombre)
       this.data.modeloFormG.controls["fecha"].setValue(this.modelSelected.fechafin == undefined ? undefined : this.modelSelected.fechafin)
-    },err=> {
+    }, err => {
       if (err.status === 400) {
         $.notify({
           icon: "notifications",
@@ -835,42 +960,44 @@ export class FormComponentEdit2 implements OnInit {
     this.informacionService.listambientesNombre(this.amb).subscribe(resp => {
       this.ambientes = resp.body["info"];
       const keys = resp.headers;
-      if(this.data.inventid!=undefined){
+      if (this.data.inventid != undefined) {
         this.ambientes.forEach(element => {
           if (this.compareThem(element, this.data.inventid.Ambiente[0])) {
             this.data.ambienteFormG.controls["ambiente"].setValue(element)
-            if(this.data.ambienteFormG.controls["ambiente"].value.id==4){
+            if (this.data.ambienteFormG.controls["ambiente"].value.id == 4 ||
+              this.data.ambienteFormG.controls["ambiente"].value.id == 5
+            ) {
               this.data.ubicacionFormG.controls["piso"].disable();
               this.data.ubicacionFormG.controls["rack"].disable();
             } else {
               this.data.ubicacionFormG.controls["piso"].enable();
               this.data.ubicacionFormG.controls["rack"].enable();
             }
-            if(this.data.ambienteFormG.controls["ambiente"].value.id==3){
+            if (this.data.ambienteFormG.controls["ambiente"].value.id == 3) {
               this.data.adicionalFormG.controls["opm"].enable()
               this.data.adicionalFormG.controls["bpac"].enable()
-            }     
+            }
 
-            if(this.data.ambienteFormG.controls["ambiente"].value.id==1){
+            if (this.data.ambienteFormG.controls["ambiente"].value.id == 1) {
               this.data.adicionalFormG.controls["opm"].disable()
               this.data.adicionalFormG.controls["bpac"].disable()
-            }        
-            if(this.data.ambienteFormG.controls["ambiente"].value.id==2){
+            }
+            if (this.data.ambienteFormG.controls["ambiente"].value.id == 2) {
               this.data.adicionalFormG.controls["opm"].disable()
               this.data.adicionalFormG.controls["bpac"].disable()
               //this.data.adicionalFormG.controls["bpac"].setValue(true);
-              this.boolorion=true;
-            }else{
-              this.boolorion=false;
-            }  
-            
+              this.boolorion = true;
+            } else {
+              this.boolorion = false;
+            }
+
           }
         });
-        if(this.perfil==1){
+        if (this.perfil == 1) {
           this.habilitarAdministrador();
         }
       }
-      
+
     }, err => {
       if (err.status === 400) {
         $.notify({
@@ -903,7 +1030,7 @@ export class FormComponentEdit2 implements OnInit {
     this.informacionService.listciudadesNombre(this.ct).subscribe(resp => {
       this.cities = resp.body["info"];
       const keys = resp.headers;
-      if(this.data.inventid!=undefined){
+      if (this.data.inventid != undefined) {
         this.cities.forEach(element => {
           if (this.compareThem(element, this.data.inventid.Agencia[0].Tipo[0].Ciudad[0])) {
             this.tp.idlink = this.data.inventid.Agencia[0].Tipo[0].Ciudad[0].id;
@@ -939,19 +1066,19 @@ export class FormComponentEdit2 implements OnInit {
       }
     });
   }
-  
-  habilitarAdministrador(){
-      this.data.modeloFormG.controls["modelo"].enable();
-      this.data.adicionalFormG.controls["propietario"].enable();
-      this.data.adicionalFormG.controls["serie"].enable();
-      this.data.adicionalFormG.controls["boolinvent"].enable();
-      this.data.adicionalFormG.controls["inv"].enable();
-      this.data.adicionalFormG.controls["boolfechab"].enable();
-      this.data.adicionalFormG.controls["fechab"].enable();
-      this.data.adicionalFormG.controls["opm"].enable();
-      this.data.adicionalFormG.controls["bpac"].enable()
+
+  habilitarAdministrador() {
+    this.data.modeloFormG.controls["modelo"].enable();
+    this.data.adicionalFormG.controls["propietario"].enable();
+    this.data.adicionalFormG.controls["serie"].enable();
+    this.data.adicionalFormG.controls["boolinvent"].enable();
+    this.data.adicionalFormG.controls["inv"].enable();
+    this.data.adicionalFormG.controls["boolfechab"].enable();
+    this.data.adicionalFormG.controls["fechab"].enable();
+    this.data.adicionalFormG.controls["opm"].enable();
+    this.data.adicionalFormG.controls["bpac"].enable()
   }
-  
+
   obtenerInfoPropietarios() {
     this.informacionService.listpropietariosNombre(this.prp).subscribe(resp => {
       this.propietarios = resp.body["info"];
@@ -970,7 +1097,7 @@ export class FormComponentEdit2 implements OnInit {
 
         this.data.adicionalFormG.controls["propietario"].disable();
 
-        if(!this.data.adicionalFormG.controls["propietario"].value.nombre.toLowerCase().includes("banco")){
+        if (!this.data.adicionalFormG.controls["propietario"].value.nombre.toLowerCase().includes("banco")) {
           this.data.adicionalFormG.controls["inv"].disable();
           this.data.adicionalFormG.controls["inv"].setValue(undefined)
           this.data.adicionalFormG.controls["boolinvent"].disable();
@@ -980,41 +1107,41 @@ export class FormComponentEdit2 implements OnInit {
           this.data.adicionalFormG.controls["fechab"].setValue(undefined)
           this.data.adicionalFormG.controls["boolfechab"].disable();
           this.data.adicionalFormG.controls["boolfechab"].setValue(true)
-        }else{
-          if(this.data.inventid.inventario==undefined){
+        } else {
+          if (this.data.inventid.inventario == undefined) {
             this.data.adicionalFormG.controls["boolinvent"].enable();
-          }else{
+          } else {
             this.data.adicionalFormG.controls["boolinvent"].disable();
           }
 
-          if(this.data.inventid.fechabanco==undefined){
+          if (this.data.inventid.fechabanco == undefined) {
             this.data.adicionalFormG.controls["boolfechab"].enable();
-          }else{
+          } else {
             this.data.adicionalFormG.controls["boolfechab"].disable();
           }
 
-          if(this.data.adicionalFormG.controls["inv"].value==undefined){
+          if (this.data.adicionalFormG.controls["inv"].value == undefined) {
             this.data.adicionalFormG.controls["inv"].disable();
             this.data.adicionalFormG.controls["boolinvent"].setValue(true);
             this.data.adicionalFormG.controls["inv"].setValue(undefined);
-          }else{
+          } else {
             this.data.adicionalFormG.controls["boolinvent"].setValue(false);
           }
 
-          if(this.data.adicionalFormG.controls["fechab"].value==undefined){
+          if (this.data.adicionalFormG.controls["fechab"].value == undefined) {
             this.data.adicionalFormG.controls["fechab"].disable();
             this.data.adicionalFormG.controls["boolfechab"].setValue(true);
             this.data.adicionalFormG.controls["fechab"].setValue(undefined);
-          }else{
+          } else {
             this.data.adicionalFormG.controls["boolfechab"].setValue(false);
           }
         }
-        if(this.perfil==1){
+        if (this.perfil == 1) {
           this.habilitarAdministrador();
         }
 
       }
-      else{
+      else {
         this.data.adicionalFormG.controls["boolinvent"].enable();
         this.data.adicionalFormG.controls["inv"].enable();
 
@@ -1104,12 +1231,12 @@ export class FormComponentEdit2 implements OnInit {
         this.data.modeloFormG.controls["modelo"].disable();
         this.obtenerInfoModelo(this.data.inventid.Modelo[0].id);
 
-        if(this.perfil==1){
+        if (this.perfil == 1) {
           this.habilitarAdministrador();
         }
 
-      }else{
-        this.data.modeloFormG.controls["modelo"].setValue({id:undefined,nombre:''})
+      } else {
+        this.data.modeloFormG.controls["modelo"].setValue({ id: undefined, nombre: '' })
         this.data.modeloFormG.controls["modelo"].enable();
       }
       this.filteredOptionsModelo = this.data.modeloFormG.controls["modelo"].valueChanges.pipe(
@@ -1225,7 +1352,7 @@ export class FormComponentEdit2 implements OnInit {
   }
 
   selectionamb(value) {
-    if(this.data.isnew){
+    if (this.data.isnew) {
       this.data.ubicacionFormG.reset();
       this.data.modeloFormG.controls["nombre"].reset();
       this.data.modeloFormG.controls["equipo"].reset();
@@ -1233,11 +1360,11 @@ export class FormComponentEdit2 implements OnInit {
       this.data.modeloFormG.controls["flash"].reset();
       this.data.modeloFormG.controls["ram"].reset();
       this.data.modeloFormG.controls["fecha"].reset();
-      this.data.modeloFormG.controls["modelo"].setValue({id:0,nombre:''});
+      this.data.modeloFormG.controls["modelo"].setValue({ id: 0, nombre: '' });
       this.data.adicionalFormG.reset();
       this.data.networkFormG.reset();
     }
-    if (value.id === 4) {
+    if (value.id === 4 || value.id === 5) {
       this.data.networkFormG.controls["orion"].setValue(undefined);
       this.data.networkFormG.controls["orion"].disable()
       this.data.networkFormG.controls["ecritico"].setValue(false);
@@ -1261,24 +1388,26 @@ export class FormComponentEdit2 implements OnInit {
       this.data.ubicacionFormG.controls["piso"].enable();
       this.data.ubicacionFormG.controls["rack"].enable();
     }
-    if(value.id == 3){
-      this.boolcity=true;
-    }else{
-      this.boolcity=false;
+
+    if (value.id == 3) {
+      this.boolcity = true;
+    } else {
+      this.boolcity = false;
     }
-    if(value.id == 1){
+    
+    if (value.id == 1) {
       this.data.adicionalFormG.controls["opm"].setValue(false);
       this.data.adicionalFormG.controls["opm"].disable();
       this.data.adicionalFormG.controls["bpac"].disable();
       this.data.adicionalFormG.controls["bpac"].setValue(true);
-    }if(value.id == 2){
+    } if (value.id == 2) {
       this.data.adicionalFormG.controls["opm"].setValue(true);
       this.data.adicionalFormG.controls["opm"].disable();
       this.data.adicionalFormG.controls["bpac"].disable();
       this.data.adicionalFormG.controls["bpac"].setValue(true);
-      this.boolorion=true;
-    }else{
-      this.boolorion=false;
+      this.boolorion = true;
+    } else {
+      this.boolorion = false;
 
     }
 
@@ -1297,16 +1426,16 @@ export class FormComponentEdit2 implements OnInit {
     this.obtenerInfoAgencias();
   }
 
-  selectionopm(value) { 
-    
-    if(this.data.ambienteFormG.controls["ambiente"].value.id!=3){
+  selectionopm(value) {
+
+    if (this.data.ambienteFormG.controls["ambiente"].value.id != 3) {
       if (value) {
         this.data.adicionalFormG.controls["bpac"].setValue(true);
       } else {
         this.data.adicionalFormG.controls["bpac"].setValue(false);
       }
-  }  
-    
+    }
+
   }
 
   selectionmodelo(value) {
@@ -1314,7 +1443,7 @@ export class FormComponentEdit2 implements OnInit {
   }
 
   selectionprop(value) {
-    if(!value.nombre.toLowerCase().includes("banco")){
+    if (!value.nombre.toLowerCase().includes("banco")) {
       this.data.adicionalFormG.controls["inv"].disable();
       this.data.adicionalFormG.controls["inv"].setValue(undefined)
       this.data.adicionalFormG.controls["boolinvent"].disable();
@@ -1324,44 +1453,43 @@ export class FormComponentEdit2 implements OnInit {
       this.data.adicionalFormG.controls["fechab"].setValue(undefined)
       this.data.adicionalFormG.controls["boolfechab"].disable();
       this.data.adicionalFormG.controls["boolfechab"].setValue(true)
-    }else{
+    } else {
       this.data.adicionalFormG.controls["boolinvent"].enable();
       this.data.adicionalFormG.controls["boolfechab"].enable();
 
     }
   }
 
-  selectionboolinvent(value){
-    if(value){
+  selectionboolinvent(value) {
+    if (value) {
       this.data.adicionalFormG.controls["inv"].disable();
       this.data.adicionalFormG.controls["inv"].setValue(undefined)
-    }else{
+    } else {
       this.data.adicionalFormG.controls["inv"].enable();
     }
-    
+
 
   }
 
-  selectionboolfechab(value){
-    if(value){
+  selectionboolfechab(value) {
+    if (value) {
       this.data.adicionalFormG.controls["fechab"].disable();
       this.data.adicionalFormG.controls["fechab"].setValue(undefined)
-    }else{
+    } else {
       this.data.adicionalFormG.controls["fechab"].enable();
     }
-    
+
 
   }
 
   sendinfo() {
-    
-    this.data.fechabanco = this.data.adicionalFormG.value.fechab == undefined? undefined:moment(this.data.adicionalFormG.value.fechab).format('YYYY-MM-DD');
-    //console.log(this.data.fechabanco)
+
+    this.data.fechabanco = this.data.adicionalFormG.value.fechab == undefined ? undefined : moment(this.data.adicionalFormG.value.fechab).format('YYYY-MM-DD');
     if (this.data.isnew) {
-      this.informacionService.insertinventario(this.data).subscribe(resp => {
+      this.inventarioService.insertinventario(this.data).subscribe(resp => {
         $.notify({
           icon: "notifications",
-          message: "El equipo "+this.data.modeloFormG.value.nombre+" - Serie "+this.data.adicionalFormG.controls["serie"].value+" se ha agregado"
+          message: "El equipo " + this.data.modeloFormG.value.nombre + " - Serie " + this.data.adicionalFormG.controls["serie"].value + " se ha agregado"
         }, {
           type: "success",
           timer: 10000,
@@ -1406,16 +1534,16 @@ export class FormComponentEdit2 implements OnInit {
         }
       });
     } else {
-      this.informacionService.editarinventario(this.data).subscribe(resp => {
-        let msg=""
-        if(this.data.estado){
-          msg="modificado"
-        }else{
-          msg="eliminado"
+      this.inventarioService.editarinventario(this.data).subscribe(resp => {
+        let msg = ""
+        if (this.data.estado) {
+          msg = "modificado"
+        } else {
+          msg = "eliminado"
         }
         $.notify({
           icon: "notifications",
-          message: "El equipo "+this.data.modeloFormG.value.nombre+" - Serie "+this.data.adicionalFormG.controls["serie"].value+" se ha "+msg
+          message: "El equipo " + this.data.modeloFormG.value.nombre + " - Serie " + this.data.adicionalFormG.controls["serie"].value + " se ha " + msg
         }, {
           type: "success",
           timer: 10000,
@@ -1466,7 +1594,7 @@ export class FormComponentEdit2 implements OnInit {
     const filterValue = nombre.toLowerCase();
     return this.modelos.filter(option => option.nombre.toLowerCase().includes(filterValue));
   }
-  
+
   compareThem(o1, o2): boolean {
     return o1.id === o2.id;
   }

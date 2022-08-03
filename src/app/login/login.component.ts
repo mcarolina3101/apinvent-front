@@ -28,9 +28,10 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   async check() {
     this.autenticacionService.loginUsuario(this.username, this.password).subscribe(resp => {
-      if (resp["info"].length == 1) {
+      if (resp["info"].length>0) {
         this.user = resp["info"][0];
       }
+      
       const keys = resp.headers;
       if (this.user != undefined) {
         if (this.user.estado) {

@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
-import { InformacionService } from '../servicios/informacion/informacion.service';
+import { InventarioService } from '../servicios/informacion/inventario.service';
+
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
@@ -54,8 +55,8 @@ export class HistoryComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<HistoryComponent>,
     breakpointObserver: BreakpointObserver,
-
-    private informacionService: InformacionService,
+    private inventarioService: InventarioService,
+    //private informacionService: InformacionService,
     @Inject(MAT_DIALOG_DATA) public data: TableListComponent) {
     this.stepperOrientation = breakpointObserver.observe('(min-width: 1000px)')
       .pipe(map(({ matches }) => matches ? 'horizontal' : 'vertical'));
@@ -63,7 +64,7 @@ export class HistoryComponent implements OnInit {
   }
 
   obtenerInfoInventario() {
-    this.informacionService.listlogs(this.infoeq).subscribe(resp => {
+    this.inventarioService.listlogs(this.infoeq).subscribe(resp => {
       this.dataDevices = resp.body["info"];
       console.log(this.dataDevices)
       const keys = resp.headers;

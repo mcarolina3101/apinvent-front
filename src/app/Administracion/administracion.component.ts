@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { InformacionService } from '../servicios/informacion/informacion.service';
+import { UsuarioService } from '../servicios/informacion/usuario.service';
+
 declare var $:any;
 
 @Component({
@@ -33,14 +35,16 @@ export class AdministracionComponent implements OnInit {
   public ieditar: boolean = false;
   public iadministrar: boolean = false;
   public iestado1=0;
-
+  
   public nusuario: boolean = true;
   public nperfil: boolean = true;
   public iusuario: boolean = true;
   public iperfil: boolean = true;
+  public nnombuser: boolean = true;
   public nuser: any;
   public nidperfil: any;
   public idactuser:any;
+  public inombuser: any;
   public iuser: any;
   public iidperfil: any;
   public iestado2 =0;
@@ -52,7 +56,7 @@ export class AdministracionComponent implements OnInit {
 
   constructor(
     private _formBuilder: FormBuilder,
-    private informacionService: InformacionService,
+    private usuarioService: UsuarioService,
     breakpointObserver: BreakpointObserver) {
   }
   ngOnInit() {
@@ -65,7 +69,7 @@ export class AdministracionComponent implements OnInit {
   }
 
   obtenerInfoUsuarios() {
-    this.informacionService.listusuarios(this.usuario).subscribe(resp => {
+    this.usuarioService.listusuarios(this.usuario).subscribe(resp => {
       this.usuarios = resp.body["info"];
       const keys = resp.headers;
     }, err => {
@@ -104,6 +108,7 @@ export class AdministracionComponent implements OnInit {
     this.nusuario = false;
 
     this.nuser = undefined;
+    this.nnombuser = undefined;
     this.nidperfil = undefined;
   }
 
@@ -112,8 +117,9 @@ export class AdministracionComponent implements OnInit {
     this.iperfil = true;
     this.iusuario = true;
     this.nusuario = true;
-    this.informacionService.insertusuario({
+    this.usuarioService.insertusuario({
       "usuario": this.nuser,
+      "nombre": this.nnombuser,
       "perfil": this.nidperfil
     }).subscribe(resp => {
       this.obtenerInfoUsuarios();
@@ -151,9 +157,10 @@ export class AdministracionComponent implements OnInit {
     this.iperfil = true;
     this.iusuario = true;
     this.nusuario = true;
-    this.informacionService.editarusuario({
+    this.usuarioService.editarusuario({
       "id":this.idactuser,
       "usuario": this.iuser,
+      "nombre": this.inombuser,
       "perfil": this.iidperfil,
       "estado":this.iestado2
     }).subscribe(resp => {
@@ -194,12 +201,13 @@ export class AdministracionComponent implements OnInit {
     this.nusuario = true;
     this.idactuser=a.id;
     this.iuser = a.usuario;
+    this.inombuser = a.nombre;
     this.iidperfil = a.perfil;
     this.iestado2 = a.estado?1:0;
   }
 
   obtenerInfoPerfiles() {
-    this.informacionService.listperfiles(this.perfil).subscribe(resp => {
+    this.usuarioService.listperfiles(this.perfil).subscribe(resp => {
       this.perfiles = resp.body["info"];
       const keys = resp.headers;
     }, err => {
@@ -232,7 +240,7 @@ export class AdministracionComponent implements OnInit {
   }
 
   obtenerInfoPerfilesNombre() {
-    this.informacionService.listperfilesbyNombre("").subscribe(resp => {
+    this.usuarioService.listperfilesbyNombre("").subscribe(resp => {
       this.perfileslist = resp["info"];
       const keys = resp.headers;
     }, err => {
@@ -282,7 +290,7 @@ export class AdministracionComponent implements OnInit {
     this.iperfil = true;
     this.iusuario = true;
     this.nusuario = true;
-    this.informacionService.insertperfil({
+    this.usuarioService.insertperfil({
       "nombre": this.nnombre,
       "administrar": this.nadministrar? 1:0,
       "crear": this.ncrear? 1:0,
@@ -325,7 +333,7 @@ export class AdministracionComponent implements OnInit {
     this.iperfil = true;
     this.iusuario = true;
     this.nusuario = true;
-    this.informacionService.editarperfil({
+    this.usuarioService.editarperfil({
       "id":this.idactperfil,
       "nombre": this.inombre,
       "administrar": this.iadministrar? 1:0,

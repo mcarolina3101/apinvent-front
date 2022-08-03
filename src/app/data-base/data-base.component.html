@@ -56,6 +56,14 @@
                                             <div class="ripple-container"></div>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" data-toggle="tab" href="#problemas"
+                                            (click)="clickListadoProblemas()">
+                                            <i class="material-icons">bug_report
+                                            </i> Problemas
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -117,32 +125,64 @@
                                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                                 </table>
-                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageAmbientes($event)"
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageAmbientes($event)"
                                     aria-label="Select page">
                                 </mat-paginator>
                             </div>
                             <div class="tab-pane" id="ciudades">
                                 <div class="table-responsive">
-                                    <table mat-table [dataSource]="ciudades" multiTemplateDataRows class="demo-table">
-                                        <ng-container matColumnDef="demo-nombre3">
+                                    <table mat-table [dataSource]="dataDevices" class="demo-table">
+
+                                        <ng-container matColumnDef="demo-ciudad">
                                             <th mat-header-cell *matHeaderCellDef>
                                                 <mat-form-field class="example-full-width" appearance="none">
-                                                    <mat-label>Nombre</mat-label>
-                                                    <input matInput [(ngModel)]="ciudad.nombre"
-                                                        (change)="clickListadoCiudades()">
+                                                    <mat-label>Ciudad</mat-label>
+                                                    <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                        [formControl]="citiescontrolarr" multiple>
+                                                        <mat-option *ngFor="let c of cities" [value]="c">{{c.nombre}}
+                                                        </mat-option>
+                                                    </mat-select>
+
                                                 </mat-form-field>
                                             </th>
                                             <td mat-cell *matCellDef="let element">
-                                                {{element.nombre}}
+                                                {{element.Ciudad[0].nombreciudad}}</td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="demo-tipo">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Tipo</mat-label>
+                                                    <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                        [formControl]="tiposcontrolarr" multiple>
+                                                        <mat-option *ngFor="let t of tipos" [value]="t">{{t.nombre}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{element.Ciudad[0].Tipo[0].nombretipo}} </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="demo-agencia">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Agencia</mat-label>
+                                                    <input matInput [(ngModel)]="inventario.nombre"
+                                                        (change)="obtenerInfoInventario_p1()">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{element.nombreagencia}}
                                             </td>
                                         </ng-container>
 
-                                        <ng-container matColumnDef="demo-estado3">
+                                        <ng-container matColumnDef="demo-estado">
                                             <th mat-header-cell *matHeaderCellDef>
                                                 <mat-form-field class="example-full-width" appearance="none">
                                                     <mat-label>Activado</mat-label>
-                                                    <mat-select id="a" name="a" [(ngModel)]="ciudad.estado"
-                                                        (selectionChange)="obtenerInfoCiudades()">
+                                                    <mat-select id="a" name="a" [(ngModel)]="inventario.estado"
+                                                        (selectionChange)="obtenerInfoInventario_p1()">
                                                         <mat-option *ngFor="let a of activado" [value]="a.id">
                                                             {{a.nombre}}
                                                         </mat-option>
@@ -150,209 +190,43 @@
                                                 </mat-form-field>
                                             </th>
                                             <td mat-cell *matCellDef="let element">
-                                                <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">
-                                                    check_circle
-                                                </mat-icon>
+                                                {{element.estado?
+                                                'INGRESADO': 'ELIMINADO' }}
                                             </td>
                                         </ng-container>
-
-                                        <ng-container matColumnDef="demo-action3">
+        
+                                        <ng-container matColumnDef="demo-action" stickyEnd>
                                             <th mat-header-cell *matHeaderCellDef>
-                                                <div
-                                                    style="display:flex !important ;justify-content: flex-end !important;">
-                                                    <button mat-icon-button (click)="openDialogCiudad()"
-                                                        matTooltip="Agregar Ciudad" [matTooltipPosition]="'above'">
+                                                <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                    <button mat-icon-button matTooltip="Editar Ciudades/Tipos"
+                                                        [matTooltipPosition]="'above'"
+                                                        (click)="openDialogCTedit()">
+                                                        <mat-icon>mode_edit</mat-icon>
+                                                    </button>
+                                                    <button mat-icon-button matTooltip="Agregar Ciudades/Tipos/Agencia" (click)="openDialogAgencia()"
+                                                        [matTooltipPosition]="'above'">
                                                         <mat-icon>add_circle_outline</mat-icon>
                                                     </button>
                                                 </div>
                                             </th>
                                             <td mat-cell *matCellDef="let element">
-                                                <div
-                                                    style="display:flex !important ;justify-content: flex-end !important;">
-                                                    <button mat-icon-button (click)="openDialogTipo(element.id)"
-                                                        matTooltip="Agregar Tipo" [matTooltipPosition]="'above'">
-                                                        <mat-icon>
-                                                            add_circle_outline</mat-icon>
-                                                    </button>
-                                                    <button mat-icon-button (click)="openDialogCiudadEdit(element.id)"
-                                                        matTooltip="Editar Ciudad" [matTooltipPosition]="'above'">
+                                                <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                    <button mat-icon-button matTooltip="Editar Agencia"
+                                                        [matTooltipPosition]="'above'"
+                                                        (click)="openDialogAgenciaEdit(element.id)">
                                                         <mat-icon>mode_edit</mat-icon>
                                                     </button>
                                                 </div>
                                             </td>
                                         </ng-container>
+        
 
-                                        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
-                                        <ng-container matColumnDef="expandedDetail">
-                                            <td mat-cell *matCellDef="let element"
-                                                [attr.colspan]="displayedColumns3.length">
-                                                <div class="example-element-detail"
-                                                    [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-                                                    <table mat-table [dataSource]="element.TipoCiudad"
-                                                        multiTemplateDataRows class="demo-table">
-                                                        <ng-container matColumnDef="demo-nombre3">
-                                                            <td mat-cell *matCellDef="let element">
-                                                                {{element.nombre}}
-                                                            </td>
-                                                        </ng-container>
-
-                                                        <ng-container matColumnDef="demo-estado3">
-                                                            <td mat-cell *matCellDef="let element">
-                                                                <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">
-                                                                    check_circle</mat-icon>
-                                                            </td>
-
-                                                        </ng-container>
-
-                                                        <ng-container matColumnDef="demo-action3">
-                                                            <td mat-cell *matCellDef="let element">
-                                                                <div
-                                                                    style="display:flex !important ;justify-content: flex-end !important;">
-                                                                    <button mat-icon-button matTooltip="Agregar"
-                                                                        [matTooltipPosition]="'above'"
-                                                                        (click)="openDialogAgencia(element.id)">
-                                                                        <mat-icon>add_circle_outline</mat-icon>
-                                                                    </button>
-                                                                    <button mat-icon-button matTooltip="Editar Tipo"
-                                                                        [matTooltipPosition]="'above'"
-                                                                        (click)="openDialogTipoEdit(element.id)">
-                                                                        <mat-icon>mode_edit</mat-icon>
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </ng-container>
-
-                                                        <ng-container matColumnDef="expandedDetail">
-                                                            <td mat-cell *matCellDef="let element"
-                                                                [attr.colspan]="displayedColumns3.length">
-                                                                <div class="example-element-detail"
-                                                                    [@detailExpand]="element == expandedElement2 ? 'expanded' : 'collapsed'">
-                                                                    <div style="width: 100%;">
-                                                                        <div class="table-responsive">
-                                                                            <table mat-table [dataSource]="agencias"
-                                                                                style="background-color: #eee;"
-                                                                                class="demo-table mat-elevation-z8 ">
-                                                                                <ng-container
-                                                                                    matColumnDef="demo-nombre3">
-                                                                                    <th mat-header-cell
-                                                                                        *matHeaderCellDef>
-                                                                                        <mat-form-field
-                                                                                            appearance="none"
-                                                                                            style="height: 50px;">
-                                                                                            <mat-label><mat-icon>search</mat-icon>
-                                                                                            </mat-label>
-                                                                                            <input matInput
-                                                                                                [(ngModel)]="agencia.nombre"
-                                                                                                (change)="clickListadoAgencias()">
-                                                                                        </mat-form-field>
-                                                                                    </th>
-                                                                                    <td mat-cell
-                                                                                        *matCellDef="let element">
-                                                                                        {{element.nombre}}
-                                                                                    </td>
-                                                                                    <td mat-cell
-                                                                                        *matCellDef="let element">
-                                                                                        {{element.nombre}}
-                                                                                    </td>
-                                                                                </ng-container>
-
-                                                                                <ng-container
-                                                                                    matColumnDef="demo-estado3">
-                                                                                    <th mat-header-cell
-                                                                                        *matHeaderCellDef>
-                                                                                        <mat-form-field
-                                                                                            appearance="none"
-                                                                                            style="height: 50px;">
-                                                                                            <mat-label>Activado
-                                                                                            </mat-label>
-                                                                                            <mat-select id="a" name="a"
-                                                                                                [(ngModel)]="agencia.estado"
-                                                                                                (selectionChange)="obtenerInfoAgencias()">
-                                                                                                <mat-option
-                                                                                                    *ngFor="let a of activado"
-                                                                                                    [value]="a.id">
-                                                                                                    {{a.nombre}}
-                                                                                                </mat-option>
-                                                                                            </mat-select>
-                                                                                        </mat-form-field>
-                                                                                    </th>
-                                                                                    <td mat-cell
-                                                                                        *matCellDef="let element">
-                                                                                        <mat-icon
-                                                                                            [ngClass]="element.estado ? 'green' : 'red' ">
-                                                                                            check_circle</mat-icon>
-                                                                                    </td>
-
-                                                                                </ng-container>
-
-                                                                                <ng-container
-                                                                                    matColumnDef="demo-action3">
-                                                                                    <th mat-header-cell
-                                                                                        *matHeaderCellDef>
-                                                                                        <div>
-                                                                                        </div>
-                                                                                    </th>
-                                                                                    <td mat-cell
-                                                                                        *matCellDef="let element">
-                                                                                        <div
-                                                                                            style="display:flex !important ;justify-content: flex-end !important;">
-                                                                                            <button mat-icon-button
-                                                                                                matTooltip="Editar"
-                                                                                                [matTooltipPosition]="'above'"
-                                                                                                (click)="openDialogAgenciaEdit(element.id)">
-                                                                                                <mat-icon>mode_edit
-                                                                                                </mat-icon>
-                                                                                            </button>
-                                                                                        </div>
-                                                                                    </td>
-                                                                                </ng-container>
-                                                                                <tr mat-header-row
-                                                                                    *matHeaderRowDef="displayedColumns3">
-                                                                                </tr>
-                                                                                <tr mat-row
-                                                                                    *matRowDef="let row; columns: displayedColumns3;">
-                                                                                </tr>
-                                                                            </table>
-                                                                        </div>
-                                                                        <mat-paginator [length]="totalenght2"
-                                                                            style="background-color: #eee;"
-                                                                            [pageSize]="12" [pageIndex]="pageIndex2"
-                                                                            (page)="PageAgencias($event)"
-                                                                            aria-label="Select page">
-                                                                        </mat-paginator>
-                                                                    </div>
-                                                                </div>
-
-                                                            </td>
-                                                        </ng-container>
-
-                                                        <tr mat-row
-                                                            *matRowDef="let element; columns: displayedColumns3;"
-                                                            class="example-element-row"
-                                                            [class.example-expanded-row]="expandedElement2 === element"
-                                                            (click)="expandedElement2 = expandedElement2 === element ? null : element; expandTipo(element.id)">
-                                                        </tr>
-                                                        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']"
-                                                            class="example-detail-row"></tr>
-                                                    </table>
-
-                                                </div>
-                                            </td>
-                                        </ng-container>
-
-                                        <tr mat-header-row *matHeaderRowDef="displayedColumns3"></tr>
-                                        <tr mat-row *matRowDef="let element; columns: displayedColumns3;"
-                                            class="example-element-row"
-                                            [class.example-expanded-row]="expandedElement === element"
-                                            (click)="expandedElement = expandedElement === element ? null : element">
-                                        </tr>
-                                        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']"
-                                            class="example-detail-row"></tr>
-
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumnsCiudad"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumnsCiudad;"></tr>
                                     </table>
                                 </div>
-                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageCiudades($event)" [pageIndex]="pageIndex"
-                                    aria-label="Select page">
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageCiudades($event)"
+                                    [pageIndex]="pageIndex" aria-label="Select page">
                                 </mat-paginator>
                             </div>
                             <div class="tab-pane" id="hardwares">
@@ -426,7 +300,7 @@
                                     <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
                                     <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
                                 </table>
-                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageHardwares($event)"
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageHardwares($event)"
                                     aria-label="Select page" [pageIndex]="pageIndex">
                                 </mat-paginator>
                             </div>
@@ -529,8 +403,8 @@
                                         <tr mat-row *matRowDef="let row; columns: displayedColumns4;"></tr>
                                     </table>
                                 </div>
-                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageModelos($event)" [pageIndex]="pageIndex"
-                                    aria-label="Select page">
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageModelos($event)"
+                                    [pageIndex]="pageIndex" aria-label="Select page">
                                 </mat-paginator>
                             </div>
                             <div class="tab-pane" id="carpetas">
@@ -589,8 +463,8 @@
                                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                                 </table>
-                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageOrions($event)" [pageIndex]="pageIndex"
-                                    aria-label="Select page">
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageOrions($event)"
+                                    [pageIndex]="pageIndex" aria-label="Select page">
                                 </mat-paginator>
                             </div>
                             <div class="tab-pane" id="propietarios">
@@ -649,8 +523,8 @@
                                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                                 </table>
-                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PagePropietarios($event)" [pageIndex]="pageIndex"
-                                    aria-label="Select page">
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PagePropietarios($event)"
+                                    [pageIndex]="pageIndex" aria-label="Select page">
                                 </mat-paginator>
                             </div>
                             <div class="tab-pane" id="entidades">
@@ -709,7 +583,66 @@
                                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                                 </table>
-                                <mat-paginator [length]="totalenght" [pageSize]="12" (page)="PageEntidades($event)" [pageIndex]="pageIndex"
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageEntidades($event)"
+                                    [pageIndex]="pageIndex" aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                            <div class="tab-pane" id="problemas">
+                                <table mat-table [dataSource]="problemas" class="demo-table">
+                                    <ng-container matColumnDef="demo-nombre1">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Nombre</mat-label>
+                                                <input matInput [(ngModel)]="problema.nombre"
+                                                    (change)="clickListadoProblemas()">
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-estado1">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <mat-form-field class="example-full-width" appearance="none">
+                                                <mat-label>Activado</mat-label>
+                                                <mat-select id="a" name="a" [(ngModel)]="problema.estado"
+                                                    (selectionChange)="obtenerInfoProblemas()">
+                                                    <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                        {{a.nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </mat-form-field>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">
+                                                check_circle</mat-icon>
+                                        </td>
+
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="demo-action1">
+                                        <th mat-header-cell *matHeaderCellDef>
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button (click)="openDialogProblemas()"
+                                                    matTooltip="Agregar" [matTooltipPosition]="'above'">
+                                                    <mat-icon>add_circle_outline</mat-icon>
+                                                </button>
+                                            </div>
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                <button mat-icon-button matTooltip="Editar"
+                                                    [matTooltipPosition]="'above'"
+                                                    (click)="openDialogProblemasEdit(element.id)">
+                                                    <mat-icon>mode_edit</mat-icon>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                                </table>
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageProblemas($event)"
                                     aria-label="Select page">
                                 </mat-paginator>
                             </div>

@@ -138,9 +138,10 @@
 
   }
 
+  /*
   ::ng-deep .mat-step-header {
     pointer-events: none !important;
-  }
+  }*/
   
   ::ng-deep .mat-step-header .mat-step-icon-selected {
     background-color: indigo; 

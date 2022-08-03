@@ -1,5 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { InformacionService } from '../servicios/informacion/informacion.service';
+import { EnlaceService } from '../servicios/informacion/enlace.service';
+
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -92,7 +94,8 @@ export class EnlacesComponent implements OnInit {
   constructor(
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
-    private informacionService: InformacionService) { }
+    private informacionService: InformacionService,
+    private enlaceService: EnlaceService) { }
 
   ngOnInit() {
     this.inventario = {
@@ -216,7 +219,7 @@ export class EnlacesComponent implements OnInit {
   }
 
   obtenerInfoInventario() {
-    this.informacionService.listenlace(this.inventario).subscribe(resp => {
+    this.enlaceService.listenlace(this.inventario).subscribe(resp => {
       this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
@@ -248,7 +251,7 @@ export class EnlacesComponent implements OnInit {
   }
 
   obtenerInfoInventarioExcel() {
-    this.informacionService.downloadenlace(this.inventario).subscribe(resp => {
+    this.enlaceService.downloadenlace(this.inventario).subscribe(resp => {
       const keys = resp.headers;
       const blob: any = new Blob([resp.body], { type: keys.getAll("content-type").toString() });
       const file = new File([blob], "inventarioEnlaces" + '.xlsx', { type: keys.getAll("content-type").toString() });
@@ -282,7 +285,7 @@ export class EnlacesComponent implements OnInit {
 
   obtenerInventarioid(n) {
 
-    this.informacionService.getenlacebyid(n).subscribe(resp => {
+    this.enlaceService.getenlacebyid(n).subscribe(resp => {
       this.inventid = resp["info"];
       this.networkFormG.controls["ip"].setValue(this.inventid.tunel)
       this.networkFormG.controls["bw"].setValue(this.inventid.bw)
@@ -538,7 +541,7 @@ export class FormComponentEnlaces implements OnInit {
   public proveedorSelected: any;
   public propietarioSelected: any;
 
-  filteredOptionsPunto: Observable<any[]>;
+  filteredOptionsAgencias: Observable<any[]>;
 
   public agencias: any[] = [];
   public tipos: any[] = [];
@@ -584,11 +587,20 @@ export class FormComponentEnlaces implements OnInit {
       });
       
 
+    }else{
+      this.data.entidades.forEach(element => {
+        if(element.nombre.toLowerCase().includes('banco')){
+          this.data.adicionalFormG.controls["propietario"].setValue(element)
+        }
+      });
     }
-    this.filteredOptionsPunto = this.data.networkFormG.controls["punto"].valueChanges.pipe(
+
+
+
+    this.filteredOptionsAgencias = this.data.ubicacionFormG.controls["ag"].valueChanges.pipe(
       startWith(''),
       map(value => (typeof value === 'string' ? value : value.nombre)),
-      map(nombre => (nombre ? this._filter(nombre) : this.puntos.slice())),
+      map(nombre => (nombre ? this._filter(nombre) : this.agencias.slice())),
     );
 
   }
@@ -597,6 +609,7 @@ export class FormComponentEnlaces implements OnInit {
     public dialogRef: MatDialogRef<FormComponentEnlaces>,
     breakpointObserver: BreakpointObserver,
     private informacionService: InformacionService,
+    private enlaceService: EnlaceService,
     @Inject(MAT_DIALOG_DATA) public data: EnlacesComponent) {
     this.stepperOrientation = breakpointObserver.observe('(min-width: 1000px)')
       .pipe(map(({ matches }) => matches ? 'horizontal' : 'vertical'));
@@ -758,6 +771,8 @@ export class FormComponentEnlaces implements OnInit {
       }
     });
   }
+
+  /*
   obtenerInfoPuntoNombre(trigger: MatAutocompleteTrigger) {
     this.pnto.nombre = this.npunto;
     this.informacionService.listagenciasNombre2(this.pnto).subscribe(resp => {
@@ -769,18 +784,9 @@ export class FormComponentEnlaces implements OnInit {
         map(nombre => (nombre ? this._filter(nombre) : this.puntos.slice())),
       );
       trigger.openPanel();
-      //this.completar();
-      /*
-      if (this.data.inventid != undefined) {
-        this.agencias.forEach(element => {
-
-          if (this.compareThem(element, this.data.inventid.Punto[0])) {
-            this.data.networkFormG.controls["punto"].setValue(element)
-          }
-        });
-      }*/
     });
   }
+  */
   obtenerInfoPuntoid(id) {
     //this.agc.nombre=nombre;
     this.informacionService.getagenciabyid(id).subscribe(resp => {
@@ -811,6 +817,7 @@ export class FormComponentEnlaces implements OnInit {
       }
     });
   }
+  /*
   completar(trigger:MatAutocompleteTrigger) {
     this.obtenerInfoPuntoNombre(trigger);
     if (this.puntos.length > 0) {
@@ -820,24 +827,40 @@ export class FormComponentEnlaces implements OnInit {
         }
       });
     }
-  }
+  }*/
   selectionpunto(value) {
     this.obtenerInfoPuntoid(value.id)
   }
   selectioncity(value) {
-    this.data.ubicacionFormG.controls["tipo"].setValue(undefined);
-    this.data.ubicacionFormG.controls["ag"].setValue(undefined);
+    this.data.ubicacionFormG.controls["tipo"].reset();
+    this.data.ubicacionFormG.controls["ag"].setValue({id:0,nombre:""})
     this.tp.idlink = value.id;
     this.obtenerInfoTipos();
   }
   selectiontipo(value) {
-    this.data.ubicacionFormG.controls["ag"].setValue(undefined);
+    this.data.ubicacionFormG.controls["ag"].setValue({id:0,nombre:""})
     this.agc.idlink = value.id;
+    if((this.data.ubicacionFormG.value.tipo.nombre).includes("ATM")){
+      this.data.networkFormG.controls["bw"].setValue("1024")
+      this.puntos.forEach(element => {
+        if(element.nombre.toLowerCase().includes("matriz")){
+          this.data.networkFormG.controls["punto"].setValue(element)
+        }
+      });  
+    }if((this.data.ubicacionFormG.value.tipo.nombre).includes("INT")){
+      this.data.networkFormG.controls["bw"].setValue("5000")
+      this.puntos.forEach(element => {
+        if(element.nombre.toLowerCase().includes("matriz")){
+          this.data.networkFormG.controls["punto"].setValue(element)
+        }
+      });  
+    }
     this.obtenerInfoAgencias();
   }
+
   sendinfo() {
     if (this.data.isnew) {
-      this.informacionService.insertenlace(this.data).subscribe(resp => {
+      this.enlaceService.insertenlace(this.data).subscribe(resp => {
         $.notify({
           icon: "notifications",
           message: "El enlace se ha agregado"
@@ -887,7 +910,7 @@ export class FormComponentEnlaces implements OnInit {
         }
       });
     } else {
-      this.informacionService.editarenlace(this.data).subscribe(resp => {
+      this.enlaceService.editarenlace(this.data).subscribe(resp => {
         $.notify({
           icon: "notifications",
           message: "El enlace se ha editado"
@@ -944,7 +967,7 @@ export class FormComponentEnlaces implements OnInit {
   }
   private _filter(nombre: string): any[] {
     const filterValue = nombre.toLowerCase();
-    return this.puntos.filter(option => option.nombre.toLowerCase().includes(filterValue));
+    return this.agencias.filter(option => option.nombre.toLowerCase().includes(filterValue));
   }
 
 }

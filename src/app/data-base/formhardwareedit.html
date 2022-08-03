@@ -33,12 +33,15 @@
       </mat-form-field>
     </div>
   </div>
-  <mat-form-field class="example-full-width" appearance="fill">
-    <mat-label>Activado</mat-label>
-    <mat-select [(value)]="data.selectedact">
-      <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div [hidden]="data.isnew">
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Activado</mat-label>
+      <mat-select [(value)]="data.selectedact">
+        <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  
 </div>
 <div mat-dialog-actions>
   <button mat-button [mat-dialog-close]="data" cdkFocusInitial color="primary">Ok</button>

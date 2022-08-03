@@ -134,6 +134,11 @@
     max-width: 100px;
   }
 
+  ::ng-deep .mat-column-demo-util {
+    width: 10%;
+    max-width: 100px;
+  }
+
   ::ng-deep .mat-column-demo-action {
     width: 10%;
     max-width: 100px;
@@ -180,11 +185,15 @@
     padding-left: 15px;
 
   }
-/*
+
+
+  /*
   ::ng-deep .mat-step-header {
     pointer-events: none !important;
   }
+
   */
+  
   ::ng-deep .mat-step-header .mat-step-icon-selected {
     background-color: indigo; 
  }

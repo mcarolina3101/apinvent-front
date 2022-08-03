@@ -11,7 +11,7 @@
                             </div>
                             <div class="col-lg-2 col-md-4 col-sm-6">
                                 <div class="demo-button-container">
-                                    <button mat-raised-button (click)="obtenerInfoInventarioExcel()"
+                                    <button mat-raised-button
                                         class="demo-button">
                                         <i class="material-icons">download</i>
                                         Descargar Excel
@@ -32,7 +32,7 @@
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.ticket}} </td>
+                                    <td mat-cell *matCellDef="let element"> {{element.TTHeader[0].fecha}}-{{element.TTHeader[0].conteo}} </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-ciudad">
@@ -81,7 +81,7 @@
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element"> 
-                                        {{element.Agencia[0].Tipo[0].Ciudad[0].Propietario[0].Problema[0].problema}}
+                                        {{element.TTHeader[0].Propietario[0].Problema[0].problema}}
                                      </td>
                                 </ng-container>
 
@@ -94,12 +94,14 @@
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element"> 
-                                        {{element.Agencia[0].Tipo[0].Ciudad[0].Propietario[0].proveedor}}
+                                        {{element.TTHeader[0].Propietario[0].proveedor == undefined?
+                                            'N/A':
+                                            element.TTHeader[0].Propietario[0].proveedor }}
 
                                     </td>
                                 </ng-container>
 
-                                <ng-container matColumnDef="demo-soporte">
+                                <!--ng-container matColumnDef="demo-soporte">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Persona que dio soporte</mat-label>
@@ -108,7 +110,7 @@
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element"> 
-                                        {{element.soporte}}
+                                        {{element.TTHeader[0].soporte}}
                                          </td>
                                 </ng-container>
 
@@ -121,9 +123,9 @@
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        {{element.descripcion}}
+                                        {{element.TTHeader[0].descripcion}}
                                     </td>
-                                </ng-container>
+                                </ng-container-->
 
                                 <ng-container matColumnDef="demo-tcompleto">
                                     <th mat-header-cell *matHeaderCellDef>
@@ -221,6 +223,7 @@
                                     </td>
                                 </ng-container>
 
+                                
                                 <ng-container matColumnDef="demo-action" stickyEnd>
                                     <th mat-header-cell *matHeaderCellDef>
                                         <div style="display:flex !important ;justify-content: flex-end !important;">
@@ -254,4 +257,5 @@
             </div>
         </div>
     </div>
+
 </div>

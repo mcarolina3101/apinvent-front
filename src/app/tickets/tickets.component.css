@@ -45,7 +45,6 @@
   ::ng-deep .mat-column-demo-agencia {
     font-style: italic;
     max-width: 200px;
-    font-size :xx-small;
   }
 
   ::ng-deep .mat-column-demo-tcompleto {
@@ -120,6 +119,24 @@
     max-width: 70px;
   }
 
+  ::ng-deep .mat-column-demo-tc {
+    max-width: 140px;
+  }
+
+  ::ng-deep .mat-column-demo-d1 {
+    max-width: 140px;
+  }
+  ::ng-deep .mat-column-demo-d2 {
+    max-width: 140px;
+  }
+  ::ng-deep .mat-column-demo-d3 {
+    max-width: 140px;
+  }
+
+  ::ng-deep .mat-column-demo-total {
+    max-width: 60px;
+  }
+
 
 
   ::ng-deep .mat-form-field .mat-form-field-label{
@@ -144,4 +161,8 @@
 
  ::ng-deep .mat-step-header .mat-step-icon-state-edit {
   background-color: indigo; 
+}
+
+.example-container .mat-form-field + .mat-form-field {
+  margin-left: 8px;
 }

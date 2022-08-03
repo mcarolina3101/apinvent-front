@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Host, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ignoreElements } from 'rxjs-compat/operator/ignoreElements';
 import * as global from "../../global";
+import { DashboardService } from '../apis/dashboard.service';
 
 
 
@@ -11,7 +11,8 @@ import * as global from "../../global";
 })
 export class InformacionService {
   private ruta = '';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private dashboardService: DashboardService) { }
 
   private cabeceraReq: any = new HttpHeaders({
     'Content-type': "application/json"
@@ -219,8 +220,23 @@ export class InformacionService {
       nombre: info.nombre,
       idLink: info.idLink,
       estado: info.estado,
+      ciudad: info.nciudad,
+      tipo: info.ntipo,
       pageSize: global.pageSize,
       pageIndex: info.pindex,
+      username: localStorage.getItem("username")
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
+  }
+  listagenciastickets(info: any): Observable<HttpResponse<any>> {
+    this.ruta = 'agencia/tickets';
+    let body = JSON.stringify({
+      nombre: info.nombre,
+      idLink: info.idLink,
+      estado: info.estado,
+      ciudad: info.ciudad,
+      tipo: info.tipo,
+      idproveedor: info.idproveedor,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
@@ -481,419 +497,49 @@ export class InformacionService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  //INVENTARIO
-  listinventario(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'inventario/list';
+  //PROBLEMAS
+  listproblemas(info: any): Observable<HttpResponse<any>> {
+    this.ruta = 'problema/list';
     let body = JSON.stringify({
       nombre: info.nombre,
-      ip: info.ip == "" ? null : info.ip,
-      serie: info.serie == "" ? null : info.serie,
-      so: info.so == "" ? null : info.so,
-      inventario: info.inv == "" ? null : info.inv,
-      piso: info.piso,
-      rack: info.rack,
-      critico: info.critico,
-      opmger: info.opmger,
-      bpac: info.bpac,
-      util: info.util,
-      fecha: info.fecha == "" ? null : info.fecha,
-      nAmbiente: info.nAmbiente == "" ? null : info.nAmbiente,
-      nModelo: info.nModelo == "" ? null : info.nModelo,
-      nEquipo: info.nEquipo == "" ? null : info.nEquipo,
-      nPropietario: info.nPropietario == "" ? null : info.nPropietario,
-      norion: info.norion == "" ? null : info.norion,
-      nagencia: info.nagencia == "" ? null : info.nagencia,
-      ntipo: info.ntipo == "" ? null : info.ntipo,
-      nciudad: info.nciudad == "" ? null : info.nciudad,
       estado: info.estado,
       pageSize: global.pageSize,
       pageIndex: info.pindex,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
-    //return this.http.post(global.ruta + ruta, {}, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
-
-    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
-  listlogs(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'inventario/logs';
+  listproblemasNombre(info: any): Observable<HttpResponse<any>> {
+    this.ruta = 'problema/nombre';
     let body = JSON.stringify({
-      id:info.id,
-      fecha: info.fecha == "" ? null : info.fecha,
-      nAmbiente: info.nAmbiente == "" ? null : info.nAmbiente,
-      nModelo: info.nModelo == "" ? null : info.nModelo,
-      nEquipo: info.nEquipo == "" ? null : info.nEquipo,
-      nPropietario: info.nPropietario == "" ? null : info.nPropietario,
-      norion: info.norion == "" ? null : info.norion,
-      nagencia: info.nagencia == "" ? null : info.nagencia,
+      nombre: info.nombre,
       estado: info.estado,
-      pageSize: global.pageSize,
-      pageIndex: info.pindex,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
-    //return this.http.post(global.ruta + ruta, {}, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
-
-    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
-  downloadinv(info: any): Observable<HttpResponse<Blob>> {
-    this.ruta = 'inventario/download';
-    let body = JSON.stringify({
-      serie: info.serie,
-      estado: info.estado,
-      pageSize: global.pageSize,
-      pageIndex: info.pindex,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
-    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
-  }
-  getinventariobyid(n: number): Observable<HttpResponse<any>> {
-    this.ruta = 'inventario/id';
+  getproblemabyid(n: number): Observable<HttpResponse<any>> {
+    this.ruta = 'problema/id';
     let body = JSON.stringify({
       id: n,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  dashboard(): Observable<HttpResponse<any>> {
-    this.ruta = 'inventario/dashboard';
-    let body = JSON.stringify({
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  insertinventario(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'inventario/crear';
-    let body = JSON.stringify({
-      //id:info.idedit,      
-      ip: info.networkFormG.value.ip,
-      so: info.networkFormG.value.so,
-      serie: info.adicionalFormG.value.serie,
-      inventario: info.adicionalFormG.value.inv,
-      fechabanco:info.adicionalFormG.value.fechab,
-      critico: info.networkFormG.value.ecritico ? 1 : 0,
-      opmger: info.adicionalFormG.value.opm ? 1 : 0,
-      idAmbiente: info.ambienteFormG.value.ambiente.id,
-      nombre: info.modeloFormG.value.nombre,
-      idModelo: info.modeloFormG.value.modelo.id,
-      idPropietario: info.adicionalFormG.value.propietario.id,
-      idOrion: info.networkFormG.value.orion == undefined ? null : info.networkFormG.value.orion.id,
-      agencia: info.ubicacionFormG.value.ag.id,
-      tipo: info.ubicacionFormG.value.tipo.id,
-      ciudad: info.ubicacionFormG.value.city.id,
-      piso: info.ubicacionFormG.value.piso,
-      rack: info.ubicacionFormG.value.rack,
-      util: info.adicionalFormG.value.util == undefined ? 0 : info.ubicacionFormG.value.util,
-      //estado:1,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  editarinventario(info: any): Observable<HttpResponse<any>> {
-    
-    this.ruta = 'inventario/actualizar';
-    let body = JSON.stringify({
-      //nombre:info.nombre,
-      //estado:info.estado,
-      id: info.idedit,
-      ip: info.networkFormG.value.ip,
-      so: info.networkFormG.value.so,
-      serie: info.adicionalFormG.controls["serie"].value,
-      inventario: info.adicionalFormG.controls["inv"].value, 
-      fechabanco:info.fechabanco,
-      critico: info.networkFormG.value.ecritico ? 1 : 0,
-      opmger: info.adicionalFormG.value.opm ? 1 : 0,
-      idAmbiente: info.ambienteFormG.value.ambiente.id,
-      nombre: info.modeloFormG.value.nombre,
-      idModelo: info.modeloFormG.controls["modelo"].value.id,
-      idPropietario: info.adicionalFormG.controls["propietario"].value.id, 
-      idOrion:info.networkFormG.controls["orion"].value == undefined? undefined : info.networkFormG.controls["orion"].value.id, 
-      agencia: info.ubicacionFormG.value.ag.id,
-      tipo: info.ubicacionFormG.value.tipo.id,
-      ciudad: info.ubicacionFormG.value.city.id,
-      piso: info.ubicacionFormG.value.piso,
-      rack: info.ubicacionFormG.value.rack,
-      util: info.ubicacionFormG.value.util == undefined ? 0 : info.ubicacionFormG.value.util,
-      estado: info.estado,
-      username: localStorage.getItem("username")
-
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  //ENLACES
-  listenlace(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'enlace/list';
-    let body = JSON.stringify({
-      idproveedor: info.idproveedor,
-      proveedor: info.proveedor == "" ? null : info.proveedor,
-      idpropiedad: info.idpropiedad,
-      propiedad: info.propiedad == "" ? null : info.propiedad,
-      idpunto: info.idpunto,
-      punto: info.punto == "" ? null : info.punto,
-      idagencia: info.idagencia,
-      agencia: info.agencia == "" ? null : info.agencia,
-      idtipo: info.idtipo,
-      tipo: info.tipo == "" ? null : info.tipo,
-      idciudad: info.idciudad,
-      ciudad: info.ciudad == "" ? null : info.ciudad,
-      bw: info.bw == "" ? null : info.bw,
-      tunel: info.ip == "" ? null : info.ip,
-      codigo: info.codigo == "" ? null : info.codigo,
-      payfor: info.payfor == "" ? null : info.payfor,
-      medio: info.medio == "" ? null : info.medio,
-      estado: info.estado == null ? 1 : info.estado,
-      pageSize: global.pageSize,
-      pageIndex: info.pindex,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
-    //return this.http.post(global.ruta + ruta, {}, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
-
-    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
-  }
-  downloadenlace(info: any): Observable<HttpResponse<Blob>> {
-    this.ruta = 'enlace/download';
-    let body = JSON.stringify({
-      serie: info.serie,
-      estado: info.estado,
-      pageSize: global.pageSize,
-      pageIndex: info.pindex,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
-    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
-  }
-  getenlacebyid(n: number): Observable<HttpResponse<any>> {
-    this.ruta = 'enlace/id';
-    let body = JSON.stringify({
-      id: n,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  dashboardenlace(): Observable<HttpResponse<any>> {
-    this.ruta = 'enlace/dashboard';
-    let body = JSON.stringify({
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  insertenlace(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'enlace/crear';
-    let body = JSON.stringify({
-      //id:info.idedit,      
-      idproveedor:info.networkFormG.value.proveedor.id == undefined ? null : info.networkFormG.value.proveedor.id,
-      bw:info.networkFormG.value.bw == undefined ? null : info.networkFormG.value.bw,
-      codigo:info.ubicacionFormG.value.codigo == undefined ? null : info.ubicacionFormG.value.codigo ,
-      identificador:info.adicionalFormG.value.identificador == undefined ? null : info.adicionalFormG.value.identificador,
-      idmedio:info.networkFormG.value.medio.id == undefined ? null : info.networkFormG.value.medio.id,
-      tunel:info.networkFormG.value.ip == undefined ? null : info.networkFormG.value.ip,
-      idpunto:info.networkFormG.value.punto.id == undefined ? null : info.networkFormG.value.punto.id,
-      doble:info.networkFormG.value.doble ? 1 : 0,
-      idpropiedad: info.adicionalFormG.value.propietario.id == undefined ? null : info.adicionalFormG.value.propietario.id,
-      idagencia: info.ubicacionFormG.value.ag.id == undefined ? null :info.ubicacionFormG.value.ag.id,
-      //estado:1,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  editarenlace(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'enlace/actualizar';
-    let body = JSON.stringify({
-      //nombre:info.nombre,
-      //estado:info.estado,
-      id:info.idedit,
-      idproveedor:info.networkFormG.value.proveedor.id == undefined ? null : info.networkFormG.value.proveedor.id,
-      bw:info.networkFormG.value.bw == undefined ? null : info.networkFormG.value.bw,
-      codigo:info.ubicacionFormG.value.codigo == undefined ? null : info.ubicacionFormG.value.codigo ,
-      identificador:info.adicionalFormG.value.identificador == undefined ? null : info.adicionalFormG.value.identificador,
-      idmedio:info.networkFormG.value.medio.id == undefined ? null : info.networkFormG.value.medio.id,
-      tunel:info.networkFormG.value.ip == undefined ? null : info.networkFormG.value.ip,
-      idpunto:info.networkFormG.value.punto.id == undefined ? null : info.networkFormG.value.punto.id,
-      doble:info.networkFormG.value.doble ? 1 : 0,
-      idpropiedad: info.adicionalFormG.value.propietario.id == undefined ? null : info.adicionalFormG.value.propietario.id,
-      idagencia: info.ubicacionFormG.value.ag.id == undefined ? null :info.ubicacionFormG.value.ag.id,
-      estado: info.estado ,
-      username: localStorage.getItem("username")
-
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  //TICKETS
-  listticket(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'ticket/list';
-    let body = JSON.stringify({
-      idagencia: info.idagencia,
-      agencia: info.agencia == "" ? null : info.agencia,
-      idtipo: info.idtipo,
-      tipo: info.tipo == "" ? null : info.tipo,
-      idciudad: info.idciudad,
-      ciudad: info.ciudad == "" ? null : info.ciudad,
-
-      idenlace: info.idenlace,
-      proveedor: info.proveedor == "" ? null : info.proveedor,
-      lan:info.lan  == "" ? null : info.lan,
-
-      idproblema: info.idproblema,
-      problema: info.problema == "" ? null : info.problema,
-
-      tmins: info.tmins == "" ? null : info.tmins,
-      tdias: info.tdias == "" ? null : info.tdias, 
-
-      time0: info.time0 == "" ? null : info.time0,
-      time1: info.time1 == "" ? null : info.time1,
-      time2: info.time2 == "" ? null : info.time2,      
-      tcompleto: info.tcompleto == "" ? null : info.tcompleto,
-      descripcion: info.descripcion == "" ? null : info.descripcion,
-      ticket: info.ticket == "" ? null : info.ticket,
-      ticketprov: info.ticketprov == "" ? null : info.ticketprov,
-
-      estado: info.estado == null ? 1 : info.estado,
-      pageSize: global.pageSize,
-      pageIndex: info.pindex,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
-    //return this.http.post(global.ruta + ruta, {}, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
-
-    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
-  }
-  downloadticket(info: any): Observable<HttpResponse<Blob>> {
-    this.ruta = 'ticket/download';
-    let body = JSON.stringify({
-      serie: info.serie,
-      estado: info.estado,
-      pageSize: global.pageSize,
-      pageIndex: info.pindex,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
-    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
-  }
-  getticketbyid(n: number): Observable<HttpResponse<any>> {
-    this.ruta = 'ticket/id';
-    let body = JSON.stringify({
-      id: n,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  insertticket(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'ticket/crear';
-    let body = JSON.stringify({
-      //id:info.idedit,      
-      idproveedor:info.networkFormG.value.proveedor.id == undefined ? null : info.networkFormG.value.proveedor.id,
-      bw:info.networkFormG.value.bw == undefined ? null : info.networkFormG.value.bw,
-      codigo:info.ubicacionFormG.value.codigo == undefined ? null : info.ubicacionFormG.value.codigo ,
-      identificador:info.adicionalFormG.value.identificador == undefined ? null : info.adicionalFormG.value.identificador,
-      idmedio:info.networkFormG.value.medio.id == undefined ? null : info.networkFormG.value.medio.id,
-      tunel:info.networkFormG.value.ip == undefined ? null : info.networkFormG.value.ip,
-      idpunto:info.networkFormG.value.punto.id == undefined ? null : info.networkFormG.value.punto.id,
-      doble:info.networkFormG.value.doble ? 1 : 0,
-      idpropiedad: info.adicionalFormG.value.propietario.id == undefined ? null : info.adicionalFormG.value.propietario.id,
-      idagencia: info.ubicacionFormG.value.ag.id == undefined ? null :info.ubicacionFormG.value.ag.id,
-      //estado:1,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  editarticket(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'ticket/actualizar';
-    let body = JSON.stringify({
-      //nombre:info.nombre,
-      //estado:info.estado,
-      id:info.idedit,
-      idproveedor:info.networkFormG.value.proveedor.id == undefined ? null : info.networkFormG.value.proveedor.id,
-      bw:info.networkFormG.value.bw == undefined ? null : info.networkFormG.value.bw,
-      codigo:info.ubicacionFormG.value.codigo == undefined ? null : info.ubicacionFormG.value.codigo ,
-      identificador:info.adicionalFormG.value.identificador == undefined ? null : info.adicionalFormG.value.identificador,
-      idmedio:info.networkFormG.value.medio.id == undefined ? null : info.networkFormG.value.medio.id,
-      tunel:info.networkFormG.value.ip == undefined ? null : info.networkFormG.value.ip,
-      idpunto:info.networkFormG.value.punto.id == undefined ? null : info.networkFormG.value.punto.id,
-      doble:info.networkFormG.value.doble ? 1 : 0,
-      idpropiedad: info.adicionalFormG.value.propietario.id == undefined ? null : info.adicionalFormG.value.propietario.id,
-      idagencia: info.ubicacionFormG.value.ag.id == undefined ? null :info.ubicacionFormG.value.ag.id,
-      estado: info.estado ,
-      username: localStorage.getItem("username")
-
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  //USUARIO
-  listusuarios(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'usuario/list';
-    let body = JSON.stringify({
-      usuario: info.nombre,
-      estado: info.estado,
-      pageSize: global.pageSize,
-      pageIndex: info.pindex,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
-  }
-  insertusuario(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'usuario/crear';
-    let body = JSON.stringify({
-      usuario: info.usuario,
-      perfil: info.perfil,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  editarusuario(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'usuario/actualizar';
-    let body = JSON.stringify({
-      id: info.id,
-      usuario: info.usuario,
-      perfil: info.perfil,
-      estado: info.estado,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  //PERFIL
-  listperfiles(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'perfil/list';
-    let body = JSON.stringify({
-      usuario: info.nombre,
-      estado: info.estado,
-      pageSize: global.pageSize,
-      pageIndex: info.pindex,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
-  }
-  listperfilesbyNombre(info: string): Observable<HttpResponse<any>> {
-    this.ruta = 'perfil/nombre';
+  insertproblema(info: string): Observable<HttpResponse<any>> {
+    this.ruta = 'problema/crear';
     let body = JSON.stringify({
       nombre: info,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  insertperfil(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'perfil/crear';
+  editarproblema(info: any): Observable<HttpResponse<any>> {
+    this.ruta = 'problema/actualizar';
     let body = JSON.stringify({
       nombre: info.nombre,
-      administrar: info.administrar,
-      crear: info.crear,
-      editar: info.editar,
-      eliminar: info.eliminar,
-      username: localStorage.getItem("username")
-    });
-    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
-  }
-  editarperfil(info: any): Observable<HttpResponse<any>> {
-    this.ruta = 'perfil/actualizar';
-    let body = JSON.stringify({
-      id: info.id,
-      nombre: info.nombre,
-      administrar: info.administrar,
-      crear: info.crear,
-      editar: info.editar,
-      eliminar: info.eliminar,
       estado: info.estado,
+      id: info.id,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });

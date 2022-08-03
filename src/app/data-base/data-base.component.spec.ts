@@ -1,9 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormModeloComponent} from './data-base.component';
 import { DataBaseComponent} from './data-base.component';
-import { FormComponent} from './data-base.component';
 import { FormComponentEdit} from './data-base.component';
-import { FormHardwareComponent} from './data-base.component';
 import { FormHardwareEditComponent} from './data-base.component';
 
 describe('DataBaseComponent', () => {
@@ -19,48 +17,6 @@ describe('DataBaseComponent', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DataBaseComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
-describe('FormComponent', () => {
-  let component: FormComponent;
-  let fixture: ComponentFixture<FormComponent>;
- 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FormComponent,]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FormComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
-describe('FormHardwareComponent', () => {
-  let component: FormHardwareComponent;
-  let fixture: ComponentFixture<FormHardwareComponent>;
- 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FormHardwareComponent,]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FormHardwareComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -91,7 +47,7 @@ describe('FormComponentEdit', () => {
   });
 });
 describe('FormHardwareEditComponent', () => {
-  let component: FormHardwareComponent;
+  let component: FormHardwareEditComponent;
   let fixture: ComponentFixture<FormHardwareEditComponent>;
  
   beforeEach(async(() => {
@@ -112,7 +68,7 @@ describe('FormHardwareEditComponent', () => {
   });
 });
 describe('FormModeloComponent', () => {
-  let component: FormHardwareComponent;
+  let component: FormModeloComponent;
   let fixture: ComponentFixture<FormModeloComponent>;
  
   beforeEach(async(() => {

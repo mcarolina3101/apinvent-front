@@ -29,7 +29,8 @@
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Ciudad</mat-label>
                                             <mat-select (selectionChange)="obtenerInfoInventario_p1()"
-                                                [formControl]="citiescontrol" multiple>
+                                                [formControl]="citiescontrol" multiple>                                             
+                                                <mat-divider></mat-divider>
                                                 <mat-option *ngFor="let c of cities" [value]="c">{{c.nombre}}
                                                 </mat-option>
                                             </mat-select>
@@ -220,7 +221,7 @@
                                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                             </table>
                         </div>
-                        <mat-paginator [length]="totalenght" [pageSize]="12" (page)="Page($event)" [pageIndex]="pageIndex"
+                        <mat-paginator [length]="totalenght" [pageSize]="20" (page)="Page($event)" [pageIndex]="pageIndex"
                             aria-label="Select page">
                         </mat-paginator>
                     </div>

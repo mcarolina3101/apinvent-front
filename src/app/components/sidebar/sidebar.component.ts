@@ -12,6 +12,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/dashboard', title: 'Dashboard',  icon: 'dashboard', class: '' },
     //{ path: '/add-device', title: 'Nuevo Dispositivo',  icon:'add_circle_outline', class: '' },
     { path: '/equipos', title: 'Equipos',  icon:'router', class: '' },
+    { path: '/enlaces', title: 'Enlaces',  icon:'hub', class: '' },
     { path: '/data-base', title: 'Informacion',  icon:'info', class: '' },
     { path: '/admin', title: 'Administracion',  icon:'settings', class: '' }
 

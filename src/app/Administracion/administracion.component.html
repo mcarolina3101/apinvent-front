@@ -45,7 +45,8 @@
                                 <mat-selection-list #shoes [multiple]="false">
                                     <mat-list-option *ngFor="let a of usuarios" [value]="a.id"
                                         (click)="clickUsuario(a)">
-                                        {{a.usuario}}
+                                        <div mat-line>{{a.nombre}}</div>
+                                        <div mat-line> {{a.usuario}}|{{a.Perfil[0].nperfil}} </div>
                                     </mat-list-option>
                                 </mat-selection-list>
 
@@ -61,6 +62,10 @@
                         <!--p class="card-category">New employees on 15th September, 2016</p-->
                     </div>
                     <div class="card-body table-responsive">
+                        <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Nombre</mat-label>
+                            <input matInput [(ngModel)]="nnombuser">
+                        </mat-form-field>
                         <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>Usuario</mat-label>
                             <input matInput [(ngModel)]="nuser">
@@ -126,9 +131,15 @@
                     </div>
                     <div class="card-body table-responsive">
                         <mat-form-field class="example-full-width" appearance="fill">
+                            <mat-label>Nombre</mat-label>
+                            <input matInput [(ngModel)]="inombuser">
+                        </mat-form-field>
+                        
+                        <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>Usuario</mat-label>
                             <input matInput [(ngModel)]="iuser">
                         </mat-form-field>
+                        
                         <mat-form-field class="example-full-width" appearance="fill">
                             <mat-label>Perfiles</mat-label>
                             <mat-select id="a" name="a" [(value)]="iidperfil">
@@ -185,7 +196,7 @@
                             </mat-select>
                         </div>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-lg-12 col-md-12"
                             style="justify-content: center;display: flex;align-items: center;">

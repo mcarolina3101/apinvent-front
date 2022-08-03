@@ -1,28 +1,64 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { InformacionService } from '../servicios/informacion/informacion.service';
+import { UsuarioService } from '../servicios/informacion/usuario.service';
+import { TicketsService } from '../servicios/informacion/tickets.service';
+import { MatTable } from '@angular/material/table';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
-import { StepperOrientation } from '@angular/material/stepper';
 import { map, startWith } from 'rxjs/operators';
+import {
+  MAT_MOMENT_DATE_FORMATS,
+  MomentDateAdapter,
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+} from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import 'moment/locale/es';
+import * as _moment from 'moment';
 declare var $: any;
 import { saveAs } from 'file-saver';
+
+const moment = _moment;
+
+
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'YYYY-MM-DD ',
+  },
+  display: {
+    dateInput: 'YYYY-MM-DD  ',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 
 @Component({
   selector: 'app-tickets',
   templateUrl: './tickets.component.html',
-  styleUrls: ['./tickets.component.css']
+  styleUrls: ['./tickets.component.css'],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'es' },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  ]
 })
 export class TicketsComponent implements OnInit {
 
   public displayedColumns: string[] = [
     'demo-ticket',
-    'demo-agencia',
-    'demo-tipo',
     'demo-ciudad',
-    'demo-lan', 
+    'demo-tipo',
+    'demo-agencia',
+    'demo-lan',
+    //'demo-soporte',
+    //'demo-descripcion',
     'demo-problema',
     'demo-proveedor',
     'demo-tcompleto',
@@ -32,109 +68,93 @@ export class TicketsComponent implements OnInit {
     'demo-tiempo',
     'demo-tiempom',
     'demo-estado',
-    'demo-action'];
-  public dataDevices: any[]=[];
-  public inventario: any;
-  public inventid: any;
-  public nombre:any;
-  public estado:any=1;
-
-
+    'demo-action'
+  ];
+  public dataDevices: any[] = [];
+  public inventario: any = {};
+  public inventid: any = 0;
+  public nombre: any = "";
+  public estado: any = 1;
   public isnew: boolean = false;
-
   public activado: any = [
     { id: 1, nombre: 'Si' },
     { id: 0, nombre: 'No' }
   ];
-
-  public titulo="";
-
+  public titulo = "";
   ticketFormG = this._formBuilder.group({
     fechai: [undefined, Validators.required],
     numero: [undefined, Validators.required]
   });
+  generalFormG = this._formBuilder.group({
+    tresp: [undefined, Validators.required],
+    reportado: [undefined, Validators.required],
+    problema: [undefined, Validators.required],
+    proveedor: [undefined],
+    soporte: [undefined],
+    ttprov: [undefined],
+    descripcion: [undefined]
 
-  //BORRAR AL ULTIMO
-
-
-  ubicacionFormG = this._formBuilder.group({
-    city: [undefined, Validators.required],
-    tipo: [undefined, Validators.required],
-    ag: [undefined, Validators.required],
-    piso: [undefined, Validators.required],
-    rack: [undefined, Validators.required]
   });
-  modeloFormG = this._formBuilder.group({
-    nombre: ['', Validators.minLength(1)],
-    modelo: [undefined, Validators.required],
-    equipo: [undefined, Validators.required],
-    marca: [undefined, Validators.required],
-    flash: [undefined, Validators.required],
-    ram: [undefined, Validators.required],
-    fecha: [undefined, Validators.required]
-  });
-  networkFormG = this._formBuilder.group({
-    ip: ['', Validators.minLength(1)],
-    so: ['', Validators.minLength(1)],
-    orion: [undefined],
-    ecritico: [undefined]
-  });
-  adicionalFormG = this._formBuilder.group({
-    opm: [undefined],
-    bpac: [undefined],
-    boolinvent:[undefined],
-    util: [undefined, Validators.required],
-    inv: ['', Validators.minLength(1)],
-    propietario: [undefined, Validators.required],
-    serie: ['', Validators.minLength(1)]
-  });
-  
+  eventoFormG = new FormControl();
+  agenciasFormG = new FormControl();
   public pageIndex = 0;
   public totalenght = 0;
-
+  public cities: any[];
+  public problemas: any[] = [];
+  public propietarios: any[] = [];
+  public usuarios: any[] = [];
+  public prb = { "nombre": "", "estado": 1 }
+  public u = { "nombre": "", "estado": 1 }
+  public pr = { "nombre": "", "estado": 1 }
 
   constructor(
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
+    private ticketsService: TicketsService,
+    private usuarioService: UsuarioService,
     private informacionService: InformacionService) { }
 
   ngOnInit() {
-    this.inventario = { 
-      "ticket": "", 
-      "agencia": "", 
-      "tipo": "", 
-      "ciudad": "", 
+    this.inventario = {
+      "ticket": "",
+      "agencia": "",
+      "tipo": "",
+      "ciudad": "",
 
-      "lan": "", 
-      "problema": "", 
-      "proveedor": "", 
+      "lan": "",
+      "problema": "",
+      "proveedor": "",
 
-      "tcompleto": "", 
-      "time0": "", 
-      "time1": "", 
-      "time2": "", 
-      "tdias": "", 
-      "tmins": "", 
 
-      "soporte": "", 
-      "descripcion": "", 
+      "tcompleto": "",
+      "time0": "",
+      "time1": "",
+      "time2": "",
+      "tdias": "",
+      "tmins": "",
+
+      "soporte": "",
+      "descripcion": "",
 
       "estado": 1,
-      "nubicacion":"", 
-      "pindex": this.pageIndex + 1}
-
+      "nubicacion": "",
+      "pindex": this.pageIndex + 1
+    }
     this.obtenerInfoInventario();
-    console.log(this.inventario)
+    this.obtenerInfoCiudades();
+    this.obtenerInfoProblemas()
+    this.obtenerInfoPropietarios()
+    this.obtenerInfoUsuarios()
   }
 
-  obtenerInfoInventario_p1(){
-    this.pageIndex=0;
-    this.inventario.pindex=1;
+  obtenerInfoInventario_p1() {
+    this.pageIndex = 0;
+    this.inventario.pindex = 1;
     this.obtenerInfoInventario();
   }
 
   obtenerInfoInventario() {
-    this.informacionService.listticket(this.inventario).subscribe(resp => {
+    this.ticketsService.listticket(this.inventario).subscribe(resp => {
       this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
@@ -168,11 +188,11 @@ export class TicketsComponent implements OnInit {
   }
 
   obtenerInfoInventarioExcel() {
-    this.informacionService.downloadinv(this.inventario).subscribe(resp => {
+    this.ticketsService.downloadticket(this.inventario).subscribe(resp => {
       //this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-    
+
       const blob: any = new Blob([resp.body], { type: keys.getAll("content-type").toString() });
       const file = new File([blob], "inventario" + '.xlsx', { type: keys.getAll("content-type").toString() });
       saveAs(file);
@@ -206,22 +226,11 @@ export class TicketsComponent implements OnInit {
   }
 
   obtenerInventarioid(n) {
-    this.informacionService.getinventariobyid(n).subscribe(resp => {
+    this.ticketsService.getticketbyid(n).subscribe(resp => {
       this.inventid = resp["info"];
-      this.modeloFormG.controls["nombre"].setValue(this.inventid.nombre)
-      this.networkFormG.controls["ip"].setValue(this.inventid.ip)
-      this.networkFormG.controls["so"].setValue(this.inventid.so)
-      this.networkFormG.controls["ecritico"].setValue(this.inventid.critico == undefined ? false : this.inventid.critico)
-      this.adicionalFormG.controls["bpac"].setValue(this.inventid.bpac == undefined ? false : this.inventid.bpac)
-      this.adicionalFormG.controls["opm"].setValue(this.inventid.opmger == undefined ? false : this.inventid.opmger)
-      this.adicionalFormG.controls["serie"].setValue(this.inventid.serie)
-      this.adicionalFormG.controls["inv"].setValue(this.inventid.inventario)
-      this.adicionalFormG.controls["util"].setValue(this.inventid.util)
-      this.ubicacionFormG.controls["piso"].setValue(this.inventid.piso)
-      this.ubicacionFormG.controls["rack"].setValue(this.inventid.rack)
-      
+
       this.openDialogEdit(n);
-    },err => {
+    }, err => {
       if (err.status === 400) {
         //const type = ['', 'info', 'success', 'warning', 'danger'];
         //const color = Math.floor((Math.random() * 4) + 1);
@@ -254,23 +263,26 @@ export class TicketsComponent implements OnInit {
   openDialogEdit(n): void {
     this.isnew = false;
     const dialogRef = this.dialog.open(FormComponentTickets, {
-      width: '1200px',
+      width: '100%',
       height: '800px',
       position: {
-        top: '0px',
+        top: '50px',
         left: '200px'
       },
       data: {
         idedit: n,
         isnew: this.isnew,
-        titulo:"Editar",
-        activado:this.activado,
+        titulo: "Editar",
+        activado: this.activado,
         ticketFormG: this.ticketFormG,
-        adicionalFormG: this.adicionalFormG,
-        ubicacionFormG: this.ubicacionFormG,
-        networkFormG: this.networkFormG,
-        modeloFormG: this.modeloFormG,
-        inventid: this.inventid
+        generalFormG: this.generalFormG,
+        eventoFormG: this.eventoFormG,
+        agenciasFormG: this.agenciasFormG,
+        inventid: this.inventid,
+        cities: this.cities,
+        problemas: this.problemas,
+        propietarios: this.propietarios,
+        usuarios: this.usuarios,
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -281,512 +293,269 @@ export class TicketsComponent implements OnInit {
 
   openDialogNew(): void {
     this.isnew = true;
-    this.modeloFormG.reset();
     this.ticketFormG.reset();
-    this.ubicacionFormG.reset();
-    this.adicionalFormG.reset();
-    this.networkFormG.reset();
     const dialogRef = this.dialog.open(FormComponentTickets, {
-      width: '1200px',
+      width: '100%',
       height: '800px',
       position: {
-        top: '0px',
+        top: '50px',
         left: '200px'
       },
       data: {
         isnew: this.isnew,
-        titulo:"Crear Ticket",
-        activado:this.activado,
+        titulo: "Crear Ticket",
+        activado: this.activado,
         ticketFormG: this.ticketFormG,
-        adicionalFormG: this.adicionalFormG,
-        ubicacionFormG: this.ubicacionFormG,
-        networkFormG: this.networkFormG,
-        modeloFormG: this.modeloFormG,
-        inventid: undefined
+        generalFormG: this.generalFormG,
+        eventoFormG: this.eventoFormG,
+        agenciasFormG: this.agenciasFormG,
+        inventid: undefined,
+        cities: this.cities,
+        problemas: this.problemas,
+        propietarios: this.propietarios,
+        usuarios: this.usuarios,
+
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       this.obtenerInfoInventario();
     });
   }
-  
+
+  obtenerInfoCiudades() {
+    this.informacionService.listciudadesNombre({ "nombre": "", "estado": 1 }).subscribe(resp => {
+      this.cities = resp.body["info"];
+      const keys = resp.headers;
+
+    }, err => {
+      if (err.status === 400) {
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+  obtenerInfoPropietarios() {
+    this.informacionService.listpropietariosNombre(this.pr).subscribe(resp => {
+      this.propietarios = resp.body["info"];
+      const keys = resp.headers;
+
+    }, err => {
+      if (err.status === 400) {
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+  obtenerInfoProblemas() {
+    this.informacionService.listproblemasNombre(this.prb).subscribe(resp => {
+      this.problemas = resp.body["info"];
+      const keys = resp.headers;
+
+    }, err => {
+      if (err.status === 400) {
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+  obtenerInfoUsuarios() {
+    this.usuarioService.listusuariosnombre(this.u).subscribe(resp => {
+      this.usuarios = resp.body["info"];
+      const keys = resp.headers;
+      /*
+      this.usuarios.forEach(element => {
+        if (element.usuario == localStorage.getItem("username")) {
+          this.data.generalFormG.controls["tresp"].setValue(element.nombre)
+        }
+      });
+      */
+    }, err => {
+      if (err.status === 400) {
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
 
   Page(event) {
     this.pageIndex = event.pageIndex;
     this.inventario.pindex = this.pageIndex + 1;
     this.obtenerInfoInventario();
   }
+
 }
 
 @Component({
   selector: 'app-formedit',
   templateUrl: './formedit.html',
-  styleUrls: ['./tickets.component.css']
+  styleUrls: ['./tickets.component.css'],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'es' },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  ]
 
 })
 export class FormComponentTickets implements OnInit {
 
-  stepperOrientation: Observable<StepperOrientation>;
+
   public modelSelected: any;
-  public boolcity:boolean;
-  public inventcheck:boolean;
+  public boolcity: boolean;
+  public inventcheck: boolean;
   public infoeq: any = { "nombre": "", "estado": 1, "idLink": 2, "pindex": 1 };
-  filteredOptionsModelo: Observable<any[]>;
-
-  public cities: any[]=[];
-  public agencias: any[]=[];
-  public tipos: any[]=[];
-  public modelos: any[]=[];
-  public propietarios: any[]=[];
-  public orion: any[]=[];
-
+  public tcompleto: any = ["SI", "NO", "No Aplica"];
+  filteredOptionsAgencias: Observable<any[]>;
+  filteredOptionsUsuario: Observable<any[]>;
+  public agencias: any[] = [];
+  public tipos: any[] = [];
+  public tcform: any;
+  public d1form: any;
+  public d2form: any;
+  public d3form: any;
+  public disabled2;
   public ct = { "nombre": "", "estado": 1 }
-  public tp = { "nombre": "", "idlink": 1 }
   public agc = { "nombre": "", "idlink": 1 }
-  public mdl = { "nombre": "", "estado": 1 }
-  public mr = { "nombre": "", "estado": 1 }
-  public eq = { "nombre": "", "idlink": 1 }
-  public prp = { "nombre": "", "estado": 1 }
-  public on = { "nombre": "", "estado": 1 }
+  dataEventos: any[] = [];
+  t2control = new FormControl();
+  citiescontrol = new FormControl();
+  tiposcontrol = new FormControl();
+  agenciascontrol = new FormControl();
+
+
+  public displayedColumns: string[] = [
+    'demo-ciudad',
+    'demo-tipo',
+    'demo-agencia',
+    'demo-tc',
+    'demo-d1',
+    'demo-d2',
+    'demo-d3',
+    'demo-total',
+    'demo-action'
+  ];
+
+  @ViewChild(MatTable) table: MatTable<any>;
 
   ngOnInit() {
-    this.obtenerInfoCiudades();
-    this.obtenerInfoModelos();
-    this.obtenerInfoOrion();
-    this.obtenerInfoPropietarios();
+    this.t2control.disable();
+    this.data.ticketFormG.reset();
+    this.data.generalFormG.reset();
+    this.citiescontrol.reset();
+    this.tiposcontrol.reset();
+    this.agenciascontrol.setValue({id:undefined,nombreagencia:""})
+    this.boolcity = true;
+    this.inventcheck = false;
+    this.disabled2 = true;
+    this.data.generalFormG.controls["tresp"].disable();
+    this.data.usuarios.forEach(element => {
+      if (element.usuario == localStorage.getItem("username")) {
+        this.data.generalFormG.controls["tresp"].setValue(element.nombre)
+      }
+    });
 
-    this.data.modeloFormG.controls["equipo"].disable();
-    this.data.modeloFormG.controls["marca"].disable();
-    this.data.modeloFormG.controls["flash"].disable();
-    this.data.modeloFormG.controls["ram"].disable();
-    this.data.modeloFormG.controls["fecha"].disable();
-    this.data.adicionalFormG.controls["bpac"].disable();
-    this.data.adicionalFormG.controls["util"].disable()
-    this.boolcity=true;
-    this.inventcheck=false;
-
-    this.data.adicionalFormG.controls["boolinvent"].enable();
-    this.data.adicionalFormG.controls["inv"].enable();
-    this.data.adicionalFormG.controls["boolinvent"].setValue(false)
-    if (this.data.inventid != undefined) {
-      this.data.estado=(this.data.inventid.estado)?1:0;
-      this.data.adicionalFormG.controls["serie"].disable();
-      console.log(this.data.inventid)
-      this.data.adicionalFormG.controls["inv"].setValue(this.data.inventid.inventario)
-      console.log(this.data.adicionalFormG.controls["inv"])
-    }else{
-      this.data.adicionalFormG.controls["serie"].enable();
-    }
-    this.filteredOptionsModelo = this.data.modeloFormG.controls["modelo"].valueChanges.pipe(
+    this.filteredOptionsUsuario = this.data.generalFormG.controls["reportado"].valueChanges.pipe(
       startWith(''),
       map(value => (typeof value === 'string' ? value : value.nombre)),
-      map(nombre => (nombre ? this._filter(nombre) : this.modelos.slice())),
+      map(nombre => (nombre ? this._filter(nombre) : this.data.usuarios.slice())),
+    );
+    this.filteredOptionsAgencias = this.agenciascontrol.valueChanges.pipe(
+      startWith(''),
+      map(value => (typeof value === 'string' ? value : value.nombreagencia)),
+      map(nombreagencia => (nombreagencia ? this._filterAg(nombreagencia) : this.agencias.slice())),
     );
   }
 
   constructor(
     public dialogRef: MatDialogRef<FormComponentTickets>,
     breakpointObserver: BreakpointObserver,
+    private ticketsService: TicketsService,
     private informacionService: InformacionService,
     @Inject(MAT_DIALOG_DATA) public data: TicketsComponent) {
-    this.stepperOrientation = breakpointObserver.observe('(min-width: 1200px,min-height:800px)')
-      .pipe(map(({ matches }) => matches ? 'horizontal' : 'vertical'));
-  }
-
-obtenerInfoModelo(n) {
-    this.informacionService.getmodelobyid(n).subscribe(resp => {
-      this.modelSelected = resp["info"];
-      this.data.modeloFormG.controls["equipo"].setValue(this.modelSelected.Equipo[0].nombre)
-      this.data.modeloFormG.controls["marca"].setValue(this.modelSelected.Marca[0].nombre)
-      this.data.modeloFormG.controls["flash"].setValue(this.modelSelected.Flash == undefined ? undefined : this.modelSelected.Flash[0].nombre)
-      this.data.modeloFormG.controls["ram"].setValue(this.modelSelected.Ram == undefined ? undefined : this.modelSelected.Ram[0].nombre)
-      this.data.modeloFormG.controls["fecha"].setValue(this.modelSelected.fechafin == undefined ? undefined : this.modelSelected.fechafin)
-
-    },err=> {
-      if (err.status === 400) {
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-
-
-  obtenerInfoCiudades() {
-    this.informacionService.listciudadesNombre(this.ct).subscribe(resp => {
-      this.cities = resp.body["info"];
-      const keys = resp.headers;
-      if(this.data.inventid!=undefined){
-        this.cities.forEach(element => {
-          if (this.compareThem(element, this.data.inventid.Agencia[0].Tipo[0].Ciudad[0])) {
-            this.tp.idlink = this.data.inventid.Agencia[0].Tipo[0].Ciudad[0].id;
-            this.data.ubicacionFormG.controls["city"].setValue(element)
-            this.obtenerInfoTipos();
-          }
-        });
-      }
-    }, err => {
-      if (err.status === 400) {
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-  
-  obtenerInfoPropietarios() {
-    this.informacionService.listpropietariosNombre(this.prp).subscribe(resp => {
-      this.propietarios = resp.body["info"];
-      const keys = resp.headers;
-      if (this.data.inventid != undefined) {
-        this.propietarios.forEach(element => {
-          if (this.compareThem(element, this.data.inventid.Propietario[0])) {
-            this.data.adicionalFormG.controls["propietario"].setValue(element)
-          }
-        });
-
-        this.data.adicionalFormG.controls["boolinvent"].disable();
-        this.data.adicionalFormG.controls["inv"].disable();
-        this.data.adicionalFormG.controls["propietario"].disable();
-
-        if(!this.data.adicionalFormG.controls["propietario"].value.nombre.toLowerCase().includes("banco")){
-          this.data.adicionalFormG.controls["inv"].disable();
-          this.data.adicionalFormG.controls["inv"].setValue(undefined)
-          this.data.adicionalFormG.controls["boolinvent"].disable();
-          this.data.adicionalFormG.controls["boolinvent"].setValue(true)
-        }else{
-          if(this.data.inventid.inventario==undefined){
-            this.data.adicionalFormG.controls["boolinvent"].enable();
-          }else{
-            this.data.adicionalFormG.controls["boolinvent"].disable();
-          }
-          if(this.data.adicionalFormG.controls["inv"].value==undefined){
-            this.data.adicionalFormG.controls["inv"].disable();
-            this.data.adicionalFormG.controls["boolinvent"].setValue(true);
-            this.data.adicionalFormG.controls["inv"].setValue(undefined);
-          }else{
-            this.data.adicionalFormG.controls["boolinvent"].setValue(false);
-            //this.data.adicionalFormG.controls["inv"].enable();
-          }
-        }
-      }
-      else{
-        this.data.adicionalFormG.controls["boolinvent"].enable();
-        this.data.adicionalFormG.controls["inv"].enable();
-        this.data.adicionalFormG.controls["propietario"].enable();
-      }
-    }, err => {
-      if (err.status === 400) {
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-
-  obtenerInfoOrion() {
-    this.informacionService.listorionNombre(this.on).subscribe(resp => {
-      this.orion = resp.body["info"];
-      const keys = resp.headers;
-      if (this.data.inventid != undefined) {
-    
-        this.orion.forEach(element => {
-          if (this.data.inventid.Orion != undefined) {
-            if (this.compareThem(element, this.data.inventid.Orion[0])) {
-              this.data.networkFormG.controls["orion"].setValue(element)
-            }
-          }
-        });
-      }
-    }, err => {
-      if (err.status === 400) {
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-
-  obtenerInfoModelos() {
-    this.informacionService.listmodelosNombre(this.mdl).subscribe(resp => {
-      this.modelos = resp.body["info"];
-      const keys = resp.headers;
-      if (this.data.inventid != undefined) {
-        this.modelos.forEach(element => {
-          if (this.compareThem(element, this.data.inventid.Modelo[0])) {
-            this.data.modeloFormG.controls["modelo"].setValue(element)
-          }
-        });
-        this.data.modeloFormG.controls["modelo"].disable();
-        this.obtenerInfoModelo(this.data.inventid.Modelo[0].id);
-
-      }else{
-        this.data.modeloFormG.controls["modelo"].setValue({id:undefined,nombre:''})
-        this.data.modeloFormG.controls["modelo"].enable();
-      }
-    }, err => {
-      if (err.status === 400) {
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-
-  obtenerInfoTipos() {
-
-    this.informacionService.listtiposNombre(this.tp).subscribe(resp => {
-      this.tipos = resp.body["info"];
-      const keys = resp.headers;
-      if (this.data.inventid != undefined) {
-        this.tipos.forEach(element => {
-          if (this.compareThem(element, this.data.inventid.Agencia[0].Tipo[0])) {
-            this.agc.idlink = this.data.inventid.Agencia[0].Tipo[0].id;
-            this.data.ubicacionFormG.controls["tipo"].setValue(element)
-            this.obtenerInfoAgencias();
-          }
-        });
-      }
-    }, err => {
-      if (err.status === 400) {
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-
-  obtenerInfoAgencias() {
-    this.informacionService.listagenciasNombre(this.agc).subscribe(resp => {
-      this.agencias = resp.body["info"];
-      const keys = resp.headers;
-      if (this.data.inventid != undefined) {
-        this.agencias.forEach(element => {
-          if (this.compareThem(element, this.data.inventid.Agencia[0])) {
-            this.data.ubicacionFormG.controls["ag"].setValue(element)
-          }
-        });
-      }
-    }, err => {
-      if (err.status === 400) {
-        $.notify({
-          icon: "notifications",
-          message: err.error.log
-        }, {
-          type: "warning",
-          timer: 4000,
-          placement: {
-            from: 'top',
-            align: 'center'
-          },
-          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-            '<i class="material-icons" data-notify="icon">notifications</i> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-            '</div>'
-        });
-      }
-    });
-  }
-
-  selectionamb(value) {
-    this.data.ubicacionFormG.reset();
-    this.data.modeloFormG.controls["nombre"].reset();
-    this.data.modeloFormG.controls["equipo"].reset();
-    this.data.modeloFormG.controls["marca"].reset();
-    this.data.modeloFormG.controls["flash"].reset();
-    this.data.modeloFormG.controls["ram"].reset();
-    this.data.modeloFormG.controls["fecha"].reset();
-    this.data.modeloFormG.controls["modelo"].setValue({id:0,nombre:''});
-
-    this.data.adicionalFormG.reset();
-    this.data.networkFormG.reset();
-    if (value.id === 4) {
-      this.data.networkFormG.controls["orion"].setValue(undefined);
-      this.data.networkFormG.controls["orion"].disable()
-      this.data.networkFormG.controls["ecritico"].setValue(false);
-      this.data.networkFormG.controls["ecritico"].disable()
-      this.data.adicionalFormG.controls["opm"].setValue(false);
-      this.data.adicionalFormG.controls["opm"].disable()
-      this.data.adicionalFormG.controls["bpac"].setValue(false);
-      this.data.adicionalFormG.controls["util"].setValue(false);
-    } else {
-      this.data.adicionalFormG.controls["util"].setValue(true);
-      this.data.adicionalFormG.controls["opm"].enable();
-      this.data.networkFormG.controls["ecritico"].enable();
-      this.data.networkFormG.controls["orion"].enable();
-    }
-    if(value.id == 3){
-      this.boolcity=true;
-    }else{
-      this.boolcity=false;
-    }
-
-  }
-
-  selectioncity(value) {
-    this.data.ubicacionFormG.controls["tipo"].setValue(undefined);
-    this.data.ubicacionFormG.controls["ag"].setValue(undefined);
-    this.tp.idlink = value.id;
-    this.obtenerInfoTipos();
-  }
-
-  selectiontipo(value) {
-    this.data.ubicacionFormG.controls["ag"].setValue(undefined);
-    this.agc.idlink = value.id;
-    this.obtenerInfoAgencias();
-  }
-
-  selectionopm(value) {
-    if (value) {
-      this.data.adicionalFormG.controls["bpac"].setValue(true);
-    } else {
-      this.data.adicionalFormG.controls["bpac"].setValue(false);
-    }
-  }
-
-  selectionmodelo(value) {
-    this.obtenerInfoModelo(value.id)
-  }
-
-  selectionprop(value) {
-    if(!value.nombre.toLowerCase().includes("banco")){
-      this.data.adicionalFormG.controls["inv"].disable();
-      this.data.adicionalFormG.controls["inv"].setValue(undefined)
-      this.data.adicionalFormG.controls["boolinvent"].disable();
-      this.data.adicionalFormG.controls["boolinvent"].setValue(true)
-    }else{
-      this.data.adicionalFormG.controls["boolinvent"].enable();
-    }
-  }
-
-  selectionboolinvent(value){
-    if(value){
-      this.data.adicionalFormG.controls["inv"].disable();
-      this.data.adicionalFormG.controls["inv"].setValue(undefined)
-    }else{
-      this.data.adicionalFormG.controls["inv"].enable();
-    }
-    
-
   }
 
   sendinfo() {
     if (this.data.isnew) {
-      this.informacionService.insertinventario(this.data).subscribe(resp => {
+      this.ticketsService.insertticket(this.data).subscribe(resp => {
         //const keys = resp.headers;
         //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
         $.notify({
@@ -838,7 +607,7 @@ obtenerInfoModelo(n) {
         }
       });
     } else {
-      this.informacionService.editarinventario(this.data).subscribe(resp => {
+      this.ticketsService.insertticket(this.data).subscribe(resp => {
         //const keys = resp.headers;
         //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
         $.notify({
@@ -892,16 +661,201 @@ obtenerInfoModelo(n) {
     }
   }
 
+  selectiond2(value) {
+    if (value == "NO") {
+      this.t2control.enable();
+    } else {
+      this.t2control.reset()
+      this.t2control.disable();
+    }
+  }
+
+  obtenerInfoTipos() {
+    this.tiposcontrol.reset();
+    let cd = "";
+    this.citiescontrol.value.forEach(element => {
+      cd = cd + element.nombre + ',';
+    });
+    this.informacionService.listtiposCiudades({ ciudades: cd }).subscribe(resp => {
+      this.tipos = resp.body["info"];
+      const keys = resp.headers;
+
+    }, err => {
+      if (err.status === 400) {
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+    this.obtenerInfoAgencias();
+  }
+
+  obtenerInfoAgencias() {
+    this.agenciascontrol.setValue({id:undefined,nombreagencia:""})
+    let cd = "";
+    let tp = "";
+    let idp;
+    if (this.data.generalFormG.controls["proveedor"].value != null) {
+      idp = this.data.generalFormG.controls["proveedor"].value.id;
+    }
+    if (this.citiescontrol.value != null) {
+      this.citiescontrol.value.forEach(element => {
+        cd = cd + element.nombre + ',';
+      });
+    }
+
+    if (this.tiposcontrol.value != null) {
+      this.tiposcontrol.value.forEach(element => {
+        tp = tp + element.nombre + ',';
+      });
+    }
+
+    this.informacionService.listagenciastickets({ ciudad: cd, tipo: tp, idproveedor: idp }).subscribe(resp => {
+      this.agencias = resp.body["info"];
+      const keys = resp.headers;
+
+    }, err => {
+      if (err.status === 400) {
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+
   private _filter(nombre: string): any[] {
     const filterValue = nombre.toLowerCase();
-    return this.modelos.filter(option => option.nombre.toLowerCase().includes(filterValue));
+    return this.data.usuarios.filter(option => option.nombre.toLowerCase().includes(filterValue));
   }
-  
+
+  private _filterAg(nombreagencia: string): any[] {
+    console.log(this.agencias)
+    const filterValue = nombreagencia.toLowerCase();
+    return this.agencias.filter(option => option.nombreagencia.toLowerCase().includes(filterValue));
+  }
+
+  deletetime(element) {
+    let i = 0;
+    this.dataEventos.forEach(v => {
+      if (v == element) {
+        this.dataEventos.splice(i, 1)
+      }
+      i++;
+      this.table.renderRows();
+    })
+  }
+
+  addtime() {
+    let total = 0;
+    let d1format;
+    let d2format;
+    let d3format;
+    let add = true;
+
+    if (this.tcform == "NO") {
+      this.t2control.enable();
+      if (this.d1form == undefined || this.d2form == undefined || this.d3form == undefined) {
+        add = false;
+      } else {
+        total = new Date(this.d3form).getTime() - new Date(this.d2form).getTime();
+      }
+
+    } else {
+      this.t2control.reset()
+      this.t2control.disable();
+      if (this.d1form == undefined || this.d3form == undefined) {
+        add = false;
+      } else {
+        total = new Date(this.d3form).getTime() - new Date(this.d1form).getTime();
+      }
+    }
+
+    if (this.tcform == undefined && this.d1form == undefined && this.d2form == undefined && this.d3form == undefined) {
+      add = false;
+    }
+    if (this.tcform == undefined) {
+      add = false;
+    }
+
+    if (this.d1form != undefined) {
+      d1format = moment(this.d1form).format('DD-MM-YYYY HH:mm');
+    } if (this.d2form != undefined) {
+      d2format = moment(this.d2form).format('DD-MM-YYYY HH:mm');
+    } if (this.d3form != undefined) {
+      d3format = moment(this.d3form).format('DD-MM-YYYY HH:mm');
+    }
+
+    if(total<0){
+      add=false;
+    }else{
+      total=((total/1000)/60);
+    }
+
+    if(this.agenciascontrol.value.id==undefined){
+      add=false;
+    }
+
+
+
+    if (add) {
+      let evento = {
+        tc: this.tcform,
+        d1: d1format,
+        d2: d2format,
+        d3: d3format,
+        ciudad: this.agenciascontrol.value.Ciudad[0].nombreciudad,
+        tipo: this.agenciascontrol.value.Ciudad[0].Tipo[0].nombretipo,
+        agencia: this.agenciascontrol.value.nombreagencia,
+        tt: total
+      }
+      this.dataEventos.push(evento);
+
+    }
+    this.table.renderRows();
+
+  }
+
   compareThem(o1, o2): boolean {
     return o1.id === o2.id;
   }
 
   displayFn(value) {
-    return value ? value.nombre : undefined;
+    return value ? value.nombreagencia : undefined;
   }
 }

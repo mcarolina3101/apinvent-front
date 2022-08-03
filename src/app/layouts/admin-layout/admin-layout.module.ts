@@ -6,9 +6,7 @@ import { AdminLayoutRoutes } from './admin-layout.routing';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { DataBaseComponent } from '../../data-base/data-base.component';
 import { AdministracionComponent } from '../../Administracion/administracion.component';
-import { FormComponent } from '../../data-base/data-base.component';
 import { FormComponentEdit } from '../../data-base/data-base.component';
-import { FormHardwareComponent } from '../../data-base/data-base.component';
 import { FormModeloComponent } from '../../data-base/data-base.component';
 import { FormHardwareEditComponent } from '../../data-base/data-base.component';
 import { TableListComponent } from '../../table/table-list.component';
@@ -75,10 +73,8 @@ import { MatSelectFilterModule } from 'mat-select-filter';
     TableListComponent,
     DataBaseComponent,
     AdministracionComponent,
-    FormComponent,
     FormComponentEdit2,
     HistoryComponent,
-    FormHardwareComponent,
     FormComponentEdit,
     FormHardwareEditComponent,
     FormModeloComponent,

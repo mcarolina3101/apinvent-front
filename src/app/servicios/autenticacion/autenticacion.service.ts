@@ -22,6 +22,9 @@ export class AutenticacionService implements CanActivate {
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
 
+
+ 
+
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot):  boolean {
