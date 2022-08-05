@@ -1,14 +1,13 @@
-<h1 mat-dialog-title style="display:flex !important ;justify-content: flex-end !important;">{{data.titulo}}</h1>
 <div mat-dialog-content>
   <mat-tab-group animationDuration="0ms">
-    <mat-tab label="Información General">
+    <mat-tab label="Ticket">
       <div class="row" style="max-width: 90%;">
         <div class="col-md-2 col-sm-6">
           <form [formGroup]="data.ticketFormG">
             <mat-form-field appearance="standard">
               <mat-label>Fecha de Ticket</mat-label>
               <input matInput [matDatepicker]="picker" formControlName="fechai">
-              <mat-hint>MM/DD/YYYY</mat-hint>
+              <mat-hint>YYYY-MM-DD</mat-hint>
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
@@ -23,7 +22,6 @@
               <mat-label>Técnico Responsable</mat-label>
               <input matInput required formControlName="tresp">
             </mat-form-field>
-
           </div>
           <div class="col-md-4 col-sm-6">
             <mat-form-field appearance="standard">
@@ -58,7 +56,8 @@
           <div class="col-md-2 col-sm-6">
             <mat-form-field appearance="standard">
               <mat-label>Proveedor</mat-label>
-              <mat-select id="a" name="a" required formControlName="proveedor" (selectionChange)="obtenerInfoAgencias()">
+              <mat-select id="a" name="a" required formControlName="proveedor"
+                (selectionChange)="obtenerInfoAgencias()">
                 <mat-option *ngFor="let a of data.propietarios" [value]="a">
                   {{a.nombre}}
                 </mat-option>
@@ -76,12 +75,13 @@
         <div>
           <mat-form-field class="example-full-width">
             <mat-label>Descripcion</mat-label>
-            <textarea rows="5" matInput formControlName="descripcion"></textarea>
+            <textarea rows="2" matInput formControlName="descripcion"></textarea>
           </mat-form-field>
         </div>
       </form>
-    </mat-tab>
-    <mat-tab label="Eventos">
+      <mat-divider></mat-divider>
+      <!--/mat-tab>
+    <mat-tab label="Eventos"-->
       <div class="row" style="max-width: 90%;">
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
@@ -106,14 +106,13 @@
         <div class="col-md-6 col-sm-6">
           <mat-form-field class="example-full-width">
             <mat-label>Agencias</mat-label>
-              <input matInput [matAutocomplete]="agencia" [formControl]="agenciascontrol" >                           
-                                <mat-autocomplete #agencia="matAutocomplete"
-                                 [displayWith]="displayFn.bind(this)">
-                                    <mat-option *ngFor="let e of filteredOptionsAgencias | async" [value]="e">
-                                      {{e.nombreagencia}}
-                                    </mat-option>
-                                </mat-autocomplete>
-            
+            <input matInput [matAutocomplete]="agencia" [formControl]="agenciascontrol">
+            <mat-autocomplete #agencia="matAutocomplete" [displayWith]="displayFn.bind(this)">
+              <mat-option *ngFor="let e of filteredOptionsAgencias | async" [value]="e">
+                {{e.nombreagencia}}
+              </mat-option>
+            </mat-autocomplete>
+
           </mat-form-field>
         </div>
       </div>
@@ -121,7 +120,7 @@
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
             <mat-label>Tiempo Completo</mat-label>
-            <mat-select id="a" name="a" required  [(value)]="tcform" (selectionChange)="selectiond2($event.value)">
+            <mat-select id="a" name="a" required [(value)]="tcform" (selectionChange)="selectiond2($event.value)">
               <mat-option *ngFor="let a of tcompleto" [value]="a">
                 {{a}}
               </mat-option>
@@ -135,15 +134,16 @@
           </mat-form-field>
         </div>
         <div class="col-md-2 col-sm-6">
-          <mat-form-field class="example-full-width" >
+          <mat-form-field class="example-full-width">
             <mat-label>Tiempo de Carga</mat-label>
-            <input type="datetime-local"  [(ngModel)]="d2form" [formControl]="t2control" matInput >
+            <input type="datetime-local" [(ngModel)]="d2form" [min]="d1form" [max]="d3form" [formControl]="t2control"
+              matInput>
           </mat-form-field>
         </div>
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
             <mat-label>Tiempo Final</mat-label>
-            <input type="datetime-local"  [(ngModel)]="d3form" matInput >
+            <input type="datetime-local" [(ngModel)]="d3form" [min]="d2form==undefined? d1form:d2form" matInput>
           </mat-form-field>
         </div>
         <div class="col-md-2 col-sm-6">
@@ -156,8 +156,8 @@
         </div>
       </div>
       <div class="table-responsive">
-        <table  mat-table [dataSource]="dataEventos">
-          
+        <table mat-table [dataSource]="dataEventos">
+
           <ng-container matColumnDef="demo-ciudad">
             <th mat-header-cell *matHeaderCellDef>
               <mat-form-field class="example-full-width" appearance="none">
@@ -265,9 +265,9 @@
             <td mat-cell *matCellDef="let element">
               <div style="display:flex !important ;justify-content: flex-end !important;">
                 <button mat-icon-button (click)="deletetime(element)">
-                    <mat-icon>close</mat-icon>
+                  <mat-icon>close</mat-icon>
                 </button>
-            </div>
+              </div>
             </td>
           </ng-container>
 

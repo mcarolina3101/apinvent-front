@@ -121,6 +121,7 @@ export class DataBaseComponent implements OnInit {
   ubicontrol = new FormControl();
   public hiddenselectubi = true;
   public editcitytipo = true;
+  public editagencia = true;
   public nombre: string = "";
   public id: number = 0;
   public activado: any = [
@@ -189,6 +190,7 @@ export class DataBaseComponent implements OnInit {
         isnew: true,
         nombre: this.nombre,
         hiddenselectubi: true,
+        editagencia:false,
         editcitytipo:true,
         accion: 'Ambiente',
         tiposcontrol: this.tiposcontrol,
@@ -247,6 +249,7 @@ export class DataBaseComponent implements OnInit {
           activado: this.activado,
           selectedact: this.selectedact,
           hiddenselectubi: true,
+          editagencia:false,
           editcitytipo:true,
           id: this.id,
           accion: 'Ambiente',
@@ -347,6 +350,7 @@ export class DataBaseComponent implements OnInit {
         isnew: true,
         nombre: this.nombre,
         hiddenselectubi: false,
+        editagencia:false,
         editcitytipo:true,
         accion: 'Ubicacion',
         tiposcontrol: this.tiposcontrol,
@@ -467,8 +471,10 @@ export class DataBaseComponent implements OnInit {
           activado: this.activado,
           selectedact: this.selectedact,
           hiddenselectubi: true,
+          editagencia:true,
           editcitytipo:true,
           id: this.id,
+          editado1:this.editado1,
           accion: 'Ubicacion',
           blockednombre: true,
           tiposcontrol: this.tiposcontrol,
@@ -478,7 +484,12 @@ export class DataBaseComponent implements OnInit {
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result != undefined) {
-          this.informacionService.editaragencia({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
+          this.informacionService.editaragencia(
+            { "nombre": result.nombre, 
+            "id": result.id, 
+            "idLink": result.tiposcontrol.value==undefined?null:result.tiposcontrol.value.id, 
+            "estado": result.selectedact }
+            ).subscribe(resp => {
             this.obtenerInfoCiudades();
           }, err => {
             if (err.status === 400) {
@@ -544,6 +555,7 @@ export class DataBaseComponent implements OnInit {
           activado: this.activado,
           selectedact: this.selectedact,
           hiddenselectubi: true,
+          editagencia:false,
           editcitytipo:false,
           id: this.id,
           accion: 'Ubicacion',
@@ -1249,6 +1261,7 @@ export class DataBaseComponent implements OnInit {
         nombre: this.nombre,
         accion: 'Orion',
         hiddenselectubi: true,
+        editagencia:false,
         editcitytipo:true,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
@@ -1280,6 +1293,7 @@ export class DataBaseComponent implements OnInit {
           selectedact: this.selectedact,
           id: this.id,
           hiddenselectubi: true,
+          editagencia:false,
           editcitytipo:true,
           accion: 'Orion',
           blockednombre: false,
@@ -1402,6 +1416,7 @@ export class DataBaseComponent implements OnInit {
         isnew: true,
         nombre: this.nombre,
         hiddenselectubi: true,
+        editagencia:false,
         editcitytipo:true,
         accion: 'Propietario',
         tiposcontrol: this.tiposcontrol,
@@ -1457,6 +1472,7 @@ export class DataBaseComponent implements OnInit {
           nombre: this.nombre,
           activado: this.activado,
           hiddenselectubi: true,
+          editagencia:false,
           editcitytipo:true,
           selectedact: this.selectedact,
           id: this.id,
@@ -1581,6 +1597,7 @@ export class DataBaseComponent implements OnInit {
       data: {
         isnew: true,
         hiddenselectubi: true,
+        editagencia:false,
         editcitytipo:true,
         nombre: this.nombre,
         accion: 'Entidad',
@@ -1638,6 +1655,7 @@ export class DataBaseComponent implements OnInit {
           nombre: this.nombre,
           activado: this.activado,
           hiddenselectubi: true,
+          editagencia:false,
           editcitytipo:true,
           selectedact: this.selectedact,
           id: this.id,
@@ -1728,6 +1746,7 @@ export class DataBaseComponent implements OnInit {
         isnew: true,
         nombre: this.nombre,
         hiddenselectubi: true,
+        editagencia:false,
         editcitytipo:true,
         accion: 'Ambiente',
         tiposcontrol: this.tiposcontrol,
@@ -1786,6 +1805,7 @@ export class DataBaseComponent implements OnInit {
           activado: this.activado,
           selectedact: this.selectedact,
           hiddenselectubi: true,
+          editagencia:false,
           editcitytipo:true,
           id: this.id,
           accion: 'Ambiente',
@@ -1900,6 +1920,12 @@ export class FormComponentEdit {
     if (!this.data.editcitytipo) {
       this.obtenerInfoCiudades();
     }
+
+    if(this.data.editagencia){
+      this.obtenerInfoCiudades();
+      this.hiddencities=false;
+      this.hiddentipos=false;
+    }
   }
 
   onSelectionUbi() {
@@ -1919,7 +1945,14 @@ export class FormComponentEdit {
     this.informacionService.listtiposNombre(cd).subscribe(resp => {
       this.tipos = resp.body["info"];
       const keys = resp.headers;
-
+      if(this.data.editagencia){
+        this.tipos.forEach(element =>{
+          if(element.id=this.data.editado1.Ciudad[0].Tipo[0].idtipo){
+            this.data.tiposcontrol.setValue(element)
+          }
+        })
+      }
+      
     }, err => {
       if (err.status === 400) {
         $.notify({
@@ -1951,7 +1984,16 @@ export class FormComponentEdit {
     this.informacionService.listciudadesNombre({ "nombre": "", "estado": 1 }).subscribe(resp => {
       this.cities = resp.body["info"];
       const keys = resp.headers;
-
+      if(this.data.editagencia){
+        console.log(this.data.editado1)
+        this.cities.forEach(element =>{
+          if(element.id==this.data.editado1.Ciudad[0].idciudad){
+            this.data.citiescontrol.setValue(element)
+            this.obtenerInfoTipos({"nombre":"","idlink":element.id});
+          }
+        })
+        
+      }
     }, err => {
       if (err.status === 400) {
         $.notify({

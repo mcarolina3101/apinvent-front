@@ -792,6 +792,28 @@ export class FormComponentTickets implements OnInit {
       this.t2control.enable();
       if (this.d1form == undefined || this.d2form == undefined || this.d3form == undefined) {
         add = false;
+        $.notify({
+          icon: "notifications",
+          message: "Definir tiempos"
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+        return 0;
       } else {
         total = new Date(this.d3form).getTime() - new Date(this.d2form).getTime();
       }
@@ -801,6 +823,28 @@ export class FormComponentTickets implements OnInit {
       this.t2control.disable();
       if (this.d1form == undefined || this.d3form == undefined) {
         add = false;
+        $.notify({
+          icon: "notifications",
+          message: "Definir tiempos"
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+        return 0;
       } else {
         total = new Date(this.d3form).getTime() - new Date(this.d1form).getTime();
       }
@@ -808,9 +852,53 @@ export class FormComponentTickets implements OnInit {
 
     if (this.tcform == undefined && this.d1form == undefined && this.d2form == undefined && this.d3form == undefined) {
       add = false;
+      $.notify({
+        icon: "notifications",
+        message: "Definir tiempos"
+      }, {
+        type: "warning",
+        timer: 4000,
+        placement: {
+          from: 'top',
+          align: 'center'
+        },
+        template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+          '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+          '<i class="material-icons" data-notify="icon">notifications</i> ' +
+          '<span data-notify="title">{1}</span> ' +
+          '<span data-notify="message">{2}</span>' +
+          '<div class="progress" data-notify="progressbar">' +
+          '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+          '</div>' +
+          '<a href="{3}" target="{4}" data-notify="url"></a>' +
+          '</div>'
+      });
+      return 0;
     }
     if (this.tcform == undefined) {
       add = false;
+      $.notify({
+        icon: "notifications",
+        message: "Definir tiempos"
+      }, {
+        type: "warning",
+        timer: 4000,
+        placement: {
+          from: 'top',
+          align: 'center'
+        },
+        template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+          '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+          '<i class="material-icons" data-notify="icon">notifications</i> ' +
+          '<span data-notify="title">{1}</span> ' +
+          '<span data-notify="message">{2}</span>' +
+          '<div class="progress" data-notify="progressbar">' +
+          '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+          '</div>' +
+          '<a href="{3}" target="{4}" data-notify="url"></a>' +
+          '</div>'
+      });
+      return 0;
     }
 
     if (this.d1form != undefined) {
@@ -823,12 +911,56 @@ export class FormComponentTickets implements OnInit {
 
     if(total<0){
       add=false;
+      $.notify({
+        icon: "notifications",
+        message: "No se puede realizar calculo de minutos"
+      }, {
+        type: "warning",
+        timer: 4000,
+        placement: {
+          from: 'top',
+          align: 'center'
+        },
+        template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+          '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+          '<i class="material-icons" data-notify="icon">notifications</i> ' +
+          '<span data-notify="title">{1}</span> ' +
+          '<span data-notify="message">{2}</span>' +
+          '<div class="progress" data-notify="progressbar">' +
+          '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+          '</div>' +
+          '<a href="{3}" target="{4}" data-notify="url"></a>' +
+          '</div>'
+      });
+      return 0;
     }else{
       total=((total/1000)/60);
     }
 
     if(this.agenciascontrol.value.id==undefined){
       add=false;
+      $.notify({
+        icon: "notifications",
+        message: "Definir agencia"
+      }, {
+        type: "warning",
+        timer: 4000,
+        placement: {
+          from: 'top',
+          align: 'center'
+        },
+        template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+          '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+          '<i class="material-icons" data-notify="icon">notifications</i> ' +
+          '<span data-notify="title">{1}</span> ' +
+          '<span data-notify="message">{2}</span>' +
+          '<div class="progress" data-notify="progressbar">' +
+          '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+          '</div>' +
+          '<a href="{3}" target="{4}" data-notify="url"></a>' +
+          '</div>'
+      });
+      return 0;
     }
 
 
@@ -851,9 +983,7 @@ export class FormComponentTickets implements OnInit {
 
   }
 
-  compareThem(o1, o2): boolean {
-    return o1.id === o2.id;
-  }
+
 
   displayFn(value) {
     return value ? value.nombreagencia : undefined;

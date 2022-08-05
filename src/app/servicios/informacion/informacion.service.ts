@@ -281,6 +281,7 @@ export class InformacionService {
       nombre: info.nombre,
       estado: info.estado,
       id: info.id,
+      idLink:info.idLink,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });

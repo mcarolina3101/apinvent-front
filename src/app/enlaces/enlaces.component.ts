@@ -550,6 +550,11 @@ export class FormComponentEnlaces implements OnInit {
     { id: 1, nombre: 'Si' },
     { id: 0, nombre: 'No' }
   ];
+  public usuariom: "";
+  public fecham: "";
+  public usuarioc: "";
+  public fechac: "";
+
   public tp = { "nombre": "", "idlink": 1 }
   public agc = { "nombre": "", "idlink": 1 }
   public pnto = { "nombre": "", "idlink": 1 }
@@ -560,9 +565,12 @@ export class FormComponentEnlaces implements OnInit {
   public npunto = ""
 
   ngOnInit() {
-    //console.log(this.data.cities)
     this.obtenerInfoPunto();
     if (this.data.inventid != undefined) {
+      this.usuariom = this.data.inventid.usuario;
+      this.usuarioc = this.data.inventid.usuarioc;
+      this.fecham = this.data.inventid.fecha;
+      this.fechac = this.data.inventid.fechac;
       this.data.propietarios.forEach(element => {
         if (this.compareThem(element, this.data.inventid.Proveedor[0])) {
           this.data.networkFormG.controls["proveedor"].setValue(element)
