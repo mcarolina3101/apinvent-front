@@ -15,6 +15,7 @@ import { HistoryComponent } from '../../table/history-component';
 import { EnlacesComponent } from '../../enlaces/enlaces.component';
 import { FormComponentEnlaces } from '../../enlaces/enlaces.component';
 import { TicketsComponent } from '../../tickets/tickets.component';
+import {MatMenuModule} from '@angular/material/menu';
 import { FormComponentTickets } from '../../tickets/tickets.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
@@ -62,6 +63,7 @@ import { MatSelectFilterModule } from 'mat-select-filter';
     MatSelectModule,
     MatSelectFilterModule,
     MatTooltipModule,
+    MatMenuModule,
     MatCheckboxModule,
     MatStepperModule,
     MatExpansionModule,

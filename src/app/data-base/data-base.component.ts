@@ -476,7 +476,7 @@ export class DataBaseComponent implements OnInit {
           id: this.id,
           editado1:this.editado1,
           accion: 'Ubicacion',
-          blockednombre: true,
+          blockednombre: false,
           tiposcontrol: this.tiposcontrol,
           citiescontrol: this.citiescontrol,
           ubicontrol: this.ubicontrol
@@ -490,7 +490,7 @@ export class DataBaseComponent implements OnInit {
             "idLink": result.tiposcontrol.value==undefined?null:result.tiposcontrol.value.id, 
             "estado": result.selectedact }
             ).subscribe(resp => {
-            this.obtenerInfoCiudades();
+            this.clickListadoCiudades();
           }, err => {
             if (err.status === 400) {
               $.notify({
@@ -567,7 +567,6 @@ export class DataBaseComponent implements OnInit {
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result != undefined) {
-          console.log(result)
           if(result.ubicontrol.value!=null){
             if(result.ubicontrol.value.id==2){
               this.informacionService.editartipo({ "nombre": result.tiposcontrol.value.nombre, "id": result.tiposcontrol.value.id, "estado": result.selectedact }).subscribe(resp => {
@@ -1748,7 +1747,7 @@ export class DataBaseComponent implements OnInit {
         hiddenselectubi: true,
         editagencia:false,
         editcitytipo:true,
-        accion: 'Ambiente',
+        accion: 'Problema',
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
         ubicontrol: this.ubicontrol
@@ -1808,7 +1807,7 @@ export class DataBaseComponent implements OnInit {
           editagencia:false,
           editcitytipo:true,
           id: this.id,
-          accion: 'Ambiente',
+          accion: 'Problema',
           blockednombre: true,
           tiposcontrol: this.tiposcontrol,
           citiescontrol: this.citiescontrol,
@@ -1947,7 +1946,7 @@ export class FormComponentEdit {
       const keys = resp.headers;
       if(this.data.editagencia){
         this.tipos.forEach(element =>{
-          if(element.id=this.data.editado1.Ciudad[0].Tipo[0].idtipo){
+          if(element.id==this.data.editado1.Ciudad[0].Tipo[0].idtipo){
             this.data.tiposcontrol.setValue(element)
           }
         })
@@ -1985,7 +1984,6 @@ export class FormComponentEdit {
       this.cities = resp.body["info"];
       const keys = resp.headers;
       if(this.data.editagencia){
-        console.log(this.data.editado1)
         this.cities.forEach(element =>{
           if(element.id==this.data.editado1.Ciudad[0].idciudad){
             this.data.citiescontrol.setValue(element)

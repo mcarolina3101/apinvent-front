@@ -22,11 +22,14 @@ export class TicketsService {
     this.ruta = 'ticket/list';
     let body = JSON.stringify({
       idagencia: info.idagencia,
-      agencia: info.agencia == "" ? null : info.agencia,
+      nagencia: info.agencia == "" ? null : info.agencia,
       idtipo: info.idtipo,
-      tipo: info.tipo == "" ? null : info.tipo,
+      abierto: info.abierto,
+      ntipo: info.tipo == "" ? null : info.tipo,
       idciudad: info.idciudad,
-      ciudad: info.ciudad == "" ? null : info.ciudad,
+      nciudad: info.ciudad == "" ? null : info.ciudad,
+      tecnicorespon: info.tecnicorespon,
+      tecnicoreporte: info.tecnicoreporte,
 
       idenlace: info.idenlace,
       proveedor: info.proveedor == "" ? null : info.proveedor,
@@ -37,9 +40,11 @@ export class TicketsService {
 
       tmins: info.tmins == "" ? null : info.tmins,
       tdias: info.tdias == "" ? null : info.tdias, 
-
+      min: info.min == "" ? null : info.min,
+      max: info.max == "" ? null : info.max,
+      
       time0: info.time0 == "" ? null : info.time0,
-      time1: info.time1 == "" ? null : info.time1,
+      //time1: info.time1 == "" ? null : info.time1,
       time2: info.time2 == "" ? null : info.time2,      
       tcompleto: info.tcompleto == "" ? null : info.tcompleto,
       descripcion: info.descripcion == "" ? null : info.descripcion,
@@ -58,17 +63,50 @@ export class TicketsService {
   }
   downloadticket(info: any): Observable<HttpResponse<Blob>> {
     this.ruta = 'ticket/download';
+
+    /*
+    let fin;
+    let ini
+    if (this.dashboardService.fechalimite == 0 && this.dashboardService.fecharango == 1) {
+      ini = this.dashboardService.todayf
+      fin = this.dashboardService.today1f
+    } else if (this.dashboardService.fechalimite == 1 && this.dashboardService.fecharango == 0) {
+      fin = this.dashboardService.todayf
+      ini = undefined
+    } else {
+      fin = undefined
+      ini = undefined
+    }
+
+    if (fin == undefined) {
+      fin = info.fechafin
+    } if (ini == undefined) {
+      ini = info.fechaini
+    }
+
+    */
+
     let body = JSON.stringify({
-      serie: info.serie,
+      
+
+      //fechafin: fin,
+      //fechaini: ini,
+
+
+      fecha: info.fecha == "" ? null : info.fecha,
+      nagencia: info.nagencia == "" ? null : info.nagencia,
+      ntipo: info.ntipo == "" ? null : info.ntipo,
+      nciudad: info.nciudad == "" ? null : info.nciudad,
       estado: info.estado,
       pageSize: global.pageSize,
       pageIndex: info.pindex,
       username: localStorage.getItem("username")
     });
+
     return this.http.post(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
     //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
-  getticketbyid(n: number): Observable<HttpResponse<any>> {
+  getheaderbyid(n: number): Observable<HttpResponse<any>> {
     this.ruta = 'ticket/id';
     let body = JSON.stringify({
       id: n,
@@ -76,42 +114,64 @@ export class TicketsService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  insertticket(info: any): Observable<HttpResponse<any>> {
+  getticketbyid(n: number): Observable<HttpResponse<any>> {
+    this.ruta = 'ticket/idticket';
+    let body = JSON.stringify({
+      id: n,
+      username: localStorage.getItem("username")
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
+  }
+  insertticket(info: any, array): Observable<HttpResponse<any>> {
     this.ruta = 'ticket/crear';
     let body = JSON.stringify({
-      //id:info.idedit,      
-      idproveedor:info.networkFormG.value.proveedor.id == undefined ? null : info.networkFormG.value.proveedor.id,
-      bw:info.networkFormG.value.bw == undefined ? null : info.networkFormG.value.bw,
-      codigo:info.ubicacionFormG.value.codigo == undefined ? null : info.ubicacionFormG.value.codigo ,
-      identificador:info.adicionalFormG.value.identificador == undefined ? null : info.adicionalFormG.value.identificador,
-      idmedio:info.networkFormG.value.medio.id == undefined ? null : info.networkFormG.value.medio.id,
-      tunel:info.networkFormG.value.ip == undefined ? null : info.networkFormG.value.ip,
-      idpunto:info.networkFormG.value.punto.id == undefined ? null : info.networkFormG.value.punto.id,
-      doble:info.networkFormG.value.doble ? 1 : 0,
-      idpropiedad: info.adicionalFormG.value.propietario.id == undefined ? null : info.adicionalFormG.value.propietario.id,
-      idagencia: info.ubicacionFormG.value.ag.id == undefined ? null :info.ubicacionFormG.value.ag.id,
+      fecha:info.value.fechai==undefined?null:info.value.fechai,
+      idproblema:info.value.problema==undefined?null:info.value.problema.id,
+      idproveedor:info.value.proveedor==undefined?null:info.value.proveedor.id,
+      soporte:info.value.soporte==undefined?null:info.value.soporte,
+      ttproveedor:info.value.ttprov==undefined?null:info.value.ttprov,
+      descripcion:info.value.descripcion==undefined?null:info.value.descripcion,
+      tecnicorespon:info.controls["tresp"].value==undefined?null:info.controls["tresp"].value,
+      tecnicoreporte:info.value.reportado==undefined?null:info.value.reportado.nombre,
+      tickets:array==undefined?null:array,
       //estado:1,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  editarticket(info: any): Observable<HttpResponse<any>> {
+  editarheader(info: any, array,id,estado): Observable<HttpResponse<any>> {
+    console.log(info)
+    this.ruta = 'ticket/actualizarheader';
+    let body = JSON.stringify({
+      fecha:info.controls.fechai.value==undefined?null:info.controls.fechai.value,
+      idproblema:info.controls.problema.value==undefined?null:info.controls.problema.value.id,
+      idproveedor:info.controls.proveedor.value==undefined?null:info.controls.proveedor.value.id,
+      tecnicorespon:info.controls["tresp"].value==undefined?null:info.controls.tresp.value,
+      id:id,
+      soporte:info.value.soporte==undefined?null:info.value.soporte,    
+      descripcion:info.value.descripcion==undefined?null:info.value.descripcion,     
+      tecnicoreporte:info.value.reportado==undefined?null:info.value.reportado.nombre,
+      ttproveedor:info.value.ttprov==undefined?null:info.value.ttprov,   
+      tickets:array==undefined?null:array,
+      //estado:1,
+      estado: estado ,
+      username: localStorage.getItem("username")
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
+  }
+  editarticket(d1form,d2form,d3form,tc,id,idagencia,idenlace,estado): Observable<HttpResponse<any>> {
     this.ruta = 'ticket/actualizar';
     let body = JSON.stringify({
       //nombre:info.nombre,
       //estado:info.estado,
-      id:info.idedit,
-      idproveedor:info.networkFormG.value.proveedor.id == undefined ? null : info.networkFormG.value.proveedor.id,
-      bw:info.networkFormG.value.bw == undefined ? null : info.networkFormG.value.bw,
-      codigo:info.ubicacionFormG.value.codigo == undefined ? null : info.ubicacionFormG.value.codigo ,
-      identificador:info.adicionalFormG.value.identificador == undefined ? null : info.adicionalFormG.value.identificador,
-      idmedio:info.networkFormG.value.medio.id == undefined ? null : info.networkFormG.value.medio.id,
-      tunel:info.networkFormG.value.ip == undefined ? null : info.networkFormG.value.ip,
-      idpunto:info.networkFormG.value.punto.id == undefined ? null : info.networkFormG.value.punto.id,
-      doble:info.networkFormG.value.doble ? 1 : 0,
-      idpropiedad: info.adicionalFormG.value.propietario.id == undefined ? null : info.adicionalFormG.value.propietario.id,
-      idagencia: info.ubicacionFormG.value.ag.id == undefined ? null :info.ubicacionFormG.value.ag.id,
-      estado: info.estado ,
+      id:id,
+      tcompleto:tc,
+      time0:d1form,
+      time1:d2form,
+      time2:d3form,
+      idagencia:idagencia,
+      idenlace:idenlace,
+      estado: estado ,
       username: localStorage.getItem("username")
 
     });

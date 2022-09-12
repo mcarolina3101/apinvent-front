@@ -5,11 +5,19 @@
                 <div class="card card-plain">
                     <div class="card-header card-header-danger">
                         <div class="row">
-                            <div class="col-md-8 col-sm-6">
+                            <div class="col-lg-7 col-md-6 col-sm-6">
                                 <h4 class="card-title mt-0"> Inventario de equipos
                                 </h4>
                             </div>
-                            <div class="col-md-2 col-sm-6">
+                            <div class="col-lg-1 col-md-2 col-sm-6">
+                                <div class="demo-button-container" >
+                                    <button mat-icon-button color="blue" (click)="obtenerInfoInventarioClean()"
+                                        aria-label="Limpiar Filtros">
+                                        <mat-icon>filter_alt_off</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-6 col-sm-6">
                                 <mat-form-field appearance="fill">
                                     <mat-label>Fecha limite de soporte</mat-label>
                                     <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
@@ -21,19 +29,16 @@
                                     <mat-date-range-picker #picker></mat-date-range-picker>
                                 </mat-form-field>
                             </div>
-                            <div class="col-md-2 col-sm-6">
+                            <div class="col-lg-2  col-md-2 col-sm-6">
                                 <div class="demo-button-container">
                                     <button mat-raised-button (click)="obtenerInfoInventarioExcel()"
                                         class="demo-button">
                                         <i class="material-icons">download</i>
                                         Descargar Excel
                                     </button>
-                                    <button mat-icon-button color="blue" (click)="obtenerInfoInventarioClean()"
-                                        aria-label="Limpiar Filtros">
-                                        <mat-icon>filter_alt_off</mat-icon>
-                                    </button>
                                 </div>
                             </div>
+                            
                         </div>
                     </div>
                     <div class="card-body">
@@ -81,8 +86,6 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Tipo</mat-label>
-                                            <!--input matInput [(ngModel)]="inventario.ntipo"
-                                                (change)="obtenerInfoInventario_p1()"-->
                                             <mat-select (selectionChange)="obtenerInfoInventario_p1()"
                                                 [formControl]="tiposcontrol" multiple>
                                                 <mat-option *ngFor="let t of tipos" [value]="t">{{t.nombre}}

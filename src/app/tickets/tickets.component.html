@@ -5,14 +5,43 @@
                 <div class="card card-plain">
                     <div class="card-header card-header-danger">
                         <div class="row">
-                            <div class="col-lg-10 col-md-8 col-sm-6">
+                            <div class="col-lg-6 col-md-8 col-sm-6">
                                 <h4 class="card-title mt-0"> Tickets
                                 </h4>
                             </div>
                             <div class="col-lg-2 col-md-4 col-sm-6">
+                                <mat-form-field appearance="fill">
+                                    <mat-label>Enter a date range</mat-label>
+                                    <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
+                                        <input matStartDate formControlName="start" placeholder="Start date"
+                                            (dateChange)="dateEvent($event)">
+                                        <input matEndDate formControlName="end" placeholder="End date"
+                                            (dateChange)="dateEvent($event)">
+                                    </mat-date-range-input>
+                                    <mat-hint>YYYY-MM-DD – YYYY-MM-DD</mat-hint>
+                                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-date-range-picker #picker></mat-date-range-picker>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-3">
+                                <mat-form-field class="example-full-width" appearance="fill">
+                                    <mat-label>Mins min </mat-label>
+                                    <input type="number" matInput [(ngModel)]="inventario.min" 
+                                        (change)="obtenerInfoInventario_p1()">
+                                </mat-form-field>
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-3">
+                                <mat-form-field class="example-full-width" appearance="fill">
+                                    <mat-label>Mins max </mat-label>
+                                    <input type="number" matInput [(ngModel)]="inventario.max" 
+                                        (change)="obtenerInfoInventario_p1()">
+                                </mat-form-field>
+                            </div>
+                            
+                            <div class="col-lg-2 col-md-4 col-sm-6">
                                 <div class="demo-button-container">
-                                    <button mat-raised-button
-                                        class="demo-button">
+                                    <button mat-raised-button class="demo-button"
+                                        (click)="obtenerInfoInventarioExcel()">
                                         <i class="material-icons">download</i>
                                         Descargar Excel
                                     </button>
@@ -24,23 +53,56 @@
                         <div class="table-responsive">
                             <table mat-table [dataSource]="dataDevices" class="mat-elevation-z8 demo-table">
 
-                                <ng-container matColumnDef="demo-ticket" >
+                                <ng-container matColumnDef="demo-ticket">
+                                    <th mat-header-cell *matHeaderCellDef>
+
+                                        <mat-form-field appearance="none">
+                                            <mat-label>Fecha Ticket</mat-label>
+                                            <input matInput [matDatepicker]="picker" [(ngModel)]="inventario.fecha"
+                                                (dateChange)="obtenerInfoInventario_p1()">
+                                            <mat-hint>YYYY-MM-DD</mat-hint>
+                                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                            <mat-datepicker #picker></mat-datepicker>
+                                        </mat-form-field>
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].fecha}}-{{element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].conteo}}
+                                    </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-tecnico1">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
-                                            <mat-label>Ticket</mat-label>
-                                            <input matInput [(ngModel)]="inventario.ticket"
+                                            <mat-label>Responsable </mat-label>
+                                            <input matInput [(ngModel)]="inventario.tecnicoreporte"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.TTHeader[0].fecha}}-{{element.TTHeader[0].conteo}} </td>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].tecnicoreporte}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-tecnico2">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>Reportado</mat-label>
+                                            <input matInput [(ngModel)]="inventario.tecnicorespon"
+                                                (change)="obtenerInfoInventario_p1()">
+                                        </mat-form-field>
+                                    </th>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].tecnicorespon}} </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-ciudad">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Ciudad</mat-label>
-                                            <input matInput [(ngModel)]="inventario.ciudad"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="citiescontrol" multiple>
+                                                <mat-option *ngFor="let c of cities" [value]="c">{{c.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
@@ -51,8 +113,11 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Tipo</mat-label>
-                                            <input matInput [(ngModel)]="inventario.tipo"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="tiposcontrol" multiple>
+                                                <mat-option *ngFor="let t of tipos" [value]="t">{{t.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
@@ -75,28 +140,35 @@
                                 <ng-container matColumnDef="demo-problema">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
-                                            <mat-label>Tipo de Problema</mat-label>
-                                            <input matInput [(ngModel)]="inventario.problema"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-label>Problema</mat-label>
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="problemascontrol" multiple>
+                                                <mat-option *ngFor="let t of problemas" [value]="t">{{t.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> 
-                                        {{element.TTHeader[0].Propietario[0].Problema[0].problema}}
-                                     </td>
+                                    <td mat-cell *matCellDef="let element">
+                                        {{element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].Propietario[0].Problema[0].problema}}
+                                    </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-proveedor">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Proveedor</mat-label>
-                                            <input matInput [(ngModel)]="inventario.proveedor"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select (selectionChange)="obtenerInfoInventario_p1()"
+                                                [formControl]="proveedorescontrol" multiple>
+                                                <mat-option *ngFor="let t of propietarios" [value]="t">{{t.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> 
-                                        {{element.TTHeader[0].Propietario[0].proveedor == undefined?
-                                            'N/A':
-                                            element.TTHeader[0].Propietario[0].proveedor }}
+                                    <td mat-cell *matCellDef="let element">
+                                        {{element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].Propietario[0].proveedor ==
+                                        undefined?
+                                        'N/A':
+                                        element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].Propietario[0].proveedor }}
 
                                     </td>
                                 </ng-container>
@@ -131,8 +203,12 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Tiempo Completo</mat-label>
-                                            <input matInput [(ngModel)]="inventario.tcompleto"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select [(ngModel)]="inventario.tcompleto"
+                                                (selectionChange)="obtenerInfoInventario_p1()">
+                                                <mat-option *ngFor="let a of tcarr" [value]="a">
+                                                    {{a}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
@@ -143,7 +219,7 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Tiempo (dias/horas)</mat-label>
-                                            <input matInput [(ngModel)]="inventario.tdias"
+                                            <input matInput [(ngModel)]="inventario.tdias" disabled
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
@@ -154,7 +230,7 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Tiempo (mins) </mat-label>
-                                            <input matInput [(ngModel)]="inventario.tmins"
+                                            <input matInput [(ngModel)]="inventario.tmins" disabled
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
@@ -165,19 +241,38 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Afección LAN</mat-label>
-                                            <input matInput [(ngModel)]="inventario.lan"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <mat-select [(ngModel)]="inventario.lan"
+                                                (selectionChange)="obtenerInfoInventario_p1()">
+                                                <mat-option *ngFor="let a of sino" [value]="a.id">
+                                                    {{a.nombre}}
+                                                </mat-option>
+                                            </mat-select>
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.lan}} </td>
+                                    <td mat-cell *matCellDef="let element"> {{element.LAN?'SI':'NO'}} </td>
+                                </ng-container>
+
+                                <ng-container matColumnDef="demo-abierto">
+                                    <th mat-header-cell *matHeaderCellDef>
+                                        <mat-form-field class="example-full-width" appearance="none">
+                                            <mat-label>CERRADO</mat-label>
+                                            <mat-select id="a" name="a" [(ngModel)]="inventario.abierto"
+                                                (selectionChange)="obtenerInfoInventario_p1()">
+                                                <mat-option *ngFor="let a of sino" [value]="a.id">
+                                                    {{a.nombre}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </th>
+                                    <td mat-cell *matCellDef="let element"> {{(element.abierto &&
+                                        element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].tthabierto)?'SI':'NO'}} </td>
                                 </ng-container>
 
                                 <ng-container matColumnDef="demo-tiempo1">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Carga al proveedor</mat-label>
-                                            <input matInput [(ngModel)]="inventario.time1"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <input matInput disabled (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element"> {{element.time1}}</td>
@@ -187,11 +282,10 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Inicio de Incidencia</mat-label>
-                                            <input matInput [(ngModel)]="inventario.time0"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <input matInput disabled (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> 
+                                    <td mat-cell *matCellDef="let element">
                                         {{element.time0}}
                                     </td>
                                 </ng-container>
@@ -200,8 +294,7 @@
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
                                             <mat-label>Cierre de Incidencia</mat-label>
-                                            <input matInput [(ngModel)]="inventario.time2"
-                                                (change)="obtenerInfoInventario_p1()">
+                                            <input matInput disabled (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
                                     </th>
                                     <td mat-cell *matCellDef="let element"> {{element.time2 }}</td>
@@ -219,14 +312,14 @@
                                             </mat-select>
                                         </mat-form-field>
                                     </th>
-                                    <td mat-cell *matCellDef="let element"> {{element.estado }}
+                                    <td mat-cell *matCellDef="let element">
+                                        {{activado[element.estado?1:0].nombre}}
                                     </td>
                                 </ng-container>
 
-                                
                                 <ng-container matColumnDef="demo-action" stickyEnd>
                                     <th mat-header-cell *matHeaderCellDef>
-                                        <div style="display:flex !important ;justify-content: flex-end !important;">
+                                        <div class="example-button-row">
                                             <button mat-icon-button matTooltip="Agregar" (click)="openDialogNew()"
                                                 [matTooltipPosition]="'above'">
                                                 <mat-icon>add_circle_outline</mat-icon>
@@ -234,13 +327,27 @@
                                         </div>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        <div style="display:flex !important ;justify-content: flex-end !important;">
-                                            <button mat-icon-button matTooltip="Editar"
-                                                (click)="obtenerInventarioid(element.id)" (color)="blue"
-                                                [matTooltipPosition]="'above'">
-                                                <mat-icon>mode_edit</mat-icon>
+                                        <!--div style="display:flex !important ;justify-content: flex-end !important;"-->
+                                        <button mat-icon-button [matMenuTriggerFor]="menu"
+                                            aria-label="Example icon-button with a menu">
+                                            <mat-icon>more_vert</mat-icon>
+                                        </button>
+                                        <mat-menu #menu="matMenu">
+                                            <button mat-menu-item
+                                                (click)="obtenerInventarioid(element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].id)">
+                                                <mat-icon>edit</mat-icon>
+                                                <span>Ticket
+                                                    {{element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].fecha}}-{{element.Agencia[0].Tipo[0].Ciudad[0].TTHeader[0].conteo}}</span>
                                             </button>
-                                        </div>
+                                            <button mat-menu-item (click)="obtenerTicketid(element.id)">
+                                                <mat-icon>edit_note</mat-icon>
+                                                <span>Evento</span>
+                                            </button>
+
+                                        </mat-menu>
+
+
+                                        <!--/div-->
                                     </td>
                                 </ng-container>
 
@@ -249,8 +356,8 @@
                                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                             </table>
                         </div>
-                        <mat-paginator [length]="totalenght" [pageSize]="12" (page)="Page($event)" [pageIndex]="pageIndex"
-                            aria-label="Select page">
+                        <mat-paginator [length]="totalenght" [pageSize]="12" (page)="Page($event)"
+                            [pageIndex]="pageIndex" aria-label="Select page">
                         </mat-paginator>
                     </div>
                 </div>

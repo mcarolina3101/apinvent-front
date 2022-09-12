@@ -41,8 +41,9 @@ export class EnlacesComponent implements OnInit {
   public isnew: boolean = false;
 
   public activado: any = [
-    { id: 1, nombre: 'Si' },
-    { id: 0, nombre: 'No' }
+    { id: 0, nombre: 'ELIMINADO' },
+    { id: 1, nombre: 'INGRESADO' },
+    { id: 2, nombre: 'BAJA' }
   ];
 
 

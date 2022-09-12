@@ -4,6 +4,9 @@
     overflow: auto; 
   }
 
+  .mat-dialog-content{
+    max-height: 100%;
+  }
 
   .mat-table-sticky-border-elem-right-demo-table {
     border-left: 1px solid #e0e0e0;
@@ -15,7 +18,7 @@
 
   ::ng-deep .mat-column-demo-ticket {
     font-style: italic;
-    max-width: 100px;
+    width: 150px;
     font-size: small;
   }
 
@@ -26,45 +29,45 @@
     font-weight: bold;
 
   }
-  th.mat-column-demo-localidad, td.mat-column-demo-agencia {
+  th.mat-column-demo-localidad{
     padding-left: 5px;
     width: 200px !important;
   }
 
-  ::ng-deep .mat-column-demo-ciudad {
+  ::ng-deep th.mat-column-demo-ciudad, td.mat-column-demo-ciudad {
     font-style: italic;
     width: 100px;
   }
 
-  ::ng-deep .mat-column-demo-tipo {
+  ::ng-deep th.mat-column-demo-tipo, td.mat-column-demo-tipo {
     font-style: italic;
-    max-width: 100px;
+    width: 100px;
 
   }
 
-  ::ng-deep .mat-column-demo-agencia {
+  ::ng-deep th.mat-column-demo-agencia, td.mat-column-demo-agencia {
     font-style: italic;
-    max-width: 200px;
+    width: 200px;
   }
 
-  ::ng-deep .mat-column-demo-tcompleto {
+  ::ng-deep th.mat-column-demo-tcompleto,td.mat-column-demo-tcompleto {
     font-style: italic;
-    max-width: 135px;
+    width: 135px;
     font-size :small;
   }
 
-  ::ng-deep .mat-column-demo-tiempo0 {
+  ::ng-deep th.mat-column-demo-tiempo0, td.mat-column-demo-tiempo0 {
     font-style: italic;
     max-width: 200px;
   }
 
-  ::ng-deep .mat-column-demo-tiempo1 {
+  ::ng-deep th.mat-column-demo-tiempo1 td.mat-column-demo-tiempo1 {
     font-style: italic;
     max-width: 200px;
 
   }
 
-  ::ng-deep .mat-column-demo-tiempo2 {
+  ::ng-deep th.mat-column-demo-tiempo2 td.mat-column-demo-tiempo2 {
     font-style: italic;
     max-width: 200px;
   }
@@ -83,7 +86,7 @@
 
   ::ng-deep .mat-column-demo-lan {
     font-style: italic;
-    max-width: 100px;
+    width: 150px;
     font-size :small;
 
   }
@@ -95,7 +98,7 @@
   }
   ::ng-deep .mat-column-demo-proveedor {
     font-style: italic;
-    width: 200px !important;
+    max-width: 150px !important;
 
   }
   ::ng-deep .mat-column-demo-soporte {
@@ -112,32 +115,35 @@
   }
 
   ::ng-deep .mat-column-demo-estado {
-    max-width: 100px;
+    width: 100px;
   }
 
-  ::ng-deep .mat-column-demo-action {
-    max-width: 70px;
+  ::ng-deep .mat-column-demo-abierto {
+    width: 100px;
   }
 
-  ::ng-deep .mat-column-demo-tc {
-    max-width: 140px;
+  ::ng-deep th.mat-column-demo-action td.mat-column-demo-action {
+    width: 200px !important;
   }
 
-  ::ng-deep .mat-column-demo-d1 {
-    max-width: 140px;
-  }
-  ::ng-deep .mat-column-demo-d2 {
-    max-width: 140px;
-  }
-  ::ng-deep .mat-column-demo-d3 {
-    max-width: 140px;
+  ::ng-deep th.mat-column-demo-tc, td.mat-column-demo-tc {
+    width: 180px;
   }
 
-  ::ng-deep .mat-column-demo-total {
-    max-width: 60px;
+  ::ng-deep th.mat-column-demo-d1,td.mat-column-demo-d1 {
+    width: 180px;
   }
 
+  ::ng-deep th.mat-column-demo-d2, td.mat-column-demo-d2 {
+    width: 180px;
+  }
+  ::ng-deep th.mat-column-demo-d3, td.mat-column-demo-d3 {
+    width: 180px;
+  }
 
+  ::ng-deep th.mat-column-demo-total,td.mat-column-demo-total {
+    width: 180px;
+  }
 
   ::ng-deep .mat-form-field .mat-form-field-label{
       font-size: 14px;
