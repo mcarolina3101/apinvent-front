@@ -4,7 +4,7 @@ import { UsuarioService } from '../servicios/informacion/usuario.service';
 import { TicketsService } from '../servicios/informacion/tickets.service';
 import { MatTable } from '@angular/material/table';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, Validators,FormGroup, FormControl } from '@angular/forms';
+import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -54,8 +54,8 @@ export class TicketsComponent implements OnInit {
   public displayedColumns: string[] = [
     'demo-ticket',
     'demo-abierto',
-    'demo-tecnico1',
     'demo-tecnico2',
+    'demo-tecnico1',
     'demo-ciudad',
     'demo-tipo',
     'demo-agencia',
@@ -96,20 +96,20 @@ export class TicketsComponent implements OnInit {
   agenciasFormG = new FormControl();
   public pageIndex = 0;
   public totalenght = 0;
-  public cities: any[];
-  public tipos: any[];
+  public cities: any[] = [];
+  public tipos: any[] = [];
   public problemas: any[] = [];
   public propietarios: any[] = [];
-  public usuarios: any[] = [];  
+  public usuarios: any[] = [];
   citiescontrol = new FormControl();
   tiposcontrol = new FormControl();
   problemascontrol = new FormControl();
   proveedorescontrol = new FormControl();
   public label = "";
   public titulo = "";
-  public activado: any = [{ id: 0, nombre: 'ELIMINADO' },{ id: 1, nombre: 'INGRESADO' } ];
-  public tcarr: any = [null,"SI","NO","NO APLICA"]
-  public sino: any = [{ id: null, nombre: '' },{ id: 0, nombre: 'NO' },{ id: 1, nombre: 'SI' }];
+  public activado: any = [{ id: 0, nombre: 'ELIMINADO' }, { id: 1, nombre: 'INGRESADO' }];
+  public tcarr: any = [null, "SI", "NO", "NO APLICA"]
+  public sino: any = [{ id: null, nombre: null }, { id: 0, nombre: 'NO' }, { id: 1, nombre: 'SI' }];
   public prb = { "nombre": "", "estado": 1 }
   public u = { "nombre": "", "estado": 1 }
   public pr = { "nombre": "", "estado": 1 }
@@ -134,17 +134,17 @@ export class TicketsComponent implements OnInit {
     this.inventario = {
       "ticket": "",
       "fecha": "",
-      "tecnicorespon":"",
-      "tecnicoreporte":"",
+      "tecnicorespon": "",
+      "tecnicoreporte": "",
       "agencia": "",
       "tipo": "",
       "ciudad": "",
 
-      "lan": "",
+      "lan": null,
       "problema": "",
       "proveedor": "",
-      "min":"",
-      "max":"",
+      "min": "",
+      "max": "",
 
       "tcompleto": "",
       "time0": "",
@@ -171,18 +171,18 @@ export class TicketsComponent implements OnInit {
   dateEvent(event) {
     let date1;
     let date2;
-    if(this.range.controls.start.value !=null){
-      date1 =  moment(this.range.controls.start.value).format('YYYY-MM-DD');
-    }else{
+    if (this.range.controls.start.value != null) {
+      date1 = moment(this.range.controls.start.value).format('YYYY-MM-DD');
+    } else {
       date1 = undefined
     }
-    if(this.range.controls.end.value !=null){
-      date2 =  moment(this.range.controls.end.value).format('YYYY-MM-DD');
-    }else{
+    if (this.range.controls.end.value != null) {
+      date2 = moment(this.range.controls.end.value).format('YYYY-MM-DD');
+    } else {
       date2 = undefined
     }
-    this.inventario.time0=date1;
-    this.inventario.time2=date2;
+    this.inventario.time0 = date1;
+    this.inventario.time2 = date2;
     this.obtenerInfoInventario_p1()
   }
 
@@ -190,8 +190,8 @@ export class TicketsComponent implements OnInit {
     let nc = this.inventario.nciudad;
     this.pageIndex = 0;
     this.inventario.pindex = 1;
-    if(this.inventario.fecha!=""){
-      this.inventario.ticket= moment(this.inventario.fecha).format('YYYY-MM-DD')
+    if (this.inventario.fecha != "") {
+      this.inventario.ticket = moment(this.inventario.fecha).format('YYYY-MM-DD')
     }
     if (this.citiescontrol.value != null && this.citiescontrol.value.length > 0) {
       this.inventario.nciudad = '';
@@ -287,17 +287,14 @@ export class TicketsComponent implements OnInit {
       //this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
-
       const blob: any = new Blob([resp.body], { type: keys.getAll("content-type").toString() });
       const file = new File([blob], "Tickets" + '.xlsx', { type: keys.getAll("content-type").toString() });
       saveAs(file);
     }, err => {
-      if (err.status === 400) {
-        //const type = ['', 'info', 'success', 'warning', 'danger'];
-        //const color = Math.floor((Math.random() * 4) + 1);
+      if (err.status === 409) {
         $.notify({
           icon: "notifications",
-          message: err.error.log
+          message: "No se pudo descargar, ingresar rango de Fechas"
         }, {
           type: "warning",
           timer: 4000,
@@ -407,7 +404,7 @@ export class TicketsComponent implements OnInit {
       data: {
         label: "Ticket",
         idedit: n,
-        inventario:this.inventario,
+        inventario: this.inventario,
         isnew: this.isnew,
         isheader: this.isheader,
         titulo: "Editar",
@@ -445,7 +442,7 @@ export class TicketsComponent implements OnInit {
         idedit: n,
         isnew: this.isnew,
         isheader: this.isheader,
-        inventario:this.inventario,
+        inventario: this.inventario,
         titulo: "Editar",
         activado: this.activado,
         selectedact: this.selectedact,
@@ -479,7 +476,7 @@ export class TicketsComponent implements OnInit {
       data: {
         label: "Ticket",
         isnew: this.isnew,
-        inventario:this.inventario,
+        inventario: this.inventario,
         isheader: this.isheader,
         titulo: "Crear Ticket",
         activado: this.activado,
@@ -698,6 +695,8 @@ export class FormComponentTickets implements OnInit {
   public minimo;
   public maximo;
   public adicional = "";
+  public selectedfecha = true;
+  public botonenviar = false;
   public ct = { "nombre": "", "estado": 1 }
   public agc = { "nombre": "", "idlink": 1 }
   dataEventos: any[] = [];
@@ -705,7 +704,7 @@ export class FormComponentTickets implements OnInit {
   citiescontrol = new FormControl();
   tiposcontrol = new FormControl();
   agenciascontrol = new FormControl();
-
+  ipcontrol = new FormControl();
 
 
   public displayedColumns: string[] = [
@@ -722,11 +721,14 @@ export class FormComponentTickets implements OnInit {
   @ViewChild(MatTable) table: MatTable<any>;
 
   ngOnInit() {
+    this.ipcontrol.disable();
     this.citiescontrol.enable();
     this.tiposcontrol.enable();
-    this.agenciascontrol.enable()
+    this.agenciascontrol.enable();
+    
     this.data.generalFormG.controls["ttprov"].disable();
     if (this.data.isnew) {
+      this.obtenerInfoAgencias();
       this.data.generalFormG.controls["proveedor"].enable();
       this.data.generalFormG.controls["problema"].enable();
       this.data.generalFormG.controls["fechai"].enable();
@@ -743,6 +745,9 @@ export class FormComponentTickets implements OnInit {
       });
     }
     if (!this.data.isnew) {
+      this.data.generalFormG.controls["proveedor"].reset();
+      this.data.generalFormG.controls["ttprov"].reset();
+      this.selectedfecha = false;
       if (this.data.inventid.Problema != undefined) {
         this.data.problemas.forEach(element => {
           if (this.compareThem(element, this.data.inventid.Problema[0])) {
@@ -767,20 +772,34 @@ export class FormComponentTickets implements OnInit {
           }
         });
       }
+      this.data.generalFormG.controls["ttprov"].setValue(this.data.inventid.ttproveedor)
       this.data.selectedact = this.data.inventid.estado ? 1 : 0;
       this.data.generalFormG.controls["proveedor"].disable();
       this.data.generalFormG.controls["problema"].disable();
       this.data.generalFormG.controls["fechai"].disable();
-      this.minimo = moment(this.data.generalFormG.controls["fechai"].value).format('YYYY-MM-DDTHH:mm:ss');
-      this.maximo = moment(this.data.generalFormG.controls["fechai"].value).add(1439, "minutes").format('YYYY-MM-DDTHH:mm:ss');
+      this.obtenerInfoAgencias();
+      this.minimo = moment(this.data.generalFormG.controls["fechai"].value).format('YYYY-MM-DDTHH:mm');
+      this.maximo = moment(this.data.generalFormG.controls["fechai"].value).add(1439, "minutes").format('YYYY-MM-DDTHH:mm');
+      this.d1form = this.minimo;
+      this.d2form = this.minimo;
+      this.d3form = this.maximo;
+      if(this.data.generalFormG.controls.problema.value!=undefined){
+        this.selectedProblem(this.data.generalFormG.controls.problema.value)
+      }
+      
+
     }
     if (!this.data.isheader) {
+      this.obtenerInfoAgencias();
       this.agencias = this.data.inventid.Agencia;
       this.agenciascontrol.setValue(this.data.inventid.Agencia[0]);
       this.tcform = this.data.inventid.tcompleto;
-      this.d1form = this.data.inventid.time0;
-      this.d2form = this.data.inventid.time1;
-      this.d3form = this.data.inventid.time2;
+      this.d1form = moment(this.data.inventid.time0).format('YYYY-MM-DDTHH:mm');
+      this.d2form = this.data.inventid.time1==undefined?this.d2form:moment(this.data.inventid.time1).format('YYYY-MM-DDTHH:mm');
+      this.d3form = moment(this.data.inventid.time2).format('YYYY-MM-DDTHH:mm');
+      this.minimo = moment(this.d3form).format('YYYY-MM-DDT00:00');
+      this.maximo = moment(this.d3form).format('YYYY-MM-DDT23:59');
+      this.adicional = this.data.inventid.adicional;
       this.data.selectedact = this.data.inventid.estado ? 1 : 0;
       this.citiescontrol.disable();
       this.tiposcontrol.disable();
@@ -796,7 +815,7 @@ export class FormComponentTickets implements OnInit {
     this.boolcity = true;
     this.inventcheck = false;
     this.disabled2 = true;
-
+    
     this.data.generalFormG.controls["tresp"].disable();
 
     this.filteredOptionsUsuario = this.data.generalFormG.controls["reportado"].valueChanges.pipe(
@@ -821,6 +840,7 @@ export class FormComponentTickets implements OnInit {
 
 
   sendinfo() {
+    this.botonenviar = true;
     this.data.generalFormG.controls["fechai"].setValue(moment(this.data.generalFormG.value.fechai).format('YYYY-MM-DD'))
     if (this.data.isnew) {
       this.ticketsService.insertticket(this.data.generalFormG, this.dataEventos).subscribe(resp => {
@@ -830,6 +850,12 @@ export class FormComponentTickets implements OnInit {
         this.data.generalFormG.controls["soporte"].reset();
         this.data.generalFormG.controls["ttprov"].reset();
         this.data.generalFormG.controls["descripcion"].reset();
+        this.data.generalFormG.controls["fechai"].reset();
+        this.tiposcontrol.reset();
+        this.citiescontrol.reset();
+        this.ipcontrol.reset();
+        this.obtenerInfoAgencias();
+
         this.dataEventos = [];
         $.notify({
           icon: "notifications",
@@ -876,6 +902,7 @@ export class FormComponentTickets implements OnInit {
               '</div>'
           });
         }
+        this.botonenviar = false;
       });
     } else {
       if (this.data.isheader) {
@@ -889,6 +916,7 @@ export class FormComponentTickets implements OnInit {
           this.data.generalFormG.controls["descripcion"].reset();
           this.dataEventos = [];
           */
+          this.botonenviar = false;
           $.notify({
             icon: "notifications",
             message: "El Ticket se ha editado"
@@ -934,9 +962,21 @@ export class FormComponentTickets implements OnInit {
                 '</div>'
             });
           }
+          this.botonenviar = false;
         });
       } else {
-        this.ticketsService.editarticket(this.d1form, this.d2form, this.d3form, this.tcform, this.data.inventid.id, this.agenciascontrol.value.id, this.data.inventid.idenlace, this.data.selectedact).subscribe(resp => {
+        this.ticketsService.editarticket(
+          moment(this.d1form).format('YYYY-MM-DDTHH:mm:ss'),
+          this.d2form == undefined ? null : moment(this.d2form).format('YYYY-MM-DDTHH:mm:ss'),
+          moment(this.d3form).format('YYYY-MM-DDTHH:mm:ss'),
+          this.tcform,
+          this.data.inventid.id,
+          this.agenciascontrol.value.id,
+          this.data.inventid.idenlace,
+          this.data.selectedact,
+          this.adicional
+        ).subscribe(resp => {
+          this.botonenviar = false;
           $.notify({
             icon: "notifications",
             message: "El ticket se ha editado"
@@ -982,6 +1022,7 @@ export class FormComponentTickets implements OnInit {
                 '</div>'
             });
           }
+          this.botonenviar = false;
         });
       }
 
@@ -997,17 +1038,91 @@ export class FormComponentTickets implements OnInit {
     }
   }
 
+  selectedProblem(value){
+    if(value.nombre.includes("ctric")){
+      this.tcform="NO APLICA"
+      this.selectiond2(this.tcform)
+    }
+    if(value.nombre.includes("anten")){
+      this.tcform="NO APLICA"
+      this.selectiond2(this.tcform)
+    }
+    if(value.nombre.includes("nlace")){
+      this.tcform="SI"
+      this.selectiond2(this.tcform)
+    }
+
+  }
+
+  selectionag(value) {
+    if(value.Ciudad[0].Tipo[0].Enlace!=undefined){
+      this.ipcontrol.setValue(value.Ciudad[0].Tipo[0].Enlace[0].tunel);
+    }
+    
+    this.data.cities.forEach(element => {
+      if (element.nombre == value.Ciudad[0].nombreciudad) {
+        this.citiescontrol.setValue(element)
+        let cd = "";
+        cd = cd + this.citiescontrol.value.nombre + ",";
+        this.informacionService.listtiposCiudades({ ciudades: cd }).subscribe(resp => {
+          this.tipos = resp.body["info"];
+          this.tipos.forEach(element => {
+            if(element.nombre == value.Ciudad[0].Tipo[0].nombretipo){
+              this.tiposcontrol.setValue(element)
+            }
+          });
+          const keys = resp.headers;
+        }, err => {
+          if (err.status === 400) {
+            $.notify({
+              icon: "notifications",
+              message: err.error.log
+            }, {
+              type: "warning",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
+          }
+        });
+        
+      }
+    });
+    
+  }
+
   selectiondate() {
-    this.minimo = moment(this.data.generalFormG.value.fechai).format('YYYY-MM-DDTHH:mm:ss');
-    this.maximo = moment(this.data.generalFormG.value.fechai).add(1439, "minutes").format('YYYY-MM-DDTHH:mm:ss');
+
+    this.minimo = moment(this.data.generalFormG.value.fechai).format('YYYY-MM-DDTHH:mm');
+    this.maximo = moment(this.data.generalFormG.value.fechai).add(1439, "minutes").format('YYYY-MM-DDTHH:mm');
+    this.d1form = this.minimo;
+    this.d2form = this.minimo;
+    this.d3form = this.maximo;
+    this.selectedfecha = false;
+    this.botonenviar = false;
   }
 
   obtenerInfoTipos() {
-    let cd;
+    let cd = "";
+    this.agencias=[]
+    this.ipcontrol.reset();
     this.tiposcontrol.reset();
-    this.citiescontrol.value.forEach(element => {
+    cd = cd + this.citiescontrol.value.nombre + ",";
+    /*this.citiescontrol.value.forEach(element => {
       cd = cd + element.nombre + ',';
-    });
+    });*/
     this.informacionService.listtiposCiudades({ ciudades: cd }).subscribe(resp => {
       this.tipos = resp.body["info"];
       const keys = resp.headers;
@@ -1037,22 +1152,44 @@ export class FormComponentTickets implements OnInit {
         });
       }
     });
+
     this.obtenerInfoAgencias();
   }
 
   obtenerInfoProveedor() {
+    this.agencias=[]
+    this.ipcontrol.reset();
     this.data.generalFormG.controls["ttprov"].enable();
     this.obtenerInfoAgencias();
   }
 
   obtenerInfoAgencias() {
+    this.agencias=[]
+    this.ipcontrol.reset();
     this.agenciascontrol.setValue({ id: undefined, nombreagencia: "" })
+    
     let cd = "";
     let tp = "";
     let idp;
     if (this.data.generalFormG.controls["proveedor"].value != null) {
       idp = this.data.generalFormG.controls["proveedor"].value.id;
     }
+    if (this.citiescontrol.value != null) {
+      cd = cd + this.citiescontrol.value.nombre + ",";
+    }
+
+    if (this.tiposcontrol.value != null) {
+      tp = tp + this.tiposcontrol.value.nombre + ",";
+    }
+    if(this.data.isheader){
+
+      if (this.data.generalFormG.controls.proveedor.value != null) {
+        idp = this.data.generalFormG.controls.proveedor.value.id;
+      }
+    }
+
+
+    /*
     if (this.citiescontrol.value != null) {
       this.citiescontrol.value.forEach(element => {
         cd = cd + element.nombre + ',';
@@ -1063,7 +1200,7 @@ export class FormComponentTickets implements OnInit {
       this.tiposcontrol.value.forEach(element => {
         tp = tp + element.nombre + ',';
       });
-    }
+    }*/
 
     this.informacionService.listagenciastickets({ ciudad: cd, tipo: tp, idproveedor: idp }).subscribe(resp => {
       this.agencias = resp.body["info"];
@@ -1258,11 +1395,11 @@ export class FormComponentTickets implements OnInit {
 
 
     if (this.d1form != undefined) {
-      d1format = moment(this.d1form).format('YYYY-MM-DD HH:mm');
+      d1format = moment(this.d1form).format('YYYY-MM-DD HH:mm:ss');
     } if (this.d2form != undefined) {
-      d2format = moment(this.d2form).format('YYYY-MM-DD HH:mm');
+      d2format = moment(this.d2form).format('YYYY-MM-DD HH:mm:ss');
     } if (this.d3form != undefined) {
-      d3format = moment(this.d3form).format('YYYY-MM-DD HH:mm');
+      d3format = moment(this.d3form).format('YYYY-MM-DD HH:mm:ss');
     }
 
     if (total < 0) {
@@ -1327,7 +1464,7 @@ export class FormComponentTickets implements OnInit {
         time0: d1format,
         time1: d2format,
         time2: d3format,
-        adicional:this.adicional,
+        adicional: this.adicional,
         ciudad: this.agenciascontrol.value.Ciudad[0].nombreciudad,
         tipo: this.agenciascontrol.value.Ciudad[0].Tipo[0].nombretipo,
         agencia: this.agenciascontrol.value.nombreagencia,
@@ -1336,6 +1473,7 @@ export class FormComponentTickets implements OnInit {
         idenlace: this.agenciascontrol.value.Ciudad[0].Tipo[0].Enlace == undefined ? null : this.agenciascontrol.value.Ciudad[0].Tipo[0].Enlace[0].idEnlace
       }
       this.dataEventos.push(evento);
+      this.botonenviar = false;
 
     }
     this.table.renderRows();
@@ -1345,6 +1483,7 @@ export class FormComponentTickets implements OnInit {
   displayFn(value) {
     return value ? value.nombreagencia : undefined;
   }
+
 
   displayFnUsuario(value) {
     return value ? value.nombre : undefined;

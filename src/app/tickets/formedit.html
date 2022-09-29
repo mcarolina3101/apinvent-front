@@ -19,7 +19,7 @@
           <div class="col-md-4 col-sm-6">
             <mat-form-field appearance="standard">
               <mat-label>Técnico Responsable</mat-label>
-              <input matInput required formControlName="tresp">
+              <input matInput  formControlName="tresp">
             </mat-form-field>
           </div>
           <div class="col-md-4 col-sm-6">
@@ -39,7 +39,7 @@
           <div class="col-md-4 col-sm-6">
             <mat-form-field appearance="standard">
               <mat-label>Tipo de Problema</mat-label>
-              <mat-select id="a" name="a" required formControlName="problema">
+              <mat-select id="a" name="a"  formControlName="problema" (selectionChange)="selectedProblem($event.value)">
                 <mat-option *ngFor="let a of data.problemas" [value]="a">
                   {{a.nombre}}
                 </mat-option>
@@ -49,15 +49,16 @@
           <div class="col-md-2 col-sm-6">
             <mat-form-field appearance="standard">
               <mat-label>Personal que dió soporte</mat-label>
-              <input matInput required formControlName="soporte">
+              <input matInput  formControlName="soporte">
             </mat-form-field>
           </div>
           <div class="col-md-2 col-sm-6">
             <mat-form-field appearance="standard">
               <mat-label>Proveedor</mat-label>
-              <mat-select id="a" name="a" required formControlName="proveedor"
+              <mat-select id="a" name="a"  formControlName="proveedor"
                 (selectionChange)="obtenerInfoProveedor()">
-                <mat-option *ngFor="let a of data.propietarios" [value]="a">
+                <mat-option *ngFor="let a of data.propietarios" [value]="a"
+                [disabled]="a.nombre.toUpperCase()=='N/A'">
                   {{a.nombre}}
                 </mat-option>
               </mat-select>
@@ -83,7 +84,7 @@
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
             <mat-label>Ciudad</mat-label>
-            <mat-select id="a" name="a" [formControl]="citiescontrol" multiple (selectionChange)="obtenerInfoTipos()">
+            <mat-select id="a" name="a" [formControl]="citiescontrol"  (selectionChange)="obtenerInfoTipos()">
               <mat-option *ngFor="let a of data.cities" [value]="a">
                 {{a.nombre}}
               </mat-option>
@@ -93,7 +94,7 @@
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
             <mat-label>Tipo</mat-label>
-            <mat-select id="a" name="a" multiple [formControl]="tiposcontrol" (selectionChange)="obtenerInfoAgencias()">
+            <mat-select id="a" name="a"  [formControl]="tiposcontrol" (selectionChange)="obtenerInfoAgencias()">
               <mat-option *ngFor="let a of tipos" [value]="a">
                 {{a.nombre}}
               </mat-option>
@@ -104,7 +105,7 @@
           <mat-form-field class="example-full-width">
             <mat-label>Localidades</mat-label>
             <input matInput [matAutocomplete]="agencia" [formControl]="agenciascontrol">
-            <mat-autocomplete #agencia="matAutocomplete" [displayWith]="displayFn.bind(this)">
+            <mat-autocomplete #agencia="matAutocomplete" (optionSelected)="selectionag($event.option.value)" [displayWith]="displayFn.bind(this)">
               <mat-option *ngFor="let e of filteredOptionsAgencias | async" [value]="e">
                 {{e.nombreagencia}}
               </mat-option>
@@ -112,12 +113,18 @@
 
           </mat-form-field>
         </div>
+        <div class="col-md-2 col-sm-6" [hidden]="!data.isheader">
+          <mat-form-field class="example-full-width">
+            <mat-label>Ip</mat-label>
+            <input matInput  [formControl]="ipcontrol">
+          </mat-form-field>
+        </div>
       </div>
       <div class="row" style="max-width: 90%;">
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
             <mat-label>Tiempo Completo</mat-label>
-            <mat-select id="a" name="a" required [(value)]="tcform" (selectionChange)="selectiond2($event.value)">
+            <mat-select id="a" name="a"  [(value)]="tcform" (selectionChange)="selectiond2($event.value)">
               <mat-option *ngFor="let a of tcompleto" [value]="a">
                 {{a}}
               </mat-option>
@@ -127,7 +134,8 @@
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
             <mat-label>Tiempo de Inicio</mat-label>
-            <input type="datetime-local" [(ngModel)]="d1form" [disabled]="!data.isheader" [min]="minimo" [max]="maximo"  matInput>
+            <input type="datetime-local" [(ngModel)]="d1form" [disabled]="(selectedfecha)" [min]="minimo" [max]="maximo"  matInput>
+            <mat-hint>Elegir Fecha de Ticket para desbloquear</mat-hint>
           </mat-form-field>
         </div>
         <div class="col-md-2 col-sm-6">
@@ -334,5 +342,5 @@
       </mat-form-field>
     </div>
   </div>
-  <button mat-button type="submit" class="btn btn-danger pull-right" (click)="sendinfo()">Enviar</button>
+  <button mat-button type="submit" class="btn btn-danger pull-right" [disabled]="botonenviar" (click)="sendinfo()">Enviar</button>
 </div>

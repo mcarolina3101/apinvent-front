@@ -57,6 +57,12 @@
     max-width: 100px !important;;
   }
 
+  ::ng-deep .mat-column-demo-usuario {
+    font-style: italic;
+    width: 10% !important;
+    max-width: 100px !important;;
+  }
+
   ::ng-deep .mat-column-demo-medio {
     font-style: italic;
     width: 10% !important;

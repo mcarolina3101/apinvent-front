@@ -13,6 +13,7 @@ import { TableListComponent } from '../../table/table-list.component';
 import { FormComponentEdit2 } from '../../table/table-list.component';
 import { HistoryComponent } from '../../table/history-component';
 import { EnlacesComponent } from '../../enlaces/enlaces.component';
+import { HistoryComponent  as HistoryComponent2}  from '../../enlaces/history-component';
 import { FormComponentEnlaces } from '../../enlaces/enlaces.component';
 import { TicketsComponent } from '../../tickets/tickets.component';
 import {MatMenuModule} from '@angular/material/menu';
@@ -77,6 +78,7 @@ import { MatSelectFilterModule } from 'mat-select-filter';
     AdministracionComponent,
     FormComponentEdit2,
     HistoryComponent,
+    HistoryComponent2,
     FormComponentEdit,
     FormHardwareEditComponent,
     FormModeloComponent,

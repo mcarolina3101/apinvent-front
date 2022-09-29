@@ -65,6 +65,8 @@ export class DataBaseComponent implements OnInit {
     'demo-ciudad',
     'demo-tipo',
     'demo-agencia',
+    'demo-countenlaces',
+    'demo-countinv',
     'demo-estado',
     'demo-action'
   ];
@@ -76,6 +78,12 @@ export class DataBaseComponent implements OnInit {
     'demo-estado4',
     'demo-action4'
   ];
+  public displayedColumns3: string[] = [ //Ambientes, Orion, Propietarios
+    'demo-nombre3',
+    'demo-estado3',
+    'demo-lan3',
+    'demo-action3'
+  ];
   public date = new FormControl(moment());
   modeloFormG = this._formBuilder.group({
 
@@ -86,57 +94,58 @@ export class DataBaseComponent implements OnInit {
     date: new FormControl(undefined)
   });
   public inventario: any;
-  public totalenght = 1000;
-  public totalenght2 = 1000;
-  public pageIndex = 0;
-  public pageIndex2 = 0;
-  public ambientes: any[];
   public ambiente: any;
-  public problemas: any[];
-  public problema: any;
-  public orions: any[];
   public orion: any;
-  public propietarios: any[];
   public propietario: any;
-  public entidades: any[];
   public entidad: any;
-  public hardwares: any[];
   public hardware: any;
   public hardwareOp: any;
   public tipohardware: any;
   public prefixmem: any;
   public modelo: any;
-  public modelos: any[];
-  public modelomarca: any[];
-  public modeloequipo: any[];
-  public isnew: any = false;
+  public lan: any;
   public cd;
-  public dataDevices: any[] = [];
-  public tipos: any[];
-  public cities: any[] = [];
+  public isproblem = false;
+  public isnew: any = false;
+  public hiddenselectubi = true;
+  public editcitytipo = true;
+  public editagencia = true;
+  public botonenviar = false;
+  public nombre: string = "";
+  public accion: string = '';
+  public id: number = 0;
+  public totalenght = 1000;
+  public totalenght2 = 1000;
+  public pageIndex = 0;
+  public pageIndex2 = 0;
+  public selectedact: number;
+  public selectedtipo: number;
+  public editado1: any; //info de editado
+  public blockednombre: any;
   tiposcontrolarr = new FormControl();
   citiescontrolarr = new FormControl();
   tiposcontrol = new FormControl();
   citiescontrol = new FormControl();
   ubicontrol = new FormControl();
-  public hiddenselectubi = true;
-  public editcitytipo = true;
-  public editagencia = true;
-  public nombre: string = "";
-  public id: number = 0;
-  public activado: any = [
-    { id: 1, nombre: 'Si' },
-    { id: 0, nombre: 'No' }
-  ];
+  public activado: any = [{ id: 1, nombre: 'Si' }, { id: 0, nombre: 'No' }];
+  public hardwares: any[];
+  public entidades: any[];
+  public propietarios: any[];
+  public ambientes: any[];
+  public problemas: any[];
+  public problema: any;
+  public orions: any[];
   public equipos: any[] = [];
   public marcas: any[] = [];
   public flashs: any[] = [];
   public rams: any[] = [];
-  public selectedact: number;
-  public selectedtipo: number;
-  public accion: string = '';
-  public editado1: any; //info de editado
-  public blockednombre: any;
+  public dataDevices: any[] = [];
+  public tipos: any[];
+  public cities: any[] = [];
+  public modelos: any[];
+  public modelomarca: any[];
+  public modeloequipo: any[];
+
   constructor(
     private _formBuilder: FormBuilder,
     public dialog: MatDialog,
@@ -149,7 +158,7 @@ export class DataBaseComponent implements OnInit {
     this.dashboardService.setfecharango(0)
 
     this.cd = { "ciudades": "Guayaquil,Quito,Manta,Quevedo,Riobamba,Ibarra" }
-    this.inventario = { "nagencia": "", "ntipo": "", "nciudad": "", "estado": 1, "pindex": this.pageIndex + 1 }
+    this.inventario = { "nagencia": "", "ntipo": "", "nciudad": "", "countenlaces": null, "countinv": null, "estado": 1, "pindex": this.pageIndex + 1 }
     this.ambiente = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.problema = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.orion = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
@@ -187,11 +196,14 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
+        botonenviar: false,
+        isproblem: false,
+        lan: this.lan,
         isnew: true,
         nombre: this.nombre,
         hiddenselectubi: true,
-        editagencia:false,
-        editcitytipo:true,
+        editagencia: false,
+        editcitytipo: true,
         accion: 'Ambiente',
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
@@ -202,6 +214,27 @@ export class DataBaseComponent implements OnInit {
       if (result != undefined) {
         this.informacionService.insertambiente(result.nombre).subscribe(resp => {
           this.obtenerInfoAmbientes();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
         }, err => {
           if (err.status === 400) {
             //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -244,13 +277,16 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
+          botonenviar: false,
           nombre: this.nombre,
           isnew: false,
+          isproblem: false,
+          lan: this.lan,
           activado: this.activado,
           selectedact: this.selectedact,
           hiddenselectubi: true,
-          editagencia:false,
-          editcitytipo:true,
+          editagencia: false,
+          editcitytipo: true,
           id: this.id,
           accion: 'Ambiente',
           blockednombre: true,
@@ -263,7 +299,27 @@ export class DataBaseComponent implements OnInit {
         if (result != undefined) {
           this.informacionService.editarambiente({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
             this.obtenerInfoAmbientes();
-
+            $.notify({
+              icon: "notifications",
+              message: "Editado"
+            }, {
+              type: "success",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
           }, err => {
             if (err.status === 400) {
               //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -347,11 +403,14 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
+        botonenviar: false,
         isnew: true,
+        isproblem: false,
+        lan: this.lan,
         nombre: this.nombre,
         hiddenselectubi: false,
-        editagencia:false,
-        editcitytipo:true,
+        editagencia: false,
+        editcitytipo: true,
         accion: 'Ubicacion',
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
@@ -362,6 +421,27 @@ export class DataBaseComponent implements OnInit {
       if (result.ubicontrol.value.id == 0) {
         this.informacionService.insertciudad(result.nombre).subscribe(resp => {
           this.clickListadoCiudades();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
         }, err => {
           if (err.status === 400) {
             //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -392,6 +472,27 @@ export class DataBaseComponent implements OnInit {
       } else if (result.ubicontrol.value.id == 1) {
         this.informacionService.inserttipo(result.nombre, result.citiescontrol.value.id).subscribe(resp => {
           this.clickListadoCiudades();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
         }, err => {
           if (err.status === 400) {
             //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -423,6 +524,27 @@ export class DataBaseComponent implements OnInit {
         if (result != undefined) {
           this.informacionService.insertagencia(result.nombre, result.tiposcontrol.value.id).subscribe(resp => {
             this.clickListadoCiudades();
+            $.notify({
+              icon: "notifications",
+              message: "Ingresado"
+            }, {
+              type: "success",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
           }, err => {
             if (err.status === 400) {
               $.notify({
@@ -466,15 +588,18 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
+          botonenviar: false,
           isnew: false,
+          isproblem: false,
+          lan: this.lan,
           nombre: this.nombre,
           activado: this.activado,
           selectedact: this.selectedact,
           hiddenselectubi: true,
-          editagencia:true,
-          editcitytipo:true,
+          editagencia: true,
+          editcitytipo: true,
           id: this.id,
-          editado1:this.editado1,
+          editado1: this.editado1,
           accion: 'Ubicacion',
           blockednombre: false,
           tiposcontrol: this.tiposcontrol,
@@ -485,12 +610,35 @@ export class DataBaseComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result != undefined) {
           this.informacionService.editaragencia(
-            { "nombre": result.nombre, 
-            "id": result.id, 
-            "idLink": result.tiposcontrol.value==undefined?null:result.tiposcontrol.value.id, 
-            "estado": result.selectedact }
-            ).subscribe(resp => {
+            {
+              "nombre": result.nombre,
+              "id": result.id,
+              "idLink": result.tiposcontrol.value == undefined ? null : result.tiposcontrol.value.id,
+              "estado": result.selectedact
+            }
+          ).subscribe(resp => {
             this.clickListadoCiudades();
+            $.notify({
+              icon: "notifications",
+              message: "Editado"
+            }, {
+              type: "success",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
           }, err => {
             if (err.status === 400) {
               $.notify({
@@ -544,91 +692,136 @@ export class DataBaseComponent implements OnInit {
       }
     });
   }
-  openDialogCTedit(){
+  openDialogCTedit() {
     //this.editado1 = undefined;
     this.nombre = "";
-      const dialogRef = this.dialog.open(FormComponentEdit, {
-        width: '400px',
-        data: {
-          isnew: false,
-          nombre: this.nombre,
-          activado: this.activado,
-          selectedact: this.selectedact,
-          hiddenselectubi: true,
-          editagencia:false,
-          editcitytipo:false,
-          id: this.id,
-          accion: 'Ubicacion',
-          blockednombre: true,
-          tiposcontrol: this.tiposcontrol,
-          citiescontrol: this.citiescontrol,
-          ubicontrol: this.ubicontrol
-        }
-      });
-      dialogRef.afterClosed().subscribe(result => {
-        if (result != undefined) {
-          if(result.ubicontrol.value!=null){
-            if(result.ubicontrol.value.id==2){
-              this.informacionService.editartipo({ "nombre": result.tiposcontrol.value.nombre, "id": result.tiposcontrol.value.id, "estado": result.selectedact }).subscribe(resp => {
-                this.obtenerInfoCiudades();
-              }, err => {
-                if (err.status === 400) {
-                  $.notify({
-                    icon: "notifications",
-                    message: err.error.log
-                  }, {
-                    type: "warning",
-                    timer: 4000,
-                    placement: {
-                      from: 'top',
-                      align: 'center'
-                    },
-                    template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-                      '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-                      '<i class="material-icons" data-notify="icon">notifications</i> ' +
-                      '<span data-notify="title">{1}</span> ' +
-                      '<span data-notify="message">{2}</span>' +
-                      '<div class="progress" data-notify="progressbar">' +
-                      '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-                      '</div>' +
-                      '<a href="{3}" target="{4}" data-notify="url"></a>' +
-                      '</div>'
-                  });
-                }
+    const dialogRef = this.dialog.open(FormComponentEdit, {
+      width: '400px',
+      data: {
+        botonenviar: false,
+        isnew: false,
+        isproblem: false,
+        lan: this.lan,
+        nombre: this.nombre,
+        activado: this.activado,
+        selectedact: this.selectedact,
+        hiddenselectubi: true,
+        editagencia: false,
+        editcitytipo: false,
+        id: this.id,
+        accion: 'Ubicacion',
+        blockednombre: true,
+        tiposcontrol: this.tiposcontrol,
+        citiescontrol: this.citiescontrol,
+        ubicontrol: this.ubicontrol
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != undefined) {
+        if (result.ubicontrol.value != null) {
+          if (result.ubicontrol.value.id == 2) {
+            this.informacionService.editartipo({ "nombre": result.tiposcontrol.value.nombre, "id": result.tiposcontrol.value.id, "estado": result.selectedact }).subscribe(resp => {
+              this.obtenerInfoCiudades();
+              $.notify({
+                icon: "notifications",
+                message: "Editado"
+              }, {
+                type: "success",
+                timer: 4000,
+                placement: {
+                  from: 'top',
+                  align: 'center'
+                },
+                template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                  '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                  '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                  '<span data-notify="title">{1}</span> ' +
+                  '<span data-notify="message">{2}</span>' +
+                  '<div class="progress" data-notify="progressbar">' +
+                  '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                  '</div>' +
+                  '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                  '</div>'
               });
-            }if(result.ubicontrol.value.id==1){
-              this.informacionService.editarciudad({ "nombre": result.citiescontrol.value.nombre, "id": result.citiescontrol.value.id, "estado": result.selectedact }).subscribe(resp => {
-                this.obtenerInfoCiudades();
-              }, err => {
-                if (err.status === 400) {
-                  $.notify({
-                    icon: "notifications",
-                    message: err.error.log
-                  }, {
-                    type: "warning",
-                    timer: 4000,
-                    placement: {
-                      from: 'top',
-                      align: 'center'
-                    },
-                    template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
-                      '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
-                      '<i class="material-icons" data-notify="icon">notifications</i> ' +
-                      '<span data-notify="title">{1}</span> ' +
-                      '<span data-notify="message">{2}</span>' +
-                      '<div class="progress" data-notify="progressbar">' +
-                      '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-                      '</div>' +
-                      '<a href="{3}" target="{4}" data-notify="url"></a>' +
-                      '</div>'
-                  });
-                }
+            }, err => {
+              if (err.status === 400) {
+                $.notify({
+                  icon: "notifications",
+                  message: err.error.log
+                }, {
+                  type: "warning",
+                  timer: 4000,
+                  placement: {
+                    from: 'top',
+                    align: 'center'
+                  },
+                  template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                    '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                    '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                    '<span data-notify="title">{1}</span> ' +
+                    '<span data-notify="message">{2}</span>' +
+                    '<div class="progress" data-notify="progressbar">' +
+                    '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                    '</div>' +
+                    '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                    '</div>'
+                });
+              }
+            });
+          } if (result.ubicontrol.value.id == 1) {
+            this.informacionService.editarciudad({ "nombre": result.citiescontrol.value.nombre, "id": result.citiescontrol.value.id, "estado": result.selectedact }).subscribe(resp => {
+              this.obtenerInfoCiudades();
+              $.notify({
+                icon: "notifications",
+                message: "Editado"
+              }, {
+                type: "success",
+                timer: 4000,
+                placement: {
+                  from: 'top',
+                  align: 'center'
+                },
+                template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                  '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                  '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                  '<span data-notify="title">{1}</span> ' +
+                  '<span data-notify="message">{2}</span>' +
+                  '<div class="progress" data-notify="progressbar">' +
+                  '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                  '</div>' +
+                  '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                  '</div>'
               });
-            }
+            }, err => {
+              if (err.status === 400) {
+                $.notify({
+                  icon: "notifications",
+                  message: err.error.log
+                }, {
+                  type: "warning",
+                  timer: 4000,
+                  placement: {
+                    from: 'top',
+                    align: 'center'
+                  },
+                  template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                    '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                    '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                    '<span data-notify="title">{1}</span> ' +
+                    '<span data-notify="message">{2}</span>' +
+                    '<div class="progress" data-notify="progressbar">' +
+                    '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                    '</div>' +
+                    '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                    '</div>'
+                });
+              }
+            });
           }
         }
-      });
-    
+      }
+    });
+
   }
   obtenerInfoInventario_p1() {
     let nc = this.inventario.nciudad;
@@ -887,6 +1080,7 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormHardwareEditComponent, {
       width: '400px',
       data: {
+        botonenviar: false,
         nombre: this.nombre, tipohardware: this.tipohardware,
         selectedtipo: this.selectedtipo, prefixmem: this.prefixmem,
         isnew: true
@@ -899,6 +1093,27 @@ export class DataBaseComponent implements OnInit {
         }
         this.informacionService.inserthardware(result.nombre, result.selectedtipo).subscribe(resp => {
           this.obtenerInfoHardware();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
         }, err => {
           if (err.status === 400) {
             //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -952,6 +1167,7 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormHardwareEditComponent, {
         width: '400px',
         data: {
+          botonenviar: false,
           isnew: false,
           nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, prefixmem: this.prefixmem,
           tipohardware: this.tipohardware, selectedtipo: this.selectedtipo, id: this.id
@@ -964,6 +1180,27 @@ export class DataBaseComponent implements OnInit {
           }
           this.informacionService.editarhardware({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact, "idLink": this.selectedtipo }).subscribe(resp => {
             this.obtenerInfoHardware();
+            $.notify({
+              icon: "notifications",
+              message: "Editado"
+            }, {
+              type: "success",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
           }, err => {
             if (err.status === 400) {
               //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -1083,6 +1320,7 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormModeloComponent, {
       width: '400px',
       data: {
+        botonenviar: false,
         accion: "Ingresar",
         nombre: this.nombre,
         activado: this.activado,
@@ -1108,6 +1346,27 @@ export class DataBaseComponent implements OnInit {
           "fecha": moment(result.date.value).format('YYYY-MM-DD')
         }).subscribe(resp => {
           this.obtenerInfoModelos();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
         });
       }
     })
@@ -1124,6 +1383,7 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormModeloComponent, {
         width: '400px',
         data: {
+          botonenviar: false,
           accion: "Editar",
           nombre: this.nombre,
           activado: this.activado,
@@ -1149,6 +1409,27 @@ export class DataBaseComponent implements OnInit {
             "fecha": moment(result.date.value).format('YYYY-MM-DD')
           }).subscribe(resp => {
             this.obtenerInfoModelos();
+            $.notify({
+              icon: "notifications",
+              message: "Editado"
+            }, {
+              type: "success",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
           }, err => {
             if (err.status === 400) {
               //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -1256,12 +1537,15 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
+        botonenviar: false,
         isnew: true,
+        isproblem: false,
+        lan: this.lan,
         nombre: this.nombre,
         accion: 'Orion',
         hiddenselectubi: true,
-        editagencia:false,
-        editcitytipo:true,
+        editagencia: false,
+        editcitytipo: true,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
         ubicontrol: this.ubicontrol
@@ -1271,6 +1555,27 @@ export class DataBaseComponent implements OnInit {
       if (result != undefined) {
         this.informacionService.insertorion(result.nombre).subscribe(resp => {
           this.obtenerInfoOrion();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
         });
       }
     });
@@ -1286,14 +1591,17 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
+          botonenviar: false,
           isnew: false,
+          isproblem: false,
+          lan: this.lan,
           nombre: this.nombre,
           activado: this.activado,
           selectedact: this.selectedact,
           id: this.id,
           hiddenselectubi: true,
-          editagencia:false,
-          editcitytipo:true,
+          editagencia: false,
+          editcitytipo: true,
           accion: 'Orion',
           blockednombre: false,
           tiposcontrol: this.tiposcontrol,
@@ -1412,11 +1720,14 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
+        botonenviar: false,
         isnew: true,
+        isproblem: false,
+        lan: this.lan,
         nombre: this.nombre,
         hiddenselectubi: true,
-        editagencia:false,
-        editcitytipo:true,
+        editagencia: false,
+        editcitytipo: true,
         accion: 'Propietario',
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
@@ -1427,6 +1738,27 @@ export class DataBaseComponent implements OnInit {
       if (result != undefined) {
         this.informacionService.insertpropietario(result.nombre).subscribe(resp => {
           this.obtenerInfoPropietarios();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
         }, err => {
           if (err.status === 400) {
             //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -1468,14 +1800,17 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
+          botonenviar: false,
           nombre: this.nombre,
           activado: this.activado,
           hiddenselectubi: true,
-          editagencia:false,
-          editcitytipo:true,
+          editagencia: false,
+          editcitytipo: true,
           selectedact: this.selectedact,
           id: this.id,
           isnew: false,
+          isproblem: false,
+          lan: this.lan,
           accion: 'Propietario',
           blockednombre: true,
           tiposcontrol: this.tiposcontrol,
@@ -1487,6 +1822,27 @@ export class DataBaseComponent implements OnInit {
         if (result != undefined) {
           this.informacionService.editarpropietario({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
             this.obtenerInfoPropietarios();
+            $.notify({
+              icon: "notifications",
+              message: "Editado"
+            }, {
+              type: "success",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
           }, err => {
             if (err.status === 400) {
               //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -1594,10 +1950,13 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
+        botonenviar: false,
         isnew: true,
+        isproblem: false,
+        lan: this.lan,
         hiddenselectubi: true,
-        editagencia:false,
-        editcitytipo:true,
+        editagencia: false,
+        editcitytipo: true,
         nombre: this.nombre,
         accion: 'Entidad',
         tiposcontrol: this.tiposcontrol,
@@ -1609,6 +1968,7 @@ export class DataBaseComponent implements OnInit {
       if (result != undefined) {
         this.informacionService.insertentidades(result.nombre).subscribe(resp => {
           this.obtenerInfoEntidades();
+          this.botonenviar = true;
         }, err => {
           if (err.status === 400) {
             //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -1650,12 +2010,15 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
+          botonenviar: false,
           isnew: false,
+          isproblem: false,
+          lan: this.lan,
           nombre: this.nombre,
           activado: this.activado,
           hiddenselectubi: true,
-          editagencia:false,
-          editcitytipo:true,
+          editagencia: false,
+          editcitytipo: true,
           selectedact: this.selectedact,
           id: this.id,
           accion: 'Entidad',
@@ -1666,17 +2029,15 @@ export class DataBaseComponent implements OnInit {
         }
       });
       dialogRef.afterClosed().subscribe(result => {
-        this.informacionService.editarentidades({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
-          this.obtenerInfoEntidades();
-        }, err => {
-          if (err.status === 400) {
-            //const type = ['', 'info', 'success', 'warning', 'danger'];
-            //const color = Math.floor((Math.random() * 4) + 1);
+        if (result != undefined) {
+          this.informacionService.editarentidades({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
+            this.obtenerInfoEntidades();
+            this.botonenviar = true;
             $.notify({
               icon: "notifications",
-              message: err.error.log
+              message: "Editado"
             }, {
-              type: "warning",
+              type: "success",
               timer: 4000,
               placement: {
                 from: 'top',
@@ -1693,8 +2054,35 @@ export class DataBaseComponent implements OnInit {
                 '<a href="{3}" target="{4}" data-notify="url"></a>' +
                 '</div>'
             });
-          }
-        });
+          }, err => {
+            if (err.status === 400) {
+              //const type = ['', 'info', 'success', 'warning', 'danger'];
+              //const color = Math.floor((Math.random() * 4) + 1);
+              $.notify({
+                icon: "notifications",
+                message: err.error.log
+              }, {
+                type: "warning",
+                timer: 4000,
+                placement: {
+                  from: 'top',
+                  align: 'center'
+                },
+                template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                  '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                  '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                  '<span data-notify="title">{1}</span> ' +
+                  '<span data-notify="message">{2}</span>' +
+                  '<div class="progress" data-notify="progressbar">' +
+                  '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                  '</div>' +
+                  '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                  '</div>'
+              });
+            }
+          });
+        }
+        
       });
     }, err => {
       if (err.status === 400) {
@@ -1742,11 +2130,14 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
+        botonenviar: false,
         isnew: true,
+        isproblem: true,
+        lan: this.lan,
         nombre: this.nombre,
         hiddenselectubi: true,
-        editagencia:false,
-        editcitytipo:true,
+        editagencia: false,
+        editcitytipo: true,
         accion: 'Problema',
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
@@ -1755,8 +2146,29 @@ export class DataBaseComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result != undefined) {
-        this.informacionService.insertproblema(result.nombre).subscribe(resp => {
+        this.informacionService.insertproblema({"nombre":result.nombre, "lan":result.lan}).subscribe(resp => {
           this.obtenerInfoProblemas();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
         }, err => {
           if (err.status === 400) {
             //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -1799,13 +2211,16 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
+          botonenviar: false,
           nombre: this.nombre,
           isnew: false,
+          isproblem: true,
+          lan: this.lan,
           activado: this.activado,
           selectedact: this.selectedact,
           hiddenselectubi: true,
-          editagencia:false,
-          editcitytipo:true,
+          editagencia: false,
+          editcitytipo: true,
           id: this.id,
           accion: 'Problema',
           blockednombre: true,
@@ -1816,9 +2231,30 @@ export class DataBaseComponent implements OnInit {
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result != undefined) {
-          this.informacionService.editarproblema({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
+          console.log(result)
+          this.informacionService.editarproblema({ "nombre": result.nombre, "lan":result.lan,"id": result.id, "estado": result.selectedact }).subscribe(resp => {
             this.obtenerInfoProblemas();
-
+            $.notify({
+              icon: "notifications",
+              message: "Editado"
+            }, {
+              type: "success",
+              timer: 4000,
+              placement: {
+                from: 'top',
+                align: 'center'
+              },
+              template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                '<span data-notify="title">{1}</span> ' +
+                '<span data-notify="message">{2}</span>' +
+                '<div class="progress" data-notify="progressbar">' +
+                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                '</div>' +
+                '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                '</div>'
+            });
           }, err => {
             if (err.status === 400) {
               //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -1920,10 +2356,10 @@ export class FormComponentEdit {
       this.obtenerInfoCiudades();
     }
 
-    if(this.data.editagencia){
+    if (this.data.editagencia) {
       this.obtenerInfoCiudades();
-      this.hiddencities=false;
-      this.hiddentipos=false;
+      this.hiddencities = false;
+      this.hiddentipos = false;
     }
   }
 
@@ -1944,14 +2380,14 @@ export class FormComponentEdit {
     this.informacionService.listtiposNombre(cd).subscribe(resp => {
       this.tipos = resp.body["info"];
       const keys = resp.headers;
-      if(this.data.editagencia){
-        this.tipos.forEach(element =>{
-          if(element.id==this.data.editado1.Ciudad[0].Tipo[0].idtipo){
+      if (this.data.editagencia) {
+        this.tipos.forEach(element => {
+          if (element.id == this.data.editado1.Ciudad[0].Tipo[0].idtipo) {
             this.data.tiposcontrol.setValue(element)
           }
         })
       }
-      
+
     }, err => {
       if (err.status === 400) {
         $.notify({
@@ -1983,14 +2419,14 @@ export class FormComponentEdit {
     this.informacionService.listciudadesNombre({ "nombre": "", "estado": 1 }).subscribe(resp => {
       this.cities = resp.body["info"];
       const keys = resp.headers;
-      if(this.data.editagencia){
-        this.cities.forEach(element =>{
-          if(element.id==this.data.editado1.Ciudad[0].idciudad){
+      if (this.data.editagencia) {
+        this.cities.forEach(element => {
+          if (element.id == this.data.editado1.Ciudad[0].idciudad) {
             this.data.citiescontrol.setValue(element)
-            this.obtenerInfoTipos({"nombre":"","idlink":element.id});
+            this.obtenerInfoTipos({ "nombre": "", "idlink": element.id });
           }
         })
-        
+
       }
     }, err => {
       if (err.status === 400) {

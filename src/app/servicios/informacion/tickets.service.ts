@@ -25,15 +25,15 @@ export class TicketsService {
       nagencia: info.agencia == "" ? null : info.agencia,
       idtipo: info.idtipo,
       abierto: info.abierto,
-      ntipo: info.tipo == "" ? null : info.tipo,
+      ntipo: info.ntipo == "" ? null : info.ntipo,
       idciudad: info.idciudad,
-      nciudad: info.ciudad == "" ? null : info.ciudad,
+      nciudad: info.nciudad == "" ? null : info.nciudad,
       tecnicorespon: info.tecnicorespon,
       tecnicoreporte: info.tecnicoreporte,
 
       idenlace: info.idenlace,
       proveedor: info.proveedor == "" ? null : info.proveedor,
-      lan:info.lan  == "" ? null : info.lan,
+      lan:info.lan,
 
       idproblema: info.idproblema,
       problema: info.problema == "" ? null : info.problema,
@@ -64,39 +64,17 @@ export class TicketsService {
   downloadticket(info: any): Observable<HttpResponse<Blob>> {
     this.ruta = 'ticket/download';
 
-    /*
-    let fin;
-    let ini
-    if (this.dashboardService.fechalimite == 0 && this.dashboardService.fecharango == 1) {
-      ini = this.dashboardService.todayf
-      fin = this.dashboardService.today1f
-    } else if (this.dashboardService.fechalimite == 1 && this.dashboardService.fecharango == 0) {
-      fin = this.dashboardService.todayf
-      ini = undefined
-    } else {
-      fin = undefined
-      ini = undefined
-    }
-
-    if (fin == undefined) {
-      fin = info.fechafin
-    } if (ini == undefined) {
-      ini = info.fechaini
-    }
-
-    */
 
     let body = JSON.stringify({
       
-
-      //fechafin: fin,
-      //fechaini: ini,
-
 
       fecha: info.fecha == "" ? null : info.fecha,
       nagencia: info.nagencia == "" ? null : info.nagencia,
       ntipo: info.ntipo == "" ? null : info.ntipo,
       nciudad: info.nciudad == "" ? null : info.nciudad,
+      time0: info.time0 == "" ? null : info.time0,
+      //time1: info.time1 == "" ? null : info.time1,
+      time2: info.time2 == "" ? null : info.time2,  
       estado: info.estado,
       pageSize: global.pageSize,
       pageIndex: info.pindex,
@@ -159,7 +137,7 @@ export class TicketsService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  editarticket(d1form,d2form,d3form,tc,id,idagencia,idenlace,estado): Observable<HttpResponse<any>> {
+  editarticket(d1form,d2form,d3form,tc,id,idagencia,idenlace,estado,adicional): Observable<HttpResponse<any>> {
     this.ruta = 'ticket/actualizar';
     let body = JSON.stringify({
       //nombre:info.nombre,
@@ -172,6 +150,7 @@ export class TicketsService {
       idagencia:idagencia,
       idenlace:idenlace,
       estado: estado ,
+      adicional:adicional,
       username: localStorage.getItem("username")
 
     });

@@ -42,6 +42,12 @@
       <input matInput [(ngModel)]="data.nombre" [disabled]="data.blockednombre">
     </mat-form-field>
   </div>
+
+  
+  <div [hidden]="!data.isproblem">
+      <mat-checkbox id="lan" name="lan" [(ngModel)]="data.lan"> Afectacion Lan</mat-checkbox>
+  </div>
+
   <div [hidden]="data.isnew">
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Activado</mat-label>
@@ -51,7 +57,9 @@
     </mat-form-field>
   </div>
 
+  
+
 </div>
 <div mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="data" cdkFocusInitial color="primary">Ok</button>
+  <button mat-button [mat-dialog-close]="data" [disabled]="data.botonenviar" cdkFocusInitial color="primary">Ok</button>
 </div>

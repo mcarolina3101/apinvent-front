@@ -66,7 +66,6 @@ export class HistoryComponent implements OnInit {
   obtenerInfoInventario() {
     this.inventarioService.listlogs(this.infoeq).subscribe(resp => {
       this.dataDevices = resp.body["info"];
-      console.log(this.dataDevices)
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
     }, err => {

@@ -221,6 +221,8 @@ export class InformacionService {
       idLink: info.idLink,
       estado: info.estado,
       ciudad: info.nciudad,
+      countenlaces:info.countenlaces,
+      countinv:info.countinv,
       tipo: info.ntipo,
       pageSize: global.pageSize,
       pageIndex: info.pindex,
@@ -503,6 +505,7 @@ export class InformacionService {
     this.ruta = 'problema/list';
     let body = JSON.stringify({
       nombre: info.nombre,
+      lan: info.lan,
       estado: info.estado,
       pageSize: global.pageSize,
       pageIndex: info.pindex,
@@ -514,6 +517,7 @@ export class InformacionService {
     this.ruta = 'problema/nombre';
     let body = JSON.stringify({
       nombre: info.nombre,
+      lan: info.lan,
       estado: info.estado,
       username: localStorage.getItem("username")
     });
@@ -527,10 +531,11 @@ export class InformacionService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  insertproblema(info: string): Observable<HttpResponse<any>> {
+  insertproblema(info: any): Observable<HttpResponse<any>> {
     this.ruta = 'problema/crear';
     let body = JSON.stringify({
       nombre: info,
+      lan: info.lan? 1 : 0,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
@@ -539,6 +544,7 @@ export class InformacionService {
     this.ruta = 'problema/actualizar';
     let body = JSON.stringify({
       nombre: info.nombre,
+      lan: info.lan? 1 : 0,
       estado: info.estado,
       id: info.id,
       username: localStorage.getItem("username")

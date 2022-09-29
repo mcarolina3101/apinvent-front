@@ -88,8 +88,8 @@ export class UsuarioService {
     let body = JSON.stringify({
       nombre: info.nombre,
       administrar: info.administrar,
-      crear: info.crear,
-      editar: info.editar,
+      informacion: info.informacion,
+      enlaces: info.enlaces,
       eliminar: info.eliminar,
       username: localStorage.getItem("username")
     });
@@ -101,8 +101,8 @@ export class UsuarioService {
       id: info.id,
       nombre: info.nombre,
       administrar: info.administrar,
-      crear: info.crear,
-      editar: info.editar,
+      informacion: info.informacion,
+      enlaces: info.enlaces,
       eliminar: info.eliminar,
       estado: info.estado,
       username: localStorage.getItem("username")

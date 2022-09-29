@@ -38,6 +38,38 @@ export class EnlaceService {
       codigo: info.codigo == "" ? null : info.codigo,
       payfor: info.payfor == "" ? null : info.payfor,
       medio: info.medio == "" ? null : info.medio,
+      estado: info.estado,
+      pageSize: global.pageSize,
+      pageIndex: info.pindex,
+      username: localStorage.getItem("username")
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
+    //return this.http.post(global.ruta + ruta, {}, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
+
+    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
+
+  listlogs(info: any): Observable<HttpResponse<any>> {
+    this.ruta = 'enlace/logs';
+    let body = JSON.stringify({
+      id:info.id,
+      idproveedor: info.idproveedor,
+      proveedor: info.proveedor == "" ? null : info.proveedor,
+      idpropiedad: info.idpropiedad,
+      propiedad: info.propiedad == "" ? null : info.propiedad,
+      idpunto: info.idpunto,
+      punto: info.punto == "" ? null : info.punto,
+      idagencia: info.idagencia,
+      agencia: info.agencia == "" ? null : info.agencia,
+      idtipo: info.idtipo,
+      tipo: info.tipo == "" ? null : info.tipo,
+      idciudad: info.idciudad,
+      ciudad: info.ciudad == "" ? null : info.ciudad,
+      bw: info.bw == "" ? null : info.bw,
+      tunel: info.tunel == "" ? null : info.tunel,
+      codigo: info.codigo == "" ? null : info.codigo,
+      payfor: info.payfor == "" ? null : info.payfor,
+      medio: info.medio == "" ? null : info.medio,
       estado: info.estado == null ? 1 : info.estado,
       pageSize: global.pageSize,
       pageIndex: info.pindex,
@@ -48,6 +80,7 @@ export class EnlaceService {
 
     //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
+  
   downloadenlace(info: any): Observable<HttpResponse<Blob>> {
     this.ruta = 'enlace/download';
     let body = JSON.stringify({
@@ -60,6 +93,7 @@ export class EnlaceService {
     return this.http.post(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
     //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
+
   getenlacebyid(n: number): Observable<HttpResponse<any>> {
     this.ruta = 'enlace/id';
     let body = JSON.stringify({
@@ -68,6 +102,7 @@ export class EnlaceService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
+
   dashboardenlace(): Observable<HttpResponse<any>> {
     this.ruta = 'enlace/dashboard';
     let body = JSON.stringify({
@@ -75,6 +110,7 @@ export class EnlaceService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
+
   insertenlace(info: any): Observable<HttpResponse<any>> {
     this.ruta = 'enlace/crear';
     let body = JSON.stringify({
@@ -94,6 +130,7 @@ export class EnlaceService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
+
   editarenlace(info: any): Observable<HttpResponse<any>> {
     this.ruta = 'enlace/actualizar';
     let body = JSON.stringify({

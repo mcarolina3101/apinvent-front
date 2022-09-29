@@ -80,6 +80,7 @@ export class TableListComponent implements OnInit {
   public id: any;
   public pageIndex = 0;
   public totalenght = 0;
+  public idedit;
   public perfil;
   public usuario = '';
   public fecha = '';
@@ -248,6 +249,7 @@ export class TableListComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit2, {
       width: '1000px',
       data: {
+        idedit : 0 ,
         isnew: this.isnew,
         activado: this.activado,
         ambienteFormG: this.ambienteFormG,

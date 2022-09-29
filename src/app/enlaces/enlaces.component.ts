@@ -9,6 +9,8 @@ import { Observable } from 'rxjs';
 import { StepperOrientation } from '@angular/material/stepper';
 import { map, startWith } from 'rxjs/operators';
 declare var $: any;
+import { HistoryComponent } from './history-component';
+
 import { saveAs } from 'file-saver';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
@@ -37,7 +39,8 @@ export class EnlacesComponent implements OnInit {
   public inventid: any;
   public nombre: any;
   public estado: any = 1;
-  
+  public idedit;
+  public id = 0;
   public isnew: boolean = false;
 
   public activado: any = [
@@ -54,6 +57,7 @@ export class EnlacesComponent implements OnInit {
     codigo: [undefined]
 
   });
+
   networkFormG = this._formBuilder.group({
     ip: [undefined, Validators.required],
     punto: [undefined, Validators.required],
@@ -63,6 +67,7 @@ export class EnlacesComponent implements OnInit {
     doble: [undefined]
 
   });
+
   adicionalFormG = this._formBuilder.group({
     propietario: [undefined, Validators.required],
     identificador: [undefined]
@@ -111,7 +116,7 @@ export class EnlacesComponent implements OnInit {
       "bw": "",
       "doble": "",
       "ciudad": "",
-      "estado": 1,
+      "estado": null,
       "pindex": this.pageIndex + 1
     }
     this.obtenerInfoInventario();
@@ -410,6 +415,7 @@ export class EnlacesComponent implements OnInit {
       }
     });
   }
+  
   obtenerInfoCiudades() {
     this.informacionService.listciudadesNombre(this.ct).subscribe(resp => {
       this.cities = resp.body["info"];
@@ -440,6 +446,7 @@ export class EnlacesComponent implements OnInit {
       }
     });
   }
+  
   obtenerInfoTipos(cd) {
     this.informacionService.listtiposCiudades(cd).subscribe(resp => {
       this.tipos = resp.body["info"];
@@ -471,6 +478,7 @@ export class EnlacesComponent implements OnInit {
       }
     });
   }
+
   openDialogEdit(n): void {
     this.isnew = false;
     const dialogRef = this.dialog.open(FormComponentEnlaces, {
@@ -504,6 +512,7 @@ export class EnlacesComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEnlaces, {
       width: '1000px',
       data: {
+        idedit:0,
         isnew: this.isnew,
         medios:this.medios,
         activado: this.activado,
@@ -517,6 +526,26 @@ export class EnlacesComponent implements OnInit {
       }
     });
     dialogRef.afterClosed().subscribe(result => {
+      this.obtenerInfoInventario();
+    });
+  }
+
+  openDialogHistory(n): void {
+    this.isnew = false;
+    const dialogRef = this.dialog.open(HistoryComponent, {
+      width: '100%',
+      height: '90%',
+      position: {
+        top: '50px',
+        left: '200px'
+      },
+      data: {
+        id: n,
+      }
+      
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      this.pageIndex = 0;
       this.obtenerInfoInventario();
     });
   }
@@ -840,12 +869,14 @@ export class FormComponentEnlaces implements OnInit {
   selectionpunto(value) {
     this.obtenerInfoPuntoid(value.id)
   }
+
   selectioncity(value) {
     this.data.ubicacionFormG.controls["tipo"].reset();
     this.data.ubicacionFormG.controls["ag"].setValue({id:0,nombre:""})
     this.tp.idlink = value.id;
     this.obtenerInfoTipos();
   }
+
   selectiontipo(value) {
     this.data.ubicacionFormG.controls["ag"].setValue({id:0,nombre:""})
     this.agc.idlink = value.id;
@@ -968,12 +999,15 @@ export class FormComponentEnlaces implements OnInit {
       });
     }
   }
+
   compareThem(o1, o2): boolean {
     return o1.id === o2.id;
   }
+
   displayFn(value) {
     return value ? value.nombre : undefined;
   }
+
   private _filter(nombre: string): any[] {
     const filterValue = nombre.toLowerCase();
     return this.agencias.filter(option => option.nombre.toLowerCase().includes(filterValue));

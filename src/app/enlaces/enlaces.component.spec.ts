@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormComponentEnlaces} from './enlaces.component';
 import { EnlacesComponent } from './enlaces.component';
+import { HistoryComponent } from './history-component';
 
 describe('EnlacesComponent', () => {
   let component: EnlacesComponent;
@@ -37,6 +38,28 @@ describe('FormComponentEnlaces', () => {
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FormComponentEnlaces);
+    //component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+
+describe('HistoryComponent', () => {
+  let component: HistoryComponent;
+  let fixture: ComponentFixture<HistoryComponent>;
+ 
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      declarations: [ HistoryComponent,]
+    })
+    .compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(HistoryComponent);
     //component = fixture.componentInstance;
     fixture.detectChanges();
   });

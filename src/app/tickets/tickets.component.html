@@ -11,7 +11,7 @@
                             </div>
                             <div class="col-lg-2 col-md-4 col-sm-6">
                                 <mat-form-field appearance="fill">
-                                    <mat-label>Enter a date range</mat-label>
+                                    <mat-label>Rango de Fecha de Tickets</mat-label>
                                     <mat-date-range-input [formGroup]="range" [rangePicker]="picker">
                                         <input matStartDate formControlName="start" placeholder="Start date"
                                             (dateChange)="dateEvent($event)">
@@ -73,7 +73,7 @@
                                 <ng-container matColumnDef="demo-tecnico1">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
-                                            <mat-label>Responsable </mat-label>
+                                            <mat-label>Reportado </mat-label>
                                             <input matInput [(ngModel)]="inventario.tecnicoreporte"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
@@ -85,7 +85,7 @@
                                 <ng-container matColumnDef="demo-tecnico2">
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
-                                            <mat-label>Reportado</mat-label>
+                                            <mat-label>Responsable</mat-label>
                                             <input matInput [(ngModel)]="inventario.tecnicorespon"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
@@ -127,7 +127,7 @@
                                 <ng-container matColumnDef="demo-agencia" sticky>
                                     <th mat-header-cell *matHeaderCellDef>
                                         <mat-form-field class="example-full-width" appearance="none">
-                                            <mat-label>Agencia</mat-label>
+                                            <mat-label>Localidad</mat-label>
                                             <input matInput [(ngModel)]="inventario.agencia"
                                                 (change)="obtenerInfoInventario_p1()">
                                         </mat-form-field>
@@ -356,7 +356,7 @@
                                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                             </table>
                         </div>
-                        <mat-paginator [length]="totalenght" [pageSize]="12" (page)="Page($event)"
+                        <mat-paginator [length]="totalenght" [pageSize]="20" (page)="Page($event)"
                             [pageIndex]="pageIndex" aria-label="Select page">
                         </mat-paginator>
                     </div>

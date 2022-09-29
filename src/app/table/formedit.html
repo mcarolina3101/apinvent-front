@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Inventario</h1>
+<h1 mat-dialog-title>Inventario {{data.idedit==0?"":data.idedit}} </h1> 
 <div mat-dialog-content>
     <ng-container [ngSwitch]="stepperOrientation | async">
         <div *ngSwitchCase="'horizontal'"></div>
@@ -35,7 +35,7 @@
                             <mat-select (selectionChange)="selectioncity($event.value)" id="c" name="c"
                                 formControlName="city" required>
                                 <mat-option *ngFor="let c of cities" [value]="c"
-                                    [disabled]="boolcity&&(c.nombre.toLowerCase()!='guayaquil' && c.nombre.toLowerCase()!='quito') ">
+                                    [disabled]="boolcity&&(c.nombre.toLowerCase()!='guayaquil' && c.nombre.toLowerCase()!='quito'  && c.nombre.toLowerCase()!='externo') ">
                                     {{c.nombre}}
                                 </mat-option>
                             </mat-select>

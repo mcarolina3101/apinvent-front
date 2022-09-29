@@ -24,15 +24,15 @@ export class AdministracionComponent implements OnInit {
   public perfileslist: any;
 
   public nnombre: any;
-  public ncrear: boolean = false;
+  public ninformacion: boolean = false;
   public neliminar: boolean = false;
-  public neditar: boolean = false;
+  public nenlaces: boolean = false;
   public nadministrar: boolean = false;
   public idactperfil:any;
   public inombre: any;
-  public icrear: boolean = false;
+  public iinformacion: boolean = false;
   public ieliminar: boolean = false;
-  public ieditar: boolean = false;
+  public ienlaces: boolean = false;
   public iadministrar: boolean = false;
   public iestado1=0;
   
@@ -279,8 +279,8 @@ export class AdministracionComponent implements OnInit {
     this.nperfil = false;
 
     this.nadministrar = false;
-    this.neditar = false;
-    this.ncrear = false;
+    this.nenlaces = false;
+    this.ninformacion = false;
     this.neliminar = false;
     this.nnombre = undefined;
   }
@@ -293,8 +293,8 @@ export class AdministracionComponent implements OnInit {
     this.usuarioService.insertperfil({
       "nombre": this.nnombre,
       "administrar": this.nadministrar? 1:0,
-      "crear": this.ncrear? 1:0,
-      "editar": this.neditar? 1:0,
+      "informacion": this.ninformacion? 1:0,
+      "enlaces": this.nenlaces? 1:0,
       "eliminar": this.neliminar? 1:0
     }).subscribe(resp => {
       this.obtenerInfoPerfiles();
@@ -337,8 +337,8 @@ export class AdministracionComponent implements OnInit {
       "id":this.idactperfil,
       "nombre": this.inombre,
       "administrar": this.iadministrar? 1:0,
-      "crear": this.icrear? 1:0,
-      "editar": this.ieditar? 1:0,
+      "informacion": this.iinformacion? 1:0,
+      "enlaces": this.ienlaces? 1:0,
       "eliminar": this.ieliminar? 1:0,
       "estado":this.iestado1
     }).subscribe(resp => {
@@ -381,9 +381,9 @@ export class AdministracionComponent implements OnInit {
     this.idactperfil = a.id;
     this.inombre = a.nombre;
     this.iadministrar = a.administrar;
-    this.ieditar = a.editar;
+    this.ienlaces = a.enlaces;
     this.ieliminar = a.eliminar;
-    this.icrear = a.crear;
+    this.iinformacion = a.informacion;
     this.iestado1 = a.estado?1:0;
   }
 

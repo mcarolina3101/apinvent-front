@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Inventario</h1>
+<h1 mat-dialog-title>Inventario {{data.idedit==0?"":data.idedit}} </h1>
 <div mat-dialog-content>
     <ng-container [ngSwitch]="stepperOrientation | async">
         <div *ngSwitchCase="'horizontal'"></div>
