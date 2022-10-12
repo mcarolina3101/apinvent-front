@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Inventario {{data.idedit==0?"":data.idedit}} </h1> 
+<h1 mat-dialog-title>Inventario {{data.idedit==0?"":data.idedit}} </h1>
 <div mat-dialog-content>
     <ng-container [ngSwitch]="stepperOrientation | async">
         <div *ngSwitchCase="'horizontal'"></div>
@@ -55,8 +55,7 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Agencia</mat-label>
-                            <mat-select id="ag" name="ag"
-                                formControlName="ag" required>
+                            <mat-select id="ag" name="ag" formControlName="ag" required>
                                 <mat-option *ngFor="let ag of agencias" [value]="ag">
                                     {{ag.nombre}}
                                 </mat-option>
@@ -96,14 +95,14 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Modelo</mat-label>
-                            <input matInput [matAutocomplete]="marca" formControlName="modelo" >                           
-                                <mat-autocomplete #marca="matAutocomplete"
+                            <input matInput [matAutocomplete]="marca" formControlName="modelo">
+                            <mat-autocomplete #marca="matAutocomplete"
                                 (optionSelected)="selectionmodelo($event.option.value)"
-                                 [displayWith]="displayFn.bind(this)">
-                                    <mat-option *ngFor="let e of filteredOptionsModelo | async" [value]="e">
-                                        {{e.nombre}}
-                                    </mat-option>
-                                </mat-autocomplete>
+                                [displayWith]="displayFn.bind(this)">
+                                <mat-option *ngFor="let e of filteredOptionsModelo | async" [value]="e">
+                                    {{e.nombre}}
+                                </mat-option>
+                            </mat-autocomplete>
                         </mat-form-field>
                     </div>
                 </div>
@@ -159,10 +158,9 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Carpeta Orion</mat-label>
-                            <mat-select id="o" name="o"
-                                formControlName="orion">
+                            <mat-select id="o" name="o" formControlName="orion">
                                 <mat-option *ngFor="let o of orion" [value]="o"
-                                [disabled]="boolorion&&(o.nombre.toUpperCase()=='N/A') ">
+                                    [disabled]="boolorion&&(o.nombre.toUpperCase()=='N/A') ">
                                     {{o.nombre}}
                                 </mat-option>
                             </mat-select>
@@ -191,10 +189,11 @@
         </mat-step>
         <mat-step [stepControl]="data.adicionalFormG" label="Gestion">
             <form [formGroup]="data.adicionalFormG">
-                <div class=""ng-container> 
+                <div class="" ng-container>
                     <div class="row">
                         <div class="col-md-3">
-                            <mat-checkbox id="opm" name="opm" formControlName="opm" (change)="selectionopm($event.checked)">
+                            <mat-checkbox id="opm" name="opm" formControlName="opm"
+                                (change)="selectionopm($event.checked)">
                                 NCM OP Manager</mat-checkbox>
                         </div>
                         <div class="col-md-3">
@@ -204,8 +203,8 @@
                             <mat-checkbox id="util" name="util" formControlName="util">Utilizado</mat-checkbox>
                         </div>
                     </div>
-                </div>            
-                <div class="row">                  
+                </div>
+                <div class="row">
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Propietario</mat-label>
@@ -217,42 +216,44 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-md-4" >
+                    <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Serie</mat-label>
                             <input matInput id="serie" name="serie" formControlName="serie" required>
                         </mat-form-field>
-                    </div>                
+                    </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md-4">
                         <mat-form-field appearance="none">
                             <mat-label>Fecha de Adquisicion</mat-label>
-                            <input matInput readonly [matDatepicker]="dp" formControlName="fechab" >
+                            <input matInput readonly [matDatepicker]="dp" formControlName="fechab">
                             <mat-hint>YYYY/MM/DD</mat-hint>
                             <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
                             <mat-datepicker #dp></mat-datepicker>
-                          </mat-form-field>
-                        
+                        </mat-form-field>
+
                     </div>
-                    
-                    <div class="col-md-4" >
-                        <mat-form-field class="example-full-width" >
+
+                    <div class="col-md-4">
+                        <mat-form-field class="example-full-width">
                             <mat-label>Inventario</mat-label>
                             <input type="number" min="0" matInput id="inv" name="inv" formControlName="inv">
                         </mat-form-field>
-                    </div>   
+                    </div>
 
                 </div>
 
                 <div class="row">
                     <div class="col-md-4">
-                        <mat-checkbox id="boolfechab" name="boolfechab" formControlName="boolfechab" (change)="selectionboolfechab($event.checked)">
-                            No tiene fecha de Adquisicion</mat-checkbox>                      
+                        <mat-checkbox id="boolfechab" name="boolfechab" formControlName="boolfechab"
+                            (change)="selectionboolfechab($event.checked)">
+                            No tiene fecha de Adquisicion</mat-checkbox>
                     </div>
-                    <div class="col-md-4" >
-                        <mat-checkbox id="boolinvent" name="boolinvent" formControlName="boolinvent" (change)="selectionboolinvent($event.checked)">
+                    <div class="col-md-4">
+                        <mat-checkbox id="boolinvent" name="boolinvent" formControlName="boolinvent"
+                            (change)="selectionboolinvent($event.checked)">
                             No tiene inventario</mat-checkbox>
                     </div>
 
@@ -260,8 +261,8 @@
                 <div>
                     <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
                         matStepperPrevious>Regresar</button>
-                    <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
-                        >Siguiente</button>
+                    <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right"
+                        matStepperNext>Siguiente</button>
                 </div>
             </form>
         </mat-step>
@@ -277,17 +278,17 @@
                 <div class="col-lg-4 col-md-6 col-sm-6" [hidden]="data.isnew">
                     <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>Activado</mat-label>
-                        <mat-select  [(value)]="data.estado" [disabled]="data.estado ==0 && perfil!=1">
-                          <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
+                        <mat-select [(value)]="data.estado" [disabled]="data.estado ==0 && perfil!=1">
+                            <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
             </div>
             <div class="row">
                 <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
-                        matStepperPrevious>Regresar</button>
+                    matStepperPrevious>Regresar</button>
                 <button mat-button mat-raised-button type="submit" class="btn btn-danger pull-right" matStepperNext
-                         (click)="sendinfo()">Enviar</button>
+                    (click)="sendinfo()">Enviar</button>
             </div>
         </mat-step>
     </mat-stepper>

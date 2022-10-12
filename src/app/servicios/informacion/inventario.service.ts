@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { data } from 'jquery';
 import { Observable } from 'rxjs';
 import * as global from "../../global";
 import { DashboardService } from '../apis/dashboard.service';

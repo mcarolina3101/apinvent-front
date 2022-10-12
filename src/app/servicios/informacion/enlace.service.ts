@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as global from "../../global";
 import { DashboardService } from '../apis/dashboard.service';
-
+import 'moment/locale/es';
+import * as _moment from 'moment';
+const moment = _moment;
 
 
 @Injectable({
@@ -70,6 +72,21 @@ export class EnlaceService {
       codigo: info.codigo == "" ? null : info.codigo,
       payfor: info.payfor == "" ? null : info.payfor,
       medio: info.medio == "" ? null : info.medio,
+      estado: info.estado == null ? 1 : info.estado,
+      pageSize: global.pageSize,
+      pageIndex: info.pindex,
+      username: localStorage.getItem("username")
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
+    //return this.http.post(global.ruta + ruta, {}, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
+
+    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
+
+  listbaja(info: any): Observable<HttpResponse<any>> {
+    this.ruta = 'enlace/baja';
+    let body = JSON.stringify({
+      id:info.id,
       estado: info.estado == null ? 1 : info.estado,
       pageSize: global.pageSize,
       pageIndex: info.pindex,
@@ -148,6 +165,9 @@ export class EnlaceService {
       idpropiedad: info.adicionalFormG.value.propietario.id == undefined ? null : info.adicionalFormG.value.propietario.id,
       idagencia: info.ubicacionFormG.value.ag.id == undefined ? null :info.ubicacionFormG.value.ag.id,
       estado: info.estado ,
+      idbaja: info.inventid.Baja==undefined? null:info.inventid.Baja[0].id,
+      fechainicio:info.inicio.value ==undefined?null: moment( info.inicio.value).format('YYYY-MM-DD'),
+      fechabaja: info.fin.value ==undefined?null:moment( info.fin.value).format('YYYY-MM-DD'),
       username: localStorage.getItem("username")
 
     });

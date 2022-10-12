@@ -11,9 +11,28 @@ import { map, startWith } from 'rxjs/operators';
 declare var $: any;
 import { HistoryComponent } from './history-component';
 
+import {
+  MAT_MOMENT_DATE_FORMATS,
+  MomentDateAdapter,
+  MAT_MOMENT_DATE_ADAPTER_OPTIONS,
+} from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import 'moment/locale/es';
+import * as _moment from 'moment';
 import { saveAs } from 'file-saver';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'YYYY-MM-DD ',
+  },
+  display: {
+    dateInput: 'YYYY-MM-DD  ',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
 
 @Component({
   selector: 'app-enlaces',
@@ -90,6 +109,8 @@ export class EnlacesComponent implements OnInit {
   medioscontrol  = new FormControl();
   agenciascontrol  = new FormControl();
   entidadescontrol  = new FormControl();
+  inicio = new FormControl();
+  fin = new FormControl();
 
   public cd = { "ciudades": "Guayaquil,Quito,Manta,Quevedo,Riobamba,Ibarra" }
   public mr = { "nombre": "", "estado": 1 }
@@ -495,7 +516,9 @@ export class EnlacesComponent implements OnInit {
         estado: this.inventid.estado,
         propietarios:this.propietarios,
         entidades:this.entidades,
-        cities:this.cities
+        cities:this.cities,
+        inicio:new FormControl(),
+        fin:new FormControl(),
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -560,7 +583,16 @@ export class EnlacesComponent implements OnInit {
 @Component({
   selector: 'app-formedit',
   templateUrl: './formedit.html',
-  styleUrls: ['./enlaces.component.css']
+  styleUrls: ['./enlaces.component.css'],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'es' },
+    {
+      provide: DateAdapter,
+      useClass: MomentDateAdapter,
+      deps: [MAT_DATE_LOCALE, MAT_MOMENT_DATE_ADAPTER_OPTIONS],
+    },
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  ]
 
 })
 export class FormComponentEnlaces implements OnInit {
@@ -570,6 +602,7 @@ export class FormComponentEnlaces implements OnInit {
   public puntoSelected: any;
   public proveedorSelected: any;
   public propietarioSelected: any;
+  
 
   filteredOptionsAgencias: Observable<any[]>;
 
@@ -595,12 +628,20 @@ export class FormComponentEnlaces implements OnInit {
   public npunto = ""
 
   ngOnInit() {
+    //this.data.inicio.reset();
+    //this.data.fin.reset();
+    this.data.inicio=new FormControl();
+    this.data.fin=new FormControl();
     this.obtenerInfoPunto();
     if (this.data.inventid != undefined) {
       this.usuariom = this.data.inventid.usuario;
       this.usuarioc = this.data.inventid.usuarioc;
       this.fecham = this.data.inventid.fecha;
       this.fechac = this.data.inventid.fechac;
+      if(this.data.inventid.Baja!=undefined){
+        this.data.inicio.setValue(this.data.inventid.Baja[0].inicio);
+        this.data.fin.setValue(this.data.inventid.Baja[0].fin);
+      }
       this.data.propietarios.forEach(element => {
         if (this.compareThem(element, this.data.inventid.Proveedor[0])) {
           this.data.networkFormG.controls["proveedor"].setValue(element)
@@ -623,17 +664,8 @@ export class FormComponentEnlaces implements OnInit {
           this.data.networkFormG.controls["medio"].setValue(element)
         }
       });
-      
 
-    }else{
-      this.data.entidades.forEach(element => {
-        if(element.nombre.toLowerCase().includes('banco')){
-          this.data.adicionalFormG.controls["propietario"].setValue(element)
-        }
-      });
     }
-
-
 
     this.filteredOptionsAgencias = this.data.ubicacionFormG.controls["ag"].valueChanges.pipe(
       startWith(''),

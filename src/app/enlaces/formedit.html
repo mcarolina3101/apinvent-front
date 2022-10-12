@@ -63,14 +63,6 @@
                     <div class="col-md-4">
                         <mat-form-field class="example-full-width">
                             <mat-label>Punto B</mat-label>
-                            <!--input matInput [matAutocomplete]="punto" formControlName="punto" (keyup)="completar(trigger)"[(ngModel)]="npunto" #trigger="matAutocompleteTrigger"  >
-                            <mat-autocomplete #punto="matAutocomplete"
-                                (optionSelected)="selectionpunto($event.option.value)"
-                                [displayWith]="displayFn.bind(this)">
-                                <mat-option *ngFor="let e of filteredOptionsPunto | async" [value]="e">
-                                    {{e.nombre}}
-                                </mat-option>
-                            </mat-autocomplete-->
                             <mat-select id="punto" name="punto" formControlName="punto" required>
                                 <mat-option *ngFor="let p of puntos" [value]="p">
                                     {{p.nombre}}
@@ -162,7 +154,26 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
+                <div class="col-lg-4 col-md-6 col-sm-6" [hidden]="data.isnew">
+                    <mat-form-field appearance="none">
+                        <mat-label>Inicio de Baja</mat-label>
+                        <input matInput readonly [matDatepicker]="ini"[max]="data.fin==undefined? undefined:data.fin.value"  [formControl]="data.inicio" >
+                        <mat-hint>YYYY-MM-DD</mat-hint>
+                        <mat-datepicker-toggle matSuffix [for]="ini"></mat-datepicker-toggle>
+                        <mat-datepicker #ini></mat-datepicker>
+                      </mat-form-field>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-6" [hidden]="data.isnew">
+                    <mat-form-field appearance="none">
+                        <mat-label>Fin de Baja</mat-label>
+                        <input matInput readonly [matDatepicker]="fin" [min]="data.inicio==undefined? undefined:data.inicio.value" [formControl]="data.fin" >
+                        <mat-hint>YYYY-MM-DD</mat-hint>
+                        <mat-datepicker-toggle matSuffix [for]="fin"></mat-datepicker-toggle>
+                        <mat-datepicker #fin></mat-datepicker>
+                      </mat-form-field>
+                </div>
             </div>
+           
             <div class="row">
                 <button mat-button mat-raised-button type="submit" class="btn btn-default pull-left"
                     matStepperPrevious>Regresar</button>
