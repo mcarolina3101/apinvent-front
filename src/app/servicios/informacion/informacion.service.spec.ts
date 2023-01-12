@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { InformacionService } from './informacion.service';
 import { TicketsService } from './tickets.service';
+import { ActividadService } from './actividad.service';
 import { InventarioService } from './inventario.service';
 import { EnlaceService } from './enlace.service';
 import { UsuarioService } from './usuario.service';
@@ -26,6 +27,19 @@ describe('TicketsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(TicketsService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});
+
+describe('ActividadService', () => {
+  let service: ActividadService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(ActividadService);
   });
 
   it('should be created', () => {

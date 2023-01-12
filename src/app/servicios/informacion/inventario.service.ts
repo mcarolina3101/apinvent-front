@@ -19,7 +19,7 @@ export class InventarioService {
     'Content-type': "application/json"
   });
   //INVENTARIO
-  listinventario(info: any): Observable<HttpResponse<any>> {
+  list(info: any): Observable<HttpResponse<any>> {
     this.ruta = 'inventario/list';
     let fin;
     let ini
@@ -98,7 +98,7 @@ export class InventarioService {
 
     //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
-  downloadinv(info: any): Observable<HttpResponse<Blob>> {
+  download(info: any): Observable<HttpResponse<Blob>> {
     this.ruta = 'inventario/download';
     let fin;
     let ini
@@ -157,7 +157,7 @@ export class InventarioService {
     return this.http.post(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
     //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
-  getinventariobyid(n: number): Observable<HttpResponse<any>> {
+  getbyid(n: number): Observable<HttpResponse<any>> {
     this.ruta = 'inventario/id';
     let body = JSON.stringify({
       id: n,
@@ -172,7 +172,7 @@ export class InventarioService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  insertinventario(info: any): Observable<HttpResponse<any>> {
+  insert(info: any): Observable<HttpResponse<any>> {
     this.ruta = 'inventario/crear';
     let body = JSON.stringify({
       //id:info.idedit,      
@@ -200,7 +200,7 @@ export class InventarioService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  editarinventario(info: any): Observable<HttpResponse<any>> {
+  editar(info: any): Observable<HttpResponse<any>> {
 
     this.ruta = 'inventario/actualizar';
     let body = JSON.stringify({

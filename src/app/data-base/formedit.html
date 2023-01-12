@@ -1,6 +1,6 @@
-<h1 mat-dialog-title>{{data.accion}}</h1>
+<h1 mat-dialog-title>{{data.varform.accion}}</h1>
 <div mat-dialog-content>
-  <div [hidden]="data.editcitytipo">
+  <div [hidden]="data.varform.editcitytipo">
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Tipo/Ciudad</mat-label>
       <mat-select [formControl]="data.ubicontrol" (selectionChange)="onSelectionUbi()">
@@ -9,9 +9,9 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div [hidden]="data.hiddenselectubi">
+  <div [hidden]="data.varform.hiddenselectubi">
     <mat-form-field class="example-full-width" appearance="fill">
-      <mat-label>Agencia/TipoCiudad/</mat-label>
+      <mat-label>Localidad/TipoCiudad/</mat-label>
       <mat-select [formControl]="data.ubicontrol" (selectionChange)="onSelectionUbi()">
         <mat-option *ngFor="let c of selectUbic" [value]="c">{{c.nombre}}
         </mat-option>
@@ -36,19 +36,42 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div [hidden]="!data.editcitytipo">
+  <div [hidden]="data.varform.hiddennombre">
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Nombre</mat-label>
-      <input matInput [(ngModel)]="data.nombre" [disabled]="data.blockednombre">
+      <input matInput [(ngModel)]="data.nombre" [disabled]="data.varform.blockednombre">
     </mat-form-field>
   </div>
-
-  
-  <div [hidden]="!data.isproblem">
-      <mat-checkbox id="lan" name="lan" [(ngModel)]="data.lan"> Afectacion Lan</mat-checkbox>
+  <div [hidden]="!data.varform.isproblem">
+    <mat-checkbox id="lan" name="lan" [(ngModel)]="data.varform.lan"> Afectacion Lan</mat-checkbox>
   </div>
-
-  <div [hidden]="data.isnew">
+  <div [hidden]="data.varform.hiddenact">
+    <mat-checkbox id="issub" name="issub" [(ngModel)]="data.varform.issub"> Es una subactividad</mat-checkbox>
+    <mat-checkbox id="editmins" name="editmins" [(ngModel)]="data.varform.editmins"> Editar minutos de
+      subactividad</mat-checkbox>
+    <mat-checkbox id="hassub" name="hassub" [(ngModel)]="data.varform.hassub"> Tiene Subactividades</mat-checkbox>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Minutos</mat-label>
+      <input matInput [(ngModel)]="data.varform.minutos" type="number">
+    </mat-form-field>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>N/A: NO Ingreso/Retiro de equio, NO Wireless</mat-label>
+      <input matInput [(ngModel)]="data.varform.subact0" pattern="^[0-9]{0,12}([,][0-9]{0,12})*?$" placeholder="Ex. 1,2,3,4">
+    </mat-form-field>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Ingreso/Retiro de equio, NO Wireless</mat-label>
+      <input matInput [(ngModel)]="data.varform.subact1" pattern="^[0-9]{0,12}([,][0-9]{0,12})*?$" placeholder="Ex. 1,2,3,4" >
+    </mat-form-field>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>NO Ingreso/Retiro de equio, Wireless</mat-label>
+      <input matInput [(ngModel)]="data.varform.subact2" pattern="^[0-9]{0,12}([,][0-9]{0,12})*?$" placeholder="Ex. 1,2,3,4">
+    </mat-form-field>
+    <mat-form-field class="example-full-width" appearance="fill">
+      <mat-label>Ingreso/Retiro de equio, Wireless</mat-label>
+      <input matInput [(ngModel)]="data.varform.subact3" pattern="^[0-9]{0,12}([,][0-9]{0,12})*?$" placeholder="Ex. 1,2,3,4">
+    </mat-form-field>
+  </div>
+  <div [hidden]="data.varform.isnew">
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Activado</mat-label>
       <mat-select [(value)]="data.selectedact">
@@ -56,10 +79,8 @@
       </mat-select>
     </mat-form-field>
   </div>
-
-  
-
 </div>
 <div mat-dialog-actions>
-  <button mat-button [mat-dialog-close]="data" [disabled]="data.botonenviar" cdkFocusInitial color="primary">Ok</button>
+  <button mat-button [mat-dialog-close]="data" [disabled]="data.varform.botonenviar" cdkFocusInitial
+    color="primary">Ok</button>
 </div>

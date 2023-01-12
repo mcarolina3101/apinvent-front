@@ -37,6 +37,7 @@ function instanceOfCharacter(character: any): character is Character {
 export const CharacterSelectionRequiredValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
   !instanceOfCharacter(control?.value) ? { matchRequired: true } : null;
 
+
 @Component({
   selector: 'app-data-base',
   templateUrl: './data-base.component.html',
@@ -49,6 +50,7 @@ export const CharacterSelectionRequiredValidator: ValidatorFn = (control: Abstra
     ]),
   ],
 })
+
 export class DataBaseComponent implements OnInit {
   public displayedColumns: string[] = [ //Ambientes, Orion, Propietarios
     'demo-nombre1',
@@ -70,6 +72,12 @@ export class DataBaseComponent implements OnInit {
     'demo-estado',
     'demo-action'
   ];
+  public displayedColumns3: string[] = [ //Ambientes, Orion, Propietarios
+    'demo-nombre3',
+    'demo-estado3',
+    'demo-lan3',
+    'demo-action3'
+  ];
   public displayedColumns4: string[] = [ //Ciudad, Hardware
     'demo-nombre4',
     'demo-equipo4',
@@ -78,63 +86,66 @@ export class DataBaseComponent implements OnInit {
     'demo-estado4',
     'demo-action4'
   ];
-  public displayedColumns3: string[] = [ //Ambientes, Orion, Propietarios
-    'demo-nombre3',
-    'demo-estado3',
-    'demo-lan3',
-    'demo-action3'
+  public displayedColumns5: string[] = [ //Actividades
+    'demo-id5',
+    'demo-nombre5',
+    'demo-issub5',
+    'demo-mins5',
+    'demo-hassub5',
+    'demo-sub50',
+    'demo-sub51',
+    'demo-sub52',
+    'demo-sub53',
+    'demo-estado5',
+    'demo-action5'
   ];
   public date = new FormControl(moment());
   modeloFormG = this._formBuilder.group({
-
     equipo: new FormControl(undefined, [Validators.required]),
     marca: new FormControl(undefined, [Validators.required]),
     flash: new FormControl(undefined),
     ram: new FormControl(undefined),
     date: new FormControl(undefined)
   });
+
+  public varform: any;
+  public cd;
   public inventario: any;
   public ambiente: any;
+  public problema: any;
+  public actividad: any;
   public orion: any;
   public propietario: any;
   public entidad: any;
   public hardware: any;
   public hardwareOp: any;
   public tipohardware: any;
-  public prefixmem: any;
   public modelo: any;
-  public lan: any;
-  public cd;
-  public isproblem = false;
-  public isnew: any = false;
-  public hiddenselectubi = true;
-  public editcitytipo = true;
-  public editagencia = true;
-  public botonenviar = false;
-  public nombre: string = "";
-  public accion: string = '';
-  public id: number = 0;
   public totalenght = 1000;
-  public totalenght2 = 1000;
   public pageIndex = 0;
-  public pageIndex2 = 0;
-  public selectedact: number;
+
+  public prefixmem: any;
   public selectedtipo: number;
-  public editado1: any; //info de editado
-  public blockednombre: any;
+  public editado1: any;
+  public accion: string = '';
+  public isnew: any;
+  public id: number = 0;
+  public nombre: string = "";
+  public selectedact: any;
   tiposcontrolarr = new FormControl();
   citiescontrolarr = new FormControl();
   tiposcontrol = new FormControl();
   citiescontrol = new FormControl();
   ubicontrol = new FormControl();
+
   public activado: any = [{ id: 1, nombre: 'Si' }, { id: 0, nombre: 'No' }];
   public hardwares: any[];
   public entidades: any[];
   public propietarios: any[];
   public ambientes: any[];
   public problemas: any[];
-  public problema: any;
   public orions: any[];
+  public actividades: any[];
   public equipos: any[] = [];
   public marcas: any[] = [];
   public flashs: any[] = [];
@@ -162,6 +173,7 @@ export class DataBaseComponent implements OnInit {
     this.ambiente = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.problema = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.orion = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
+    this.actividad = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.entidad = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.propietario = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.hardware = { "nombre": "", "estado": 1, "idLink": null, "pindex": this.pageIndex + 1 }
@@ -178,6 +190,33 @@ export class DataBaseComponent implements OnInit {
     this.obtenerInfoAmbientes()
   }
 
+  resetVarform() {
+    this.varform = {
+      lan: false,
+      isproblem: false,
+      isnew: false,
+      botonenviar: false,
+      activado: false,
+      minutos: 0,
+      issub: false,
+      hassub: false,
+      editmins: false,
+      hiddenact: true,
+      hiddenselectubi: true,
+      editagencia: false,
+      editcitytipo: true,
+      hiddennombre: false,
+      accion: '',
+      blockednombre: false,
+      subact0: null,
+      subact1: null,
+      subact2: null,
+      subact3: null,
+    }
+    this.nombre = null;
+    this.selectedact = null;
+  }
+
   //AMBIENTE
   PageAmbientes(event) {
     this.pageIndex = event.pageIndex;
@@ -187,27 +226,26 @@ export class DataBaseComponent implements OnInit {
   clickListadoAmbientes() {
     this.pageIndex = 0;
     this.ambiente.pindex = 1;
-    this.hiddenselectubi = true,
-      this.obtenerInfoAmbientes();
+    this.obtenerInfoAmbientes();
   }
   openDialogAmbientes(): void {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.isnew = true;
+    this.varform.accion = "Ambiente"
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
-        botonenviar: false,
-        isproblem: false,
-        lan: this.lan,
-        isnew: true,
+        varform: this.varform,
         nombre: this.nombre,
-        hiddenselectubi: true,
-        editagencia: false,
-        editcitytipo: true,
-        accion: 'Ambiente',
+        activado: this.activado,
+        id: this.id,
+        selectedact: this.selectedact,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
-        ubicontrol: this.ubicontrol
+        ubicontrol: this.ubicontrol,
+        editado1: this.editado1
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -269,6 +307,9 @@ export class DataBaseComponent implements OnInit {
     this.nombre = "";
     this.id = 0;
     this.editado1 = undefined;
+    this.resetVarform();
+    this.varform.blockednombre = true;
+    this.varform.accion = "Ambiente";
     this.informacionService.getambientebyid(n).subscribe(resp => {
       this.editado1 = resp["info"];
       this.nombre = this.editado1.nombre;
@@ -277,22 +318,15 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
-          botonenviar: false,
+          varform: this.varform,
           nombre: this.nombre,
-          isnew: false,
-          isproblem: false,
-          lan: this.lan,
           activado: this.activado,
-          selectedact: this.selectedact,
-          hiddenselectubi: true,
-          editagencia: false,
-          editcitytipo: true,
           id: this.id,
-          accion: 'Ambiente',
-          blockednombre: true,
+          selectedact: this.selectedact,
           tiposcontrol: this.tiposcontrol,
           citiescontrol: this.citiescontrol,
-          ubicontrol: this.ubicontrol
+          ubicontrol: this.ubicontrol,
+          editado1: this.editado1
         }
       });
       dialogRef.afterClosed().subscribe(result => {
@@ -400,21 +434,22 @@ export class DataBaseComponent implements OnInit {
   openDialogAgencia(n: number): void {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.isnew = true;
+    this.varform.hiddenselectubi = false;
+    this.varform.accion = "Ubicacion"
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
-        botonenviar: false,
-        isnew: true,
-        isproblem: false,
-        lan: this.lan,
+        varform: this.varform,
         nombre: this.nombre,
-        hiddenselectubi: false,
-        editagencia: false,
-        editcitytipo: true,
-        accion: 'Ubicacion',
+        activado: this.activado,
+        id: this.id,
+        selectedact: this.selectedact,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
-        ubicontrol: this.ubicontrol
+        ubicontrol: this.ubicontrol,
+        editado1: this.editado1
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -580,31 +615,26 @@ export class DataBaseComponent implements OnInit {
   openDialogAgenciaEdit(n: number) {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.editagencia = true;
+    this.varform.accion = "Ubicacion"
     this.informacionService.getagenciabyid(n).subscribe(resp => {
       this.editado1 = resp["info"];
-      this.nombre = this.editado1.nombre;
       this.selectedact = this.editado1.estado ? 1 : 0;
+      this.nombre = this.editado1.nombre;
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
-          botonenviar: false,
-          isnew: false,
-          isproblem: false,
-          lan: this.lan,
+          varform: this.varform,
           nombre: this.nombre,
           activado: this.activado,
-          selectedact: this.selectedact,
-          hiddenselectubi: true,
-          editagencia: true,
-          editcitytipo: true,
           id: this.id,
-          editado1: this.editado1,
-          accion: 'Ubicacion',
-          blockednombre: false,
+          selectedact: this.selectedact,
           tiposcontrol: this.tiposcontrol,
           citiescontrol: this.citiescontrol,
-          ubicontrol: this.ubicontrol
+          ubicontrol: this.ubicontrol,
+          editado1: this.editado1
         }
       });
       dialogRef.afterClosed().subscribe(result => {
@@ -695,25 +725,22 @@ export class DataBaseComponent implements OnInit {
   openDialogCTedit() {
     //this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.hiddennombre = true;
+    this.varform.editcitytipo = false;
+    this.varform.accion = "Ubicacion"
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
-        botonenviar: false,
-        isnew: false,
-        isproblem: false,
-        lan: this.lan,
+        varform: this.varform,
         nombre: this.nombre,
         activado: this.activado,
-        selectedact: this.selectedact,
-        hiddenselectubi: true,
-        editagencia: false,
-        editcitytipo: false,
         id: this.id,
-        accion: 'Ubicacion',
-        blockednombre: true,
+        selectedact: this.selectedact,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
-        ubicontrol: this.ubicontrol
+        ubicontrol: this.ubicontrol,
+        editado1: this.editado1
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -1080,7 +1107,6 @@ export class DataBaseComponent implements OnInit {
     const dialogRef = this.dialog.open(FormHardwareEditComponent, {
       width: '400px',
       data: {
-        botonenviar: false,
         nombre: this.nombre, tipohardware: this.tipohardware,
         selectedtipo: this.selectedtipo, prefixmem: this.prefixmem,
         isnew: true
@@ -1167,7 +1193,6 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormHardwareEditComponent, {
         width: '400px',
         data: {
-          botonenviar: false,
           isnew: false,
           nombre: this.nombre, activado: this.activado, selectedact: this.selectedact, prefixmem: this.prefixmem,
           tipohardware: this.tipohardware, selectedtipo: this.selectedtipo, id: this.id
@@ -1313,10 +1338,7 @@ export class DataBaseComponent implements OnInit {
       "Ram": [{ "id": null, "nombre": "" }]
     }
     this.nombre = "";
-    /*this.selectedtipo = 0;
-    this.selectedequipo = 0;*/
     this.selectedact = 1;
-    //this.myControlEquipo.setValidators(Validators.compose([Validators.required,]))
     const dialogRef = this.dialog.open(FormModeloComponent, {
       width: '400px',
       data: {
@@ -1383,7 +1405,6 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormModeloComponent, {
         width: '400px',
         data: {
-          botonenviar: false,
           accion: "Editar",
           nombre: this.nombre,
           activado: this.activado,
@@ -1534,21 +1555,21 @@ export class DataBaseComponent implements OnInit {
   openDialogOrion(): void {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.isnew = true;
+    this.varform.accion = "Orion"
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
-        botonenviar: false,
-        isnew: true,
-        isproblem: false,
-        lan: this.lan,
+        varform: this.varform,
         nombre: this.nombre,
-        accion: 'Orion',
-        hiddenselectubi: true,
-        editagencia: false,
-        editcitytipo: true,
+        activado: this.activado,
+        id: this.id,
+        selectedact: this.selectedact,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
-        ubicontrol: this.ubicontrol
+        ubicontrol: this.ubicontrol,
+        editado1: this.editado1
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -1583,6 +1604,8 @@ export class DataBaseComponent implements OnInit {
   openDialogOrionEdit(n: number) {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.accion = "Orion"
     this.informacionService.getorionbyid(n).subscribe(resp => {
       this.editado1 = resp["info"];
       this.nombre = this.editado1.nombre;
@@ -1591,22 +1614,15 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
-          botonenviar: false,
-          isnew: false,
-          isproblem: false,
-          lan: this.lan,
+          varform: this.varform,
           nombre: this.nombre,
           activado: this.activado,
-          selectedact: this.selectedact,
           id: this.id,
-          hiddenselectubi: true,
-          editagencia: false,
-          editcitytipo: true,
-          accion: 'Orion',
-          blockednombre: false,
+          selectedact: this.selectedact,
           tiposcontrol: this.tiposcontrol,
           citiescontrol: this.citiescontrol,
-          ubicontrol: this.ubicontrol
+          ubicontrol: this.ubicontrol,
+          editado1: this.editado1
         }
       });
       dialogRef.afterClosed().subscribe(result => {
@@ -1717,21 +1733,21 @@ export class DataBaseComponent implements OnInit {
   openDialogPropietario(): void {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.isnew = true;
+    this.varform.accion = "Propietario"
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
-        botonenviar: false,
-        isnew: true,
-        isproblem: false,
-        lan: this.lan,
+        varform: this.varform,
         nombre: this.nombre,
-        hiddenselectubi: true,
-        editagencia: false,
-        editcitytipo: true,
-        accion: 'Propietario',
+        activado: this.activado,
+        id: this.id,
+        selectedact: this.selectedact,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
-        ubicontrol: this.ubicontrol
+        ubicontrol: this.ubicontrol,
+        editado1: this.editado1
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -1792,30 +1808,26 @@ export class DataBaseComponent implements OnInit {
   openDialogPropietariosEdit(n: number) {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.accion = "Propietario"
+    this.varform.blockednombre = true;
     this.informacionService.getpropietariobyid(n).subscribe(resp => {
       this.editado1 = resp["info"];
       this.nombre = this.editado1.nombre;
-      this.selectedact = this.editado1.estado ? 1 : 0;
+      this.varform.selectedact = this.editado1.estado ? 1 : 0;
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
-          botonenviar: false,
+          varform: this.varform,
           nombre: this.nombre,
           activado: this.activado,
-          hiddenselectubi: true,
-          editagencia: false,
-          editcitytipo: true,
-          selectedact: this.selectedact,
           id: this.id,
-          isnew: false,
-          isproblem: false,
-          lan: this.lan,
-          accion: 'Propietario',
-          blockednombre: true,
+          selectedact: this.selectedact,
           tiposcontrol: this.tiposcontrol,
           citiescontrol: this.citiescontrol,
-          ubicontrol: this.ubicontrol
+          ubicontrol: this.ubicontrol,
+          editado1: this.editado1
         }
       });
       dialogRef.afterClosed().subscribe(result => {
@@ -1947,28 +1959,27 @@ export class DataBaseComponent implements OnInit {
   openDialogEntidad(): void {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.isnew = true;
+    this.varform.accion = "Entidad"
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
-        botonenviar: false,
-        isnew: true,
-        isproblem: false,
-        lan: this.lan,
-        hiddenselectubi: true,
-        editagencia: false,
-        editcitytipo: true,
+        varform: this.varform,
         nombre: this.nombre,
-        accion: 'Entidad',
+        activado: this.activado,
+        id: this.id,
+        selectedact: this.selectedact,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
-        ubicontrol: this.ubicontrol
+        ubicontrol: this.ubicontrol,
+        editado1: this.editado1
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result != undefined) {
         this.informacionService.insertentidades(result.nombre).subscribe(resp => {
           this.obtenerInfoEntidades();
-          this.botonenviar = true;
         }, err => {
           if (err.status === 400) {
             //const type = ['', 'info', 'success', 'warning', 'danger'];
@@ -2002,6 +2013,8 @@ export class DataBaseComponent implements OnInit {
   openDialogEntidadEdit(n: number) {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.accion = "Entidad"
     this.informacionService.getentidadesbyid(n).subscribe(resp => {
       this.editado1 = resp["info"];
       this.nombre = this.editado1.nombre;
@@ -2010,29 +2023,21 @@ export class DataBaseComponent implements OnInit {
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
-          botonenviar: false,
-          isnew: false,
-          isproblem: false,
-          lan: this.lan,
+          varform: this.varform,
           nombre: this.nombre,
           activado: this.activado,
-          hiddenselectubi: true,
-          editagencia: false,
-          editcitytipo: true,
-          selectedact: this.selectedact,
           id: this.id,
-          accion: 'Entidad',
-          blockednombre: true,
+          selectedact: this.selectedact,
           tiposcontrol: this.tiposcontrol,
           citiescontrol: this.citiescontrol,
-          ubicontrol: this.ubicontrol
+          ubicontrol: this.ubicontrol,
+          editado1: this.editado1
         }
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result != undefined) {
           this.informacionService.editarentidades({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
             this.obtenerInfoEntidades();
-            this.botonenviar = true;
             $.notify({
               icon: "notifications",
               message: "Editado"
@@ -2082,7 +2087,7 @@ export class DataBaseComponent implements OnInit {
             }
           });
         }
-        
+
       });
     }, err => {
       if (err.status === 400) {
@@ -2121,32 +2126,32 @@ export class DataBaseComponent implements OnInit {
   clickListadoProblemas() {
     this.pageIndex = 0;
     this.problema.pindex = 1;
-    this.hiddenselectubi = true,
-      this.obtenerInfoProblemas();
+    this.obtenerInfoProblemas();
   }
   openDialogProblemas(): void {
     this.editado1 = undefined;
     this.nombre = "";
+    this.resetVarform();
+    this.varform.isnew = true;
+    this.varform.isproblem = true;
+    this.varform.accion = "Problema"
     const dialogRef = this.dialog.open(FormComponentEdit, {
       width: '400px',
       data: {
-        botonenviar: false,
-        isnew: true,
-        isproblem: true,
-        lan: this.lan,
+        varform: this.varform,
         nombre: this.nombre,
-        hiddenselectubi: true,
-        editagencia: false,
-        editcitytipo: true,
-        accion: 'Problema',
+        activado: this.activado,
+        id: this.id,
+        selectedact: this.selectedact,
         tiposcontrol: this.tiposcontrol,
         citiescontrol: this.citiescontrol,
-        ubicontrol: this.ubicontrol
+        ubicontrol: this.ubicontrol,
+        editado1: this.editado1
       }
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result != undefined) {
-        this.informacionService.insertproblema({"nombre":result.nombre, "lan":result.lan}).subscribe(resp => {
+        this.informacionService.insertproblema({ "nombre": result.nombre, "lan": result.lan }).subscribe(resp => {
           this.obtenerInfoProblemas();
           $.notify({
             icon: "notifications",
@@ -2203,36 +2208,33 @@ export class DataBaseComponent implements OnInit {
     this.nombre = "";
     this.id = 0;
     this.editado1 = undefined;
+    this.resetVarform();
+    this.varform.isproblem = true;
+    this.varform.blockednombre = true;
+    this.varform.accion = "Problema"
     this.informacionService.getproblemabyid(n).subscribe(resp => {
       this.editado1 = resp["info"];
       this.nombre = this.editado1.nombre;
       this.selectedact = this.editado1.estado ? 1 : 0;
+      this.varform.lan = this.editado1.lan;
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
         data: {
-          botonenviar: false,
+          varform: this.varform,
           nombre: this.nombre,
-          isnew: false,
-          isproblem: true,
-          lan: this.lan,
           activado: this.activado,
-          selectedact: this.selectedact,
-          hiddenselectubi: true,
-          editagencia: false,
-          editcitytipo: true,
           id: this.id,
-          accion: 'Problema',
-          blockednombre: true,
+          selectedact: this.selectedact,
           tiposcontrol: this.tiposcontrol,
           citiescontrol: this.citiescontrol,
-          ubicontrol: this.ubicontrol
+          ubicontrol: this.ubicontrol,
+          editado1: this.editado1
         }
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result != undefined) {
-          console.log(result)
-          this.informacionService.editarproblema({ "nombre": result.nombre, "lan":result.lan,"id": result.id, "estado": result.selectedact }).subscribe(resp => {
+          this.informacionService.editarproblema({ "nombre": result.nombre, "lan": result.lan, "id": result.id, "estado": result.varform.selectedact }).subscribe(resp => {
             this.obtenerInfoProblemas();
             $.notify({
               icon: "notifications",
@@ -2319,6 +2321,197 @@ export class DataBaseComponent implements OnInit {
       }
     });
   }
+  //ACTIVIDADES
+  PageActividades(event) {
+    this.pageIndex = event.pageIndex;
+    this.actividad.pindex = this.pageIndex + 1;
+    this.obtenerInfoActividades()
+  }
+  clickListadoActividades() {
+    this.pageIndex = 0;
+    this.orion.pindex = 1;
+    this.obtenerInfoActividades();
+  }
+  obtenerInfoActividades() {
+    this.informacionService.listact(this.actividad).subscribe(resp => {
+      this.actividades = resp.body["info"];
+      const keys = resp.headers;
+      this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
+  openDialogActividades(): void {
+    this.editado1 = undefined;
+    this.nombre = "";
+    this.resetVarform();
+    this.varform.isnew = true;
+    this.varform.hiddenact = false;
+    this.varform.accion = "Actividad"
+    const dialogRef = this.dialog.open(FormComponentEdit, {
+      width: '400px',
+      data: {
+        varform: this.varform,
+        nombre: this.nombre,
+        activado: this.activado,
+        id: this.id,
+        selectedact: this.selectedact,
+        tiposcontrol: this.tiposcontrol,
+        citiescontrol: this.citiescontrol,
+        ubicontrol: this.ubicontrol,
+        editado1: this.editado1
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result != undefined) {
+        result.varform.editmins = result.varform.editmins ? 1 : 0;
+        result.varform.hassub = result.varform.hassub ? 1 : 0;
+        result.varform.issub = result.varform.issub ? 1 : 0;
+        this.informacionService.insertact(result.nombre, result.varform).subscribe(resp => {
+          this.obtenerInfoActividades();
+          $.notify({
+            icon: "notifications",
+            message: "Ingresado"
+          }, {
+            type: "success",
+            timer: 4000,
+            placement: {
+              from: 'top',
+              align: 'center'
+            },
+            template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+              '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+              '<i class="material-icons" data-notify="icon">notifications</i> ' +
+              '<span data-notify="title">{1}</span> ' +
+              '<span data-notify="message">{2}</span>' +
+              '<div class="progress" data-notify="progressbar">' +
+              '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+              '</div>' +
+              '<a href="{3}" target="{4}" data-notify="url"></a>' +
+              '</div>'
+          });
+        });
+      }
+    });
+  }
+  openDialogActividadesEdit(n: number) {
+    this.editado1 = undefined;
+    this.nombre = "";
+    this.resetVarform();
+    this.varform.hiddenact = false;
+    this.varform.accion = "Actividad"
+    this.informacionService.getactbyid(n).subscribe(resp => {
+      this.editado1 = resp["info"];
+      this.nombre = this.editado1.nombre;
+      this.selectedact = this.editado1.estado ? 1 : 0;
+      this.varform.editmins = this.editado1.editmins ? 1 : 0;
+      this.varform.hassub = this.editado1.hassub ? 1 : 0;
+      this.varform.issub = this.editado1.issub ? 1 : 0;
+      this.varform.minutos = this.editado1.mins;
+      this.varform.subact0 = this.editado1.subact0;
+      this.varform.subact1 = this.editado1.subact1;
+      this.varform.subact2 = this.editado1.subact2;
+      this.varform.subact3 = this.editado1.subact3;
+      this.id = this.editado1.id;
+      const dialogRef = this.dialog.open(FormComponentEdit, {
+        width: '400px',
+        data: {
+          varform: this.varform,
+          nombre: this.nombre,
+          activado: this.activado,
+          id: this.id,
+          selectedact: this.selectedact,
+          tiposcontrol: this.tiposcontrol,
+          citiescontrol: this.citiescontrol,
+          ubicontrol: this.ubicontrol,
+          editado1: this.editado1
+        }
+      });
+      dialogRef.afterClosed().subscribe(result => {
+        if (result != undefined) {
+          this.informacionService.editaract({ "nombre": result.nombre, "id": result.id, "estado": result.selectedact }, this.varform).subscribe(resp => {
+            this.obtenerInfoActividades();
+          }, err => {
+            if (err.status === 400) {
+              //const type = ['', 'info', 'success', 'warning', 'danger'];
+              //const color = Math.floor((Math.random() * 4) + 1);
+              $.notify({
+                icon: "notifications",
+                message: err.error.log
+              }, {
+                type: "warning",
+                timer: 4000,
+                placement: {
+                  from: 'top',
+                  align: 'center'
+                },
+                template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+                  '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+                  '<i class="material-icons" data-notify="icon">notifications</i> ' +
+                  '<span data-notify="title">{1}</span> ' +
+                  '<span data-notify="message">{2}</span>' +
+                  '<div class="progress" data-notify="progressbar">' +
+                  '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                  '</div>' +
+                  '<a href="{3}" target="{4}" data-notify="url"></a>' +
+                  '</div>'
+              });
+            }
+          });
+        }
+      });
+    }, err => {
+      if (err.status === 400) {
+        //const type = ['', 'info', 'success', 'warning', 'danger'];
+        //const color = Math.floor((Math.random() * 4) + 1);
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });
+  }
 
 }
 
@@ -2334,8 +2527,10 @@ export class FormComponentEdit {
   public cities: any[] = [];
   public hiddencities = true;
   public hiddentipos = true;
+
+
   public selectUbic: any = [
-    { id: 2, nombre: 'Agencia' },
+    { id: 2, nombre: 'Localidad' },
     { id: 1, nombre: 'Tipo' },
     { id: 0, nombre: 'Ciudad' }
   ];
@@ -2349,14 +2544,15 @@ export class FormComponentEdit {
     private informacionService: InformacionService) { }
 
   ngOnInit(): void {
-    if (!this.data.hiddenselectubi) {
-      this.obtenerInfoCiudades();
-    }
-    if (!this.data.editcitytipo) {
+    if (!this.data.varform.hiddenselectubi) {
       this.obtenerInfoCiudades();
     }
 
-    if (this.data.editagencia) {
+    if (!this.data.varform.editcitytipo) {
+      this.obtenerInfoCiudades();
+    }
+
+    if (this.data.varform.editagencia) {
       this.obtenerInfoCiudades();
       this.hiddencities = false;
       this.hiddentipos = false;
@@ -2380,7 +2576,7 @@ export class FormComponentEdit {
     this.informacionService.listtiposNombre(cd).subscribe(resp => {
       this.tipos = resp.body["info"];
       const keys = resp.headers;
-      if (this.data.editagencia) {
+      if (this.data.varform.editagencia) {
         this.tipos.forEach(element => {
           if (element.id == this.data.editado1.Ciudad[0].Tipo[0].idtipo) {
             this.data.tiposcontrol.setValue(element)
@@ -2419,7 +2615,7 @@ export class FormComponentEdit {
     this.informacionService.listciudadesNombre({ "nombre": "", "estado": 1 }).subscribe(resp => {
       this.cities = resp.body["info"];
       const keys = resp.headers;
-      if (this.data.editagencia) {
+      if (this.data.varform.editagencia) {
         this.cities.forEach(element => {
           if (element.id == this.data.editado1.Ciudad[0].idciudad) {
             this.data.citiescontrol.setValue(element)

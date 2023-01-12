@@ -16,8 +16,10 @@ import { EnlacesComponent } from '../../enlaces/enlaces.component';
 import { HistoryComponent  as HistoryComponent2}  from '../../enlaces/history-component';
 import { FormComponentEnlaces } from '../../enlaces/enlaces.component';
 import { TicketsComponent } from '../../tickets/tickets.component';
-import {MatMenuModule} from '@angular/material/menu';
 import { FormComponentTickets } from '../../tickets/tickets.component';
+import { ActividadComponent } from '../../actividad/actividad.component';
+import { FormComponentActividad } from '../../actividad/actividad.component';
+import {MatMenuModule} from '@angular/material/menu';
 import {MatButtonModule} from '@angular/material/button';
 import {MatInputModule} from '@angular/material/input';
 import {MatRippleModule} from '@angular/material/core';
@@ -85,7 +87,9 @@ import { MatSelectFilterModule } from 'mat-select-filter';
     EnlacesComponent,
     TicketsComponent,
     FormComponentTickets,
-    FormComponentEnlaces
+    FormComponentEnlaces,
+    ActividadComponent,
+    FormComponentActividad
   ]
 })
 

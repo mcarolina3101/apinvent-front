@@ -3,104 +3,211 @@
     max-width: 100%;
     overflow: auto;
   }
+
   ::ng-deep .demo-table {
     width: 100%;
     height: 75%;
-    overflow: auto; 
-  } 
+    overflow: auto;
+  }
+
   ::ng-deep .mat-column-demo-nombre1 {
     font-style: italic;
     font-size: 15px;
     padding-right: 8px !important;
     width: 20%;
   }
+
   ::ng-deep .mat-column-demo-estado1 {
     font-style: italic;
     width: 5%;
-  }  
+  }
+
   ::ng-deep .mat-column-demo-action1 {
     width: 75%;
   }
+
   ::ng-deep .mat-column-demo-nombre2 {
     font-style: italic;
     font-size: 15px;
     padding-right: 8px !important;
     width: 15%;
   }
+
   ::ng-deep .mat-column-demo-link2 {
     font-style: italic;
     font-size: 15px;
     padding-right: 8px !important;
     width: 10%;
   }
+
   ::ng-deep .mat-column-demo-estado2 {
     font-style: italic;
     width: 5%;
   }
+
   ::ng-deep .mat-column-demo-action2 {
     width: 70%;
   }
+
   ::ng-deep .mat-column-demo-nombre3 {
     font-style: italic;
     font-size: 15px;
     padding-right: 8px !important;
     width: 30%;
   }
+
   ::ng-deep .mat-column-demo-estado3 {
     font-style: italic;
     width: 15%;
   }
-  ::ng-deep .mat-column-demo-action2 {
-    width: 55%;
-  }
+
   ::ng-deep .mat-column-demo-nombre4 {
     font-style: italic;
     font-size: 15px;
     padding-right: 8px !important;
-    width: 100px!important;
+    width: 100px !important;
   }
+
   ::ng-deep .mat-column-demo-marca4 {
     font-style: italic;
     font-size: 15px;
     padding-right: 8px !important;
     width: 100px !important;
   }
+
   ::ng-deep .mat-column-demo-equipo4 {
     font-style: italic;
     font-size: 15px;
     padding-right: 8px !important;
-    width: 100px!important;
+    width: 100px !important;
   }
+
   ::ng-deep .mat-column-demo-fecha4 {
     font-style: italic;
     font-size: 15px;
     padding-right: 8px !important;
-    width: 100px!important;
+    width: 100px !important;
   }
+
   ::ng-deep .mat-column-demo-estado4 {
     font-style: italic;
-    width: 100px!important;
+    width: 100px !important;
   }
+
   ::ng-deep .mat-column-demo-action4 {
-    width: 100px!important;
+    width: 100px !important;
   }
+
+  ::ng-deep th.mat-column-demo-nombre5,
+  td.mat-column-demo-nombre5,
+  .mat-column-demo-nombre5 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    max-width: 180px !important;
+  }
+
+  ::ng-deep th.mat-column-demo-id5,
+  td.mat-column-demo-id5,
+  .mat-column-demo-id5 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    max-width: 40px !important;
+  }
+  ::ng-deep th.mat-column-demo-mins5,
+  td.mat-column-demo-mins5,
+  .mat-column-demo-mins5 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    max-width: 40px !important;
+  }
+
+  ::ng-deep th.mat-column-demo-issub5,
+  td.mat-column-demo-issub5,
+  .mat-column-demo-issub5 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    width: 110px !important;
+  }
+
+  ::ng-deep th.mat-column-demo-hassub5,
+  td.mat-column-demo-hassub5,
+  .mat-column-demo-hassub5 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    width: 100px !important;
+  }
+
+  ::ng-deep th.mat-column-demo-sub50,
+  td.mat-column-demo-sub50,
+  .mat-column-demo-sub50 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    max-width: 50px !important;
+  }
+
+  ::ng-deep th.mat-column-demo-sub51,
+  td.mat-column-demo-sub51,
+  .mat-column-demo-sub51 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    max-width: 80px !important;
+  }
+
+  ::ng-deep th.mat-column-demo-sub52,
+  td.mat-column-demo-sub52,
+  .mat-column-demo-sub52 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    max-width: 50px !important;
+  }
+
+  ::ng-deep th.mat-column-demo-sub53,
+  td.mat-column-demo-sub53,
+  .mat-column-demo-sub53 {
+    font-style: italic;
+    font-size: 15px;
+    padding-right: 8px !important;
+    max-width: 80px !important;
+  }
+
+  ::ng-deep th.mat-column-demo-estado5,
+  td.mat-column-demo-estado5,
+  .mat-column-demo-estado5 {
+    font-style: italic;
+    max-width: 40px !important;
+  }
+
+  ::ng-deep .mat-column-demo-action5 {
+    width: 100px !important;
+  }
+
   ::ng-deep .red {
     font-size: 25px;
     color: red
   }
+
   ::ng-deep .green {
     font-size: 25px;
     color: green;
   }
-  ::ng-deep .mat-header-cell{
+
+  ::ng-deep .mat-header-cell {
     font-weight: bold;
     font-size: 18px;
   }
 
-
   ::ng-deep tr.example-detail-row {
     height: 0 !important;
   }
+
   ::ng-deep td.mat-cell.example-detail-row {
     padding: 0 !important;
   }
@@ -108,15 +215,15 @@
   ::ng-deep tr.example-element-row {
     height: 30 !important;
   }
-  
+
   ::ng-deep tr.example-element-row:not(.example-expanded-row):hover {
     background: whitesmoke;
   }
-  
+
   ::ng-deep tr.example-element-row:not(.example-expanded-row):active {
     background: #efefef;
   }
-  
+
   ::ng-deep .example-element-row td {
     border-bottom-width: 0;
   }
@@ -126,9 +233,7 @@
     display: flex;
   }
 
-  ::ng-deep .mat-header-row{
+  ::ng-deep .mat-header-row {
     height: 10px !important;
     min-height: 10px !important;
   }
-  
-  

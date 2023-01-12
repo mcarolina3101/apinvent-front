@@ -5,9 +5,17 @@
                 <div class="card card-plain">
                     <div class="card-header card-header-danger">
                         <div class="row">
-                            <div class="col-lg-6 col-md-8 col-sm-6">
+                            <div class="col-lg-5 col-md-8 col-sm-6">
                                 <h4 class="card-title mt-0"> Tickets
                                 </h4>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-6" style="padding:0px; display:flex !important ;justify-content: flex-end !important;" >
+                                <div class="demo-button-container"  >
+                                    <button mat-icon-button color="blue" (click)="obtenerInfoInventarioClean()" 
+                                        aria-label="Limpiar Filtros">
+                                        <mat-icon>filter_alt_off</mat-icon>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-lg-2 col-md-4 col-sm-6">
                                 <mat-form-field appearance="fill">
@@ -18,7 +26,7 @@
                                         <input matEndDate formControlName="end" placeholder="End date"
                                             (dateChange)="dateEvent($event)">
                                     </mat-date-range-input>
-                                    <mat-hint>YYYY-MM-DD – YYYY-MM-DD</mat-hint>
+                                    <mat-hint>YYYY-MM-DD 00:00 – YYYY-MM-DD 23:59</mat-hint>
                                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                                     <mat-date-range-picker #picker></mat-date-range-picker>
                                 </mat-form-field>

@@ -5,6 +5,7 @@ import { TableListComponent } from '../../table/table-list.component';
 import { DataBaseComponent } from '../../data-base/data-base.component';
 import { EnlacesComponent } from '../../enlaces/enlaces.component';
 import { TicketsComponent } from '../../tickets/tickets.component';
+import { ActividadComponent } from '../../actividad/actividad.component';
 import { AutenticacionService } from 'app/servicios/autenticacion/autenticacion.service';
 import { AdministracionComponent } from '../../Administracion/administracion.component';
 
@@ -15,6 +16,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'data-base',    component: DataBaseComponent, canActivate : [AutenticacionService]  },
     { path: 'enlaces',    component: EnlacesComponent, canActivate : [AutenticacionService]  },
     { path: 'tickets',    component: TicketsComponent, canActivate : [AutenticacionService]  },
+    { path: 'actividad',    component: ActividadComponent, canActivate : [AutenticacionService]  },
     { path: 'admin',        component: AdministracionComponent, canActivate : [AutenticacionService] }
 
 ];

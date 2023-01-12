@@ -5,9 +5,17 @@
                 <div class="card card-plain">
                     <div class="card-header card-header-danger">
                         <div class="row">
-                            <div class="col-lg-10 col-md-8 col-sm-6">
+                            <div class="col-lg-9 col-md-8 col-sm-6">
                                 <h4 class="card-title mt-0"> Inventario de enlaces
                                 </h4>
+                            </div>
+                            <div class="col-lg-1 col-md-2 col-sm-6" style="padding:0px; display:flex !important ;justify-content: flex-end !important;" >
+                                <div class="demo-button-container"  >
+                                    <button mat-icon-button color="blue" (click)="obtenerInfoInventarioClean()" 
+                                        aria-label="Limpiar Filtros">
+                                        <mat-icon>filter_alt_off</mat-icon>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-lg-2 col-md-4 col-sm-6">
                                 <div class="demo-button-container">

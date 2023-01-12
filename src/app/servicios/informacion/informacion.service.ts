@@ -552,4 +552,85 @@ export class InformacionService {
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
 
+    //Actividades
+    listact(info: any): Observable<HttpResponse<any>> {
+      this.ruta = 'configact/list';
+      let body = JSON.stringify({
+        nombre: info.nombre,
+        estado: info.estado,
+        pageSize: global.pageSize,
+        pageIndex: info.pindex,
+        username: localStorage.getItem("username")
+      });
+      return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
+    }
+    listnombAct(info: any): Observable<HttpResponse<any>> {
+      this.ruta = 'configact/nombAct';
+      let body = JSON.stringify({
+        nombre: info.nombre,
+        username: localStorage.getItem("username")
+      });
+      return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
+    }
+    listnombSubact(info: any): Observable<HttpResponse<any>> {
+      this.ruta = 'configact/nombSubact';
+      let body = JSON.stringify({
+        nombre: info.nombre,
+        username: localStorage.getItem("username")
+      });
+      return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
+    }
+    getactbyid(n: number): Observable<HttpResponse<any>> {
+      this.ruta = 'configact/id';
+      let body = JSON.stringify({
+        id: n,
+        username: localStorage.getItem("username")
+      });
+      return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
+    }
+    getactopbyid(id: number, op:number): Observable<HttpResponse<any>> {
+      this.ruta = 'configact/opcion';
+      let body = JSON.stringify({
+        id: id,
+        subactop:op,
+        username: localStorage.getItem("username")
+      });
+      return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
+    }
+    insertact(info: string, varform:any): Observable<HttpResponse<any>> {
+      this.ruta = 'configact/crear';
+      let body = JSON.stringify({
+        nombre: info,
+        editmins:varform.editmins,
+        hassub:varform.hassub,
+        issub:varform.issub,
+        mins:varform.minutos,
+        subact0:varform.subact0,
+        subact1:varform.subact1,
+        subact2:varform.subact2,
+        subact3:varform.subact3,
+        username: localStorage.getItem("username")
+      });
+      return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
+    }
+    editaract(info: any, varform:any): Observable<HttpResponse<any>> {
+      this.ruta = 'configact/actualizar';
+      let body = JSON.stringify({
+        nombre: info.nombre,
+        estado: info.estado,
+        id: info.id,
+        editmins:varform.editmins ? 1:0,
+        hassub:varform.hassub ? 1:0,
+        issub:varform.issub ? 1:0,
+        mins:varform.minutos,
+        subact0:varform.subact0,
+        subact1:varform.subact1,
+        subact2:varform.subact2,
+        subact3:varform.subact3,
+        username: localStorage.getItem("username")
+      });
+      return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
+    }
+  
+
 }

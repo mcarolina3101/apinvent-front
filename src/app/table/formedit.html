@@ -278,7 +278,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6" [hidden]="data.isnew">
                     <mat-form-field class="example-full-width" appearance="fill">
                         <mat-label>Activado</mat-label>
-                        <mat-select [(value)]="data.estado" [disabled]="data.estado ==0 && perfil!=1">
+                        <mat-select [(value)]="data.estado" >
                             <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
                         </mat-select>
                     </mat-form-field>

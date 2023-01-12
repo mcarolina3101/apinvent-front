@@ -1,174 +1,191 @@
 ::ng-deep .demo-table {
-    width: 100%;
-    height: 100%;
-    overflow: auto; 
-  }
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
 
-  .mat-dialog-content{
-    max-height: 100%;
-  }
+.mat-dialog-content {
+  max-height: 100%;
+}
 
-  .mat-table-sticky-border-elem-right-demo-table {
-    border-left: 1px solid #e0e0e0;
-  }
-  
-  .mat-table-sticky-border-elem-left-demo-table {
-    border-right: 1px solid #e0e0e0;
-  }
+.mat-table-sticky-border-elem-right-demo-table {
+  border-left: 1px solid #e0e0e0;
+}
 
-  ::ng-deep .mat-column-demo-ticket {
-    font-style: italic;
-    width: 150px;
-    font-size: small;
-  }
+.mat-table-sticky-border-elem-left-demo-table {
+  border-right: 1px solid #e0e0e0;
+}
 
-  ::ng-deep .mat-column-demo-localidad {
-    font-style: italic;
-    width: 200px !important;
-    font-size :xx-small;
-    font-weight: bold;
+::ng-deep .mat-column-demo-ticket {
+  font-style: italic;
+  width: 150px;
+  font-size: small;
+}
 
-  }
-  th.mat-column-demo-localidad{
-    padding-left: 5px;
-    width: 200px !important;
-  }
+::ng-deep .mat-column-demo-localidad {
+  font-style: italic;
+  width: 200px !important;
+  font-size: xx-small;
+  font-weight: bold;
 
-  ::ng-deep th.mat-column-demo-ciudad, td.mat-column-demo-ciudad {
-    font-style: italic;
-    width: 100px;
-  }
+}
 
-  ::ng-deep th.mat-column-demo-tipo, td.mat-column-demo-tipo {
-    font-style: italic;
-    width: 100px;
+th.mat-column-demo-localidad {
+  padding-left: 5px;
+  width: 200px !important;
+}
 
-  }
+::ng-deep th.mat-column-demo-ciudad,
+td.mat-column-demo-ciudad {
+  font-style: italic;
+  width: 100px;
+}
 
-  ::ng-deep th.mat-column-demo-agencia, td.mat-column-demo-agencia {
-    font-style: italic;
-    width: 200px;
-  }
+::ng-deep th.mat-column-demo-tipo,
+td.mat-column-demo-tipo {
+  font-style: italic;
+  width: 100px;
 
-  ::ng-deep th.mat-column-demo-tcompleto,td.mat-column-demo-tcompleto {
-    font-style: italic;
-    width: 135px;
-    font-size :small;
-  }
+}
 
-  ::ng-deep th.mat-column-demo-tiempo0, td.mat-column-demo-tiempo0 {
-    font-style: italic;
-    max-width: 200px;
-  }
+::ng-deep th.mat-column-demo-agencia,
+td.mat-column-demo-agencia {
+  font-style: italic;
+  width: 200px;
+}
 
-  ::ng-deep th.mat-column-demo-tiempo1 td.mat-column-demo-tiempo1 {
-    font-style: italic;
-    max-width: 200px;
+::ng-deep th.mat-column-demo-tcompleto,
+td.mat-column-demo-tcompleto {
+  font-style: italic;
+  width: 135px;
+  font-size: small;
+}
 
-  }
+::ng-deep th.mat-column-demo-tiempo0,
+td.mat-column-demo-tiempo0 {
+  font-style: italic;
+  max-width: 200px;
+}
 
-  ::ng-deep th.mat-column-demo-tiempo2 td.mat-column-demo-tiempo2 {
-    font-style: italic;
-    max-width: 200px;
-  }
+::ng-deep th.mat-column-demo-tiempo1 td.mat-column-demo-tiempo1 {
+  font-style: italic;
+  max-width: 200px;
 
-  ::ng-deep .mat-column-demo-tiempo {
-    font-style: italic;
-    max-width: 135px;
-    font-weight: bold;
-    font-size: smaller;
-  }
+}
 
-  ::ng-deep .mat-column-demo-tiempom {
-    font-style: italic;
-    max-width: 100px ;
-  }
+::ng-deep th.mat-column-demo-tiempo2 td.mat-column-demo-tiempo2 {
+  font-style: italic;
+  max-width: 200px;
+}
 
-  ::ng-deep .mat-column-demo-lan {
-    font-style: italic;
-    width: 150px;
-    font-size :small;
+::ng-deep .mat-column-demo-tiempo {
+  font-style: italic;
+  max-width: 135px;
+  font-weight: bold;
+  font-size: smaller;
+}
 
-  }
+::ng-deep .mat-column-demo-tiempom {
+  font-style: italic;
+  max-width: 100px;
+}
 
-  ::ng-deep .mat-column-demo-problema {
-    font-style: italic;
-    width: 300px !important;
+::ng-deep .mat-column-demo-lan {
+  font-style: italic;
+  width: 150px;
+  font-size: small;
 
-  }
-  ::ng-deep .mat-column-demo-proveedor {
-    font-style: italic;
-    max-width: 150px !important;
+}
 
-  }
-  ::ng-deep .mat-column-demo-soporte {
-    font-style: italic;
-    width: 200px !important;
+::ng-deep .mat-column-demo-problema {
+  font-style: italic;
+  width: 300px !important;
 
-  }
+}
 
-  ::ng-deep .mat-column-demo-descripcion {
-    font-style: italic;
-    max-width: 400px;
-    font-size :xx-small;
+::ng-deep .mat-column-demo-proveedor {
+  font-style: italic;
+  max-width: 150px !important;
 
-  }
+}
 
-  ::ng-deep .mat-column-demo-estado {
-    width: 100px;
-  }
+::ng-deep .mat-column-demo-soporte {
+  font-style: italic;
+  width: 200px !important;
 
-  ::ng-deep .mat-column-demo-abierto {
-    width: 100px;
-  }
+}
 
-  ::ng-deep th.mat-column-demo-action td.mat-column-demo-action {
-    width: 200px !important;
-  }
+::ng-deep .mat-column-demo-descripcion {
+  font-style: italic;
+  max-width: 400px;
+  font-size: xx-small;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 
-  ::ng-deep th.mat-column-demo-tc, td.mat-column-demo-tc {
-    width: 180px;
-  }
+}
 
-  ::ng-deep th.mat-column-demo-d1,td.mat-column-demo-d1 {
-    width: 180px;
-  }
+::ng-deep .mat-column-demo-estado {
+  width: 100px;
+}
 
-  ::ng-deep th.mat-column-demo-d2, td.mat-column-demo-d2 {
-    width: 180px;
-  }
-  ::ng-deep th.mat-column-demo-d3, td.mat-column-demo-d3 {
-    width: 180px;
-  }
+::ng-deep .mat-column-demo-abierto {
+  width: 100px;
+}
 
-  ::ng-deep th.mat-column-demo-total,td.mat-column-demo-total {
-    width: 180px;
-  }
+::ng-deep th.mat-column-demo-action td.mat-column-demo-action {
+  width: 200px !important;
+}
 
-  ::ng-deep .mat-form-field .mat-form-field-label{
-      font-size: 14px;
-      font-weight: bold;
-  }
+::ng-deep th.mat-column-demo-tc,
+td.mat-column-demo-tc {
+  width: 180px;
+}
 
-  ::ng-deep .mat-header-cell{
-    font-weight: bold;
-    font-size: 14px;
-    padding-left: 15px;
+::ng-deep th.mat-column-demo-d1,
+td.mat-column-demo-d1 {
+  width: 180px;
+}
 
-  }
+::ng-deep th.mat-column-demo-d2,
+td.mat-column-demo-d2 {
+  width: 180px;
+}
+
+::ng-deep th.mat-column-demo-d3,
+td.mat-column-demo-d3 {
+  width: 180px;
+}
+
+::ng-deep th.mat-column-demo-total,
+td.mat-column-demo-total {
+  width: 180px;
+}
+
+::ng-deep .mat-form-field .mat-form-field-label {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+::ng-deep .mat-header-cell {
+  font-weight: bold;
+  font-size: 14px;
+  padding-left: 15px;
+
+}
+
 /*
   ::ng-deep .mat-step-header {
     pointer-events: none !important;
   }
   */
-  ::ng-deep .mat-step-header .mat-step-icon-selected {
-    background-color: indigo; 
- }
-
- ::ng-deep .mat-step-header .mat-step-icon-state-edit {
-  background-color: indigo; 
+::ng-deep .mat-step-header .mat-step-icon-selected {
+  background-color: indigo;
 }
 
-.example-container .mat-form-field + .mat-form-field {
+::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: indigo;
+}
+
+.example-container .mat-form-field+.mat-form-field {
   margin-left: 8px;
 }

@@ -18,7 +18,7 @@ export class TicketsService {
     'Content-type': "application/json"
   });
   //TICKETS
-  listticket(info: any): Observable<HttpResponse<any>> {
+  list(info: any): Observable<HttpResponse<any>> {
     this.ruta = 'ticket/list';
     let body = JSON.stringify({
       idagencia: info.idagencia,
@@ -61,7 +61,7 @@ export class TicketsService {
 
     //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
-  downloadticket(info: any): Observable<HttpResponse<Blob>> {
+  download(info: any): Observable<HttpResponse<Blob>> {
     this.ruta = 'ticket/download';
 
 
@@ -92,7 +92,7 @@ export class TicketsService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  getticketbyid(n: number): Observable<HttpResponse<any>> {
+  getbyid(n: number): Observable<HttpResponse<any>> {
     this.ruta = 'ticket/idticket';
     let body = JSON.stringify({
       id: n,
@@ -100,7 +100,7 @@ export class TicketsService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  insertticket(info: any, array): Observable<HttpResponse<any>> {
+  insert(info: any, array,arracti): Observable<HttpResponse<any>> {
     this.ruta = 'ticket/crear';
     let body = JSON.stringify({
       fecha:info.value.fechai==undefined?null:info.value.fechai,
@@ -112,13 +112,13 @@ export class TicketsService {
       tecnicorespon:info.controls["tresp"].value==undefined?null:info.controls["tresp"].value,
       tecnicoreporte:info.value.reportado==undefined?null:info.value.reportado.nombre,
       tickets:array==undefined?null:array,
+      actividades:array==undefined?null:arracti,
       //estado:1,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
   editarheader(info: any, array,id,estado): Observable<HttpResponse<any>> {
-    console.log(info)
     this.ruta = 'ticket/actualizarheader';
     let body = JSON.stringify({
       fecha:info.controls.fechai.value==undefined?null:info.controls.fechai.value,
@@ -137,7 +137,7 @@ export class TicketsService {
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
   }
-  editarticket(d1form,d2form,d3form,tc,id,idagencia,idenlace,estado,adicional): Observable<HttpResponse<any>> {
+  editar(d1form,d2form,d3form,tc,id,idagencia,idenlace,estado,adicional): Observable<HttpResponse<any>> {
     this.ruta = 'ticket/actualizar';
     let body = JSON.stringify({
       //nombre:info.nombre,

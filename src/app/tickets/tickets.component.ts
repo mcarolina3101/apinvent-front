@@ -18,6 +18,7 @@ import 'moment/locale/es';
 import * as _moment from 'moment';
 declare var $: any;
 import { saveAs } from 'file-saver';
+import { element } from 'protractor';
 
 const moment = _moment;
 
@@ -248,8 +249,50 @@ export class TicketsComponent implements OnInit {
     this.obtenerInfoInventario();
   }
 
+  obtenerInfoInventarioClean() {
+    this.pageIndex = 0;
+    this.inventario = {
+      "ticket": "",
+      "fecha": "",
+      "tecnicorespon": "",
+      "tecnicoreporte": "",
+      "agencia": "",
+      "tipo": "",
+      "ciudad": "",
+
+      "lan": null,
+      "problema": "",
+      "proveedor": "",
+      "min": "",
+      "max": "",
+
+      "tcompleto": "",
+      "time0": "",
+      "time1": "",
+      "time2": "",
+      "tdias": "",
+      "tmins": "",
+
+      "soporte": "",
+      "descripcion": "",
+
+      "estado": 1,
+      "abierto": null,
+      "nubicacion": "",
+      "pindex": this.pageIndex + 1
+    }
+
+    this.citiescontrol.reset();
+    this.tiposcontrol.reset();
+    this.problemascontrol.reset();
+    this.proveedorescontrol.reset();
+    this.range.reset();
+
+    this.obtenerInfoInventario();
+  }
+  
   obtenerInfoInventario() {
-    this.ticketsService.listticket(this.inventario).subscribe(resp => {
+    this.ticketsService.list(this.inventario).subscribe(resp => {
       this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
@@ -283,7 +326,7 @@ export class TicketsComponent implements OnInit {
   }
 
   obtenerInfoInventarioExcel() {
-    this.ticketsService.downloadticket(this.inventario).subscribe(resp => {
+    this.ticketsService.download(this.inventario).subscribe(resp => {
       //this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       //this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
@@ -357,7 +400,7 @@ export class TicketsComponent implements OnInit {
   }
 
   obtenerTicketid(n) {
-    this.ticketsService.getticketbyid(n).subscribe(resp => {
+    this.ticketsService.getbyid(n).subscribe(resp => {
       this.inventid = resp["info"];
       this.openDialogEditEvento(n);
     }, err => {
@@ -528,6 +571,7 @@ export class TicketsComponent implements OnInit {
       }
     });
   }
+
   obtenerInfoTipos(cd) {
     this.informacionService.listtiposCiudades(cd).subscribe(resp => {
       this.tipos = resp.body["info"];
@@ -559,6 +603,7 @@ export class TicketsComponent implements OnInit {
       }
     });
   }
+  
   obtenerInfoPropietarios() {
     this.informacionService.listpropietariosNombre(this.pr).subscribe(resp => {
       this.propietarios = resp.body["info"];
@@ -590,6 +635,7 @@ export class TicketsComponent implements OnInit {
       }
     });
   }
+
   obtenerInfoProblemas() {
     this.informacionService.listproblemasNombre(this.prb).subscribe(resp => {
       this.problemas = resp.body["info"];
@@ -621,6 +667,7 @@ export class TicketsComponent implements OnInit {
       }
     });
   }
+  
   obtenerInfoUsuarios() {
     this.usuarioService.listusuariosnombre(this.u).subscribe(resp => {
       this.usuarios = resp.body["info"];
@@ -695,6 +742,8 @@ export class FormComponentTickets implements OnInit {
   public minimo;
   public maximo;
   public adicional = "";
+  public usuariom: "";
+  public fecham: "";
   public selectedfecha = true;
   public botonenviar = false;
   public ct = { "nombre": "", "estado": 1 }
@@ -705,6 +754,7 @@ export class FormComponentTickets implements OnInit {
   tiposcontrol = new FormControl();
   agenciascontrol = new FormControl();
   ipcontrol = new FormControl();
+  public actividades:any[] = [];
 
 
   public displayedColumns: string[] = [
@@ -725,13 +775,14 @@ export class FormComponentTickets implements OnInit {
     this.citiescontrol.enable();
     this.tiposcontrol.enable();
     this.agenciascontrol.enable();
-    
+
     this.data.generalFormG.controls["ttprov"].disable();
     if (this.data.isnew) {
       this.obtenerInfoAgencias();
       this.data.generalFormG.controls["proveedor"].enable();
       this.data.generalFormG.controls["problema"].enable();
       this.data.generalFormG.controls["fechai"].enable();
+      this.data.generalFormG.controls["soporte"].enable();
 
       this.t2control.disable();
       this.data.generalFormG.reset();
@@ -743,8 +794,22 @@ export class FormComponentTickets implements OnInit {
           this.data.generalFormG.controls["tresp"].setValue(element.nombre)
         }
       });
+      this.informacionService.listnombAct({ nombre: "nciden" }).subscribe(resp => {
+        let acts = resp.body["info"];
+        acts.forEach(element=>{
+          let fecha0=undefined;
+          if(element.nombre.includes("ngreso")){
+            fecha0=moment().format('YYYY-MM-DDTHH:mm');
+          }
+          let subact ={id:element.id,mins:element.mins==undefined?0:element.mins, fecha:fecha0,nombre:element.nombre,editmins:element.editmins}
+          this.actividades.push(subact);
+        });
+        const keys = resp.headers;
+      });
     }
     if (!this.data.isnew) {
+      this.usuariom = this.data.inventid.modificacion;
+      this.fecham = this.data.inventid.fechamod;
       this.data.generalFormG.controls["proveedor"].reset();
       this.data.generalFormG.controls["ttprov"].reset();
       this.selectedfecha = false;
@@ -772,20 +837,31 @@ export class FormComponentTickets implements OnInit {
           }
         });
       }
+      if(this.data.generalFormG.controls.problema.value!=undefined){
+        this.selectedProblem(this.data.generalFormG.controls.problema.value)
+      }
+      if(this.data.generalFormG.controls.soporte.value!=undefined){
+        if(this.data.generalFormG.controls.soporte.value == 'LAN automatico'){
+          this.data.generalFormG.controls["soporte"].disable();
+        }else{
+          this.data.generalFormG.controls["soporte"].enable();
+        }
+      }else{
+        this.data.generalFormG.controls["soporte"].enable();
+      }
       this.data.generalFormG.controls["ttprov"].setValue(this.data.inventid.ttproveedor)
       this.data.selectedact = this.data.inventid.estado ? 1 : 0;
       this.data.generalFormG.controls["proveedor"].disable();
       this.data.generalFormG.controls["problema"].disable();
       this.data.generalFormG.controls["fechai"].disable();
+
       this.obtenerInfoAgencias();
       this.minimo = moment(this.data.generalFormG.controls["fechai"].value).format('YYYY-MM-DDTHH:mm');
       this.maximo = moment(this.data.generalFormG.controls["fechai"].value).add(1439, "minutes").format('YYYY-MM-DDTHH:mm');
       this.d1form = this.minimo;
       this.d2form = this.minimo;
       this.d3form = this.maximo;
-      if(this.data.generalFormG.controls.problema.value!=undefined){
-        this.selectedProblem(this.data.generalFormG.controls.problema.value)
-      }
+
       
 
     }
@@ -811,12 +887,11 @@ export class FormComponentTickets implements OnInit {
         this.t2control.disable();
       }
     }
-
     this.boolcity = true;
     this.inventcheck = false;
     this.disabled2 = true;
-    
     this.data.generalFormG.controls["tresp"].disable();
+
 
     this.filteredOptionsUsuario = this.data.generalFormG.controls["reportado"].valueChanges.pipe(
       startWith(''),
@@ -841,9 +916,20 @@ export class FormComponentTickets implements OnInit {
 
   sendinfo() {
     this.botonenviar = true;
-    this.data.generalFormG.controls["fechai"].setValue(moment(this.data.generalFormG.value.fechai).format('YYYY-MM-DD'))
+    //this.data.generalFormG.controls["fechai"].setValue(moment(this.data.generalFormG.value.fechai).format('YYYY-MM-DD'))
     if (this.data.isnew) {
-      this.ticketsService.insertticket(this.data.generalFormG, this.dataEventos).subscribe(resp => {
+      let actheader =[];
+      this.actividades.forEach(element =>{
+        let act={
+          actividad:element.id, 
+          nameact:element.nombre, 
+          comentario:this.data.generalFormG.controls["descripcion"].value, 
+          subactop:null,
+          subactividades:[{subactividad:5,fecha:element.fecha, mins:element.mins}]
+        }
+        actheader.push(act)
+      });
+      this.ticketsService.insert(this.data.generalFormG, this.dataEventos, actheader).subscribe(resp => {
         this.data.generalFormG.controls["reportado"].setValue({ id: 0, nombre: "" });
         this.data.generalFormG.controls["problema"].reset();
         this.data.generalFormG.controls["proveedor"].reset();
@@ -907,15 +993,7 @@ export class FormComponentTickets implements OnInit {
     } else {
       if (this.data.isheader) {
         this.ticketsService.editarheader(this.data.generalFormG, this.dataEventos, this.data.inventid.id, this.data.selectedact).subscribe(resp => {
-          /*
-          this.data.generalFormG.controls["reportado"].setValue({ id: 0, nombre: "" });
-          this.data.generalFormG.controls["problema"].reset();
-          this.data.generalFormG.controls["proveedor"].reset();
-          this.data.generalFormG.controls["soporte"].reset();
-          this.data.generalFormG.controls["ttprov"].reset();
-          this.data.generalFormG.controls["descripcion"].reset();
-          this.dataEventos = [];
-          */
+
           this.botonenviar = false;
           $.notify({
             icon: "notifications",
@@ -965,7 +1043,7 @@ export class FormComponentTickets implements OnInit {
           this.botonenviar = false;
         });
       } else {
-        this.ticketsService.editarticket(
+        this.ticketsService.editar(
           moment(this.d1form).format('YYYY-MM-DDTHH:mm:ss'),
           this.d2form == undefined ? null : moment(this.d2form).format('YYYY-MM-DDTHH:mm:ss'),
           moment(this.d3form).format('YYYY-MM-DDTHH:mm:ss'),
@@ -1042,14 +1120,29 @@ export class FormComponentTickets implements OnInit {
     if(value.nombre.includes("ctric")){
       this.tcform="NO APLICA"
       this.selectiond2(this.tcform)
+      this.data.generalFormG.controls["proveedor"].reset();
+      this.data.generalFormG.controls["ttprov"].disable();
+      this.data.generalFormG.controls["proveedor"].disable();
+      this.citiescontrol.reset()
+      this.tiposcontrol.reset()
+      this.obtenerInfoAgencias();
     }
-    if(value.nombre.includes("anten")){
+    else if(value.nombre.includes("anten")){
       this.tcform="NO APLICA"
       this.selectiond2(this.tcform)
+      this.data.generalFormG.controls["proveedor"].reset();
+      this.data.generalFormG.controls["ttprov"].disable();
+      this.data.generalFormG.controls["proveedor"].enable();
+      this.citiescontrol.reset()
+      this.tiposcontrol.reset()
+      this.obtenerInfoAgencias();
     }
-    if(value.nombre.includes("nlace")){
+    else if(value.nombre.includes("nlace")){
       this.tcform="SI"
+      this.data.generalFormG.controls["proveedor"].enable();
       this.selectiond2(this.tcform)
+    }else{
+      this.data.generalFormG.controls["proveedor"].enable();
     }
 
   }
@@ -1110,8 +1203,17 @@ export class FormComponentTickets implements OnInit {
     this.d1form = this.minimo;
     this.d2form = this.minimo;
     this.d3form = this.maximo;
+    this.tiempoinicio();
     this.selectedfecha = false;
     this.botonenviar = false;
+  }
+
+  tiempoinicio(){
+    this.actividades.forEach(element=>{
+      if(element.nombre.includes('eguim')){
+        element.fecha=this.d1form
+      }
+    })
   }
 
   obtenerInfoTipos() {

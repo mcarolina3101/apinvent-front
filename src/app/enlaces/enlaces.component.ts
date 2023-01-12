@@ -246,7 +246,7 @@ export class EnlacesComponent implements OnInit {
   }
 
   obtenerInfoInventario() {
-    this.enlaceService.listenlace(this.inventario).subscribe(resp => {
+    this.enlaceService.list(this.inventario).subscribe(resp => {
       this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
@@ -277,8 +277,72 @@ export class EnlacesComponent implements OnInit {
     });
   }
 
+  obtenerInfoInventarioClean() {
+    this.pageIndex = 0;
+    this.inventario = {
+      "tunel": "",
+      "proveedor": "",
+      "identificador": "",
+      "prioridad": "",
+      "agencia": "",
+      "tipo": "",
+      "punto": "",
+      "medio": "",
+      "bw": "",
+      "doble": "",
+      "ciudad": "",
+      "estado": null,
+      "pindex": this.pageIndex + 1
+    }
+
+    /*
+    citiescontrol = new FormControl();
+  tiposcontrol = new FormControl();
+  propietarioscontrol = new FormControl();
+  medioscontrol  = new FormControl();
+  agenciascontrol  = new FormControl();
+  entidadescontrol  = new FormControl();
+    */
+    this.citiescontrol.reset();
+    this.tiposcontrol.reset();
+    this.propietarioscontrol.reset();
+    this.medioscontrol.reset();
+    this.entidadescontrol.reset();
+    /*this.informacionService.listinventario(this.inventario).subscribe(resp => {
+      this.dataDevices = resp.body["info"];
+      const keys = resp.headers;
+      this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
+    }, err => {
+      if (err.status === 400) {
+        $.notify({
+          icon: "notifications",
+          message: err.error.log
+        }, {
+          type: "warning",
+          timer: 4000,
+          placement: {
+            from: 'top',
+            align: 'center'
+          },
+          template: '<div data-notify="container" class="col-xl-4 col-lg-4 col-11 col-sm-4 col-md-4 alert alert-{0} alert-with-icon" role="alert">' +
+            '<button mat-button  type="button" aria-hidden="true" class="close mat-button" data-notify="dismiss">  <i class="material-icons">close</i></button>' +
+            '<i class="material-icons" data-notify="icon">notifications</i> ' +
+            '<span data-notify="title">{1}</span> ' +
+            '<span data-notify="message">{2}</span>' +
+            '<div class="progress" data-notify="progressbar">' +
+            '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+            '</div>' +
+            '<a href="{3}" target="{4}" data-notify="url"></a>' +
+            '</div>'
+        });
+      }
+    });*/
+
+    this.obtenerInfoInventario();
+  }
+
   obtenerInfoInventarioExcel() {
-    this.enlaceService.downloadenlace(this.inventario).subscribe(resp => {
+    this.enlaceService.download(this.inventario).subscribe(resp => {
       const keys = resp.headers;
       const blob: any = new Blob([resp.body], { type: keys.getAll("content-type").toString() });
       const file = new File([blob], "inventarioEnlaces" + '.xlsx', { type: keys.getAll("content-type").toString() });
@@ -312,7 +376,7 @@ export class EnlacesComponent implements OnInit {
 
   obtenerInventarioid(n) {
 
-    this.enlaceService.getenlacebyid(n).subscribe(resp => {
+    this.enlaceService.getbyid(n).subscribe(resp => {
       this.inventid = resp["info"];
       this.networkFormG.controls["ip"].setValue(this.inventid.tunel)
       this.networkFormG.controls["bw"].setValue(this.inventid.bw)
@@ -932,7 +996,7 @@ export class FormComponentEnlaces implements OnInit {
 
   sendinfo() {
     if (this.data.isnew) {
-      this.enlaceService.insertenlace(this.data).subscribe(resp => {
+      this.enlaceService.insert(this.data).subscribe(resp => {
         $.notify({
           icon: "notifications",
           message: "El enlace se ha agregado"
@@ -954,7 +1018,6 @@ export class FormComponentEnlaces implements OnInit {
             '<a href="{3}" target="{4}" data-notify="url"></a>' +
             '</div>'
         });
-        console.log("close")
         this.dialogRef.close()
       }, err => {
         if (err.status === 400) {
@@ -982,7 +1045,7 @@ export class FormComponentEnlaces implements OnInit {
         }
       });
     } else {
-      this.enlaceService.editarenlace(this.data).subscribe(resp => {
+      this.enlaceService.editar(this.data).subscribe(resp => {
         $.notify({
           icon: "notifications",
           message: "El enlace se ha editado"

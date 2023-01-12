@@ -49,6 +49,7 @@ export const MY_FORMATS = {
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
   ]
 })
+
 export class TableListComponent implements OnInit {
 
   public displayedColumns: string[] = [
@@ -267,7 +268,7 @@ export class TableListComponent implements OnInit {
   }
 
   obtenerInventarioid(n) {
-    this.inventarioService.getinventariobyid(n).subscribe(resp => {
+    this.inventarioService.getbyid(n).subscribe(resp => {
       this.inventid = resp["info"];
       this.usuario = this.inventid.usuario,
         this.fecha = this.inventid.fecha,
@@ -428,7 +429,7 @@ export class TableListComponent implements OnInit {
 
   obtenerInfoInventario() {
 
-    this.inventarioService.listinventario(this.inventario).subscribe(resp => {
+    this.inventarioService.list(this.inventario).subscribe(resp => {
       this.dataDevices = resp.body["info"];
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());
@@ -529,7 +530,7 @@ export class TableListComponent implements OnInit {
   }
 
   obtenerInfoInventarioExcel() {
-    this.inventarioService.downloadinv(this.inventario).subscribe(resp => {
+    this.inventarioService.download(this.inventario).subscribe(resp => {
       const keys = resp.headers;
 
       const blob: any = new Blob([resp.body], { type: keys.getAll("content-type").toString() });
@@ -820,6 +821,7 @@ export class TableListComponent implements OnInit {
   ]
 
 })
+
 export class FormComponentEdit2 implements OnInit {
 
   stepperOrientation: Observable<StepperOrientation>;
@@ -898,7 +900,7 @@ export class FormComponentEdit2 implements OnInit {
       this.data.adicionalFormG.controls["serie"].enable();
     }
 
-    if (this.perfil == 1) {
+    if (this.perfil == 1 || this.perfil == 6) {
       this.habilitarAdministrador();
     }
 
@@ -920,8 +922,6 @@ export class FormComponentEdit2 implements OnInit {
       .pipe(map(({ matches }) => matches ? 'horizontal' : 'vertical'));
 
   }
-
-
 
   obtenerInfoModelo(n) {
     this.informacionService.getmodelobyid(n).subscribe(resp => {
@@ -995,7 +995,7 @@ export class FormComponentEdit2 implements OnInit {
 
           }
         });
-        if (this.perfil == 1) {
+        if (this.perfil == 1 || this.perfil==6) {
           this.habilitarAdministrador();
         }
       }
@@ -1138,7 +1138,7 @@ export class FormComponentEdit2 implements OnInit {
             this.data.adicionalFormG.controls["boolfechab"].setValue(false);
           }
         }
-        if (this.perfil == 1) {
+        if (this.perfil == 1 || this.perfil == 6) {
           this.habilitarAdministrador();
         }
 
@@ -1233,7 +1233,7 @@ export class FormComponentEdit2 implements OnInit {
         this.data.modeloFormG.controls["modelo"].disable();
         this.obtenerInfoModelo(this.data.inventid.Modelo[0].id);
 
-        if (this.perfil == 1) {
+        if (this.perfil == 1 || this.perfil ==6) {
           this.habilitarAdministrador();
         }
 
@@ -1488,7 +1488,7 @@ export class FormComponentEdit2 implements OnInit {
 
     this.data.fechabanco = this.data.adicionalFormG.value.fechab == undefined ? undefined : moment(this.data.adicionalFormG.value.fechab).format('YYYY-MM-DD');
     if (this.data.isnew) {
-      this.inventarioService.insertinventario(this.data).subscribe(resp => {
+      this.inventarioService.insert(this.data).subscribe(resp => {
         $.notify({
           icon: "notifications",
           message: "El equipo " + this.data.modeloFormG.value.nombre + " - Serie " + this.data.adicionalFormG.controls["serie"].value + " se ha agregado"
@@ -1536,7 +1536,7 @@ export class FormComponentEdit2 implements OnInit {
         }
       });
     } else {
-      this.inventarioService.editarinventario(this.data).subscribe(resp => {
+      this.inventarioService.editar(this.data).subscribe(resp => {
         let msg = ""
         if (this.data.estado) {
           msg = "modificado"

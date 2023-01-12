@@ -80,6 +80,36 @@
         </div>
       </form>
       <mat-divider></mat-divider>
+      <section class="example-section">
+        <span class="example-list-section">
+          <ul>
+            <li *ngFor="let a of actividades">
+              <div class="row" style="max-width: 90%;">
+                <div class="col-md-4 col-sm-6">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Actividad</mat-label>
+                    <input [value]="a.nombre" [disabled]="true" matInput>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Fecha - Hora</mat-label>
+                    <input type="datetime-local" [(ngModel)]="a.fecha" matInput>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-2 col-sm-6">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Minutos</mat-label>
+                    <input type="number"  [(ngModel)]="a.mins" [disabled]="!a.editmins"  matInput>
+                  </mat-form-field>
+                </div>
+                
+              </div>
+            </li>
+          </ul>
+        </span>
+      </section>
+      <mat-divider></mat-divider>
       <div class="row" style="max-width: 90%;">
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
@@ -134,7 +164,7 @@
         <div class="col-md-2 col-sm-6">
           <mat-form-field class="example-full-width">
             <mat-label>Tiempo de Inicio</mat-label>
-            <input type="datetime-local" [(ngModel)]="d1form" [disabled]="(selectedfecha)" [min]="minimo" [max]="maximo"  matInput>
+            <input type="datetime-local" [(ngModel)]="d1form" [disabled]="(selectedfecha)" (change)="tiempoinicio()" [min]="minimo" [max]="maximo"  matInput>
             <mat-hint>Elegir Fecha de Ticket para desbloquear</mat-hint>
           </mat-form-field>
         </div>
@@ -309,9 +339,6 @@
           </ng-container>
 
           <ng-container matColumnDef="demo-adicional">
-            <th mat-header-cell *matHeaderCellDef>
-              Adicional
-            </th>
             <td mat-cell *matCellDef="let element">
               {{element.adicional}}
             </td>
@@ -329,7 +356,6 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
       </div>
-
     </mat-tab>
   </mat-tab-group>
   <div class = "row" style="max-width: 90%;" >
@@ -343,4 +369,5 @@
     </div>
   </div>
   <button mat-button type="submit" class="btn btn-danger pull-right" [disabled]="botonenviar" (click)="sendinfo()">Enviar</button>
+  <h6 [hidden]="data.isnew">Ultima modificacion: {{usuariom}} {{ fecham}}</h6>
 </div>

@@ -64,6 +64,13 @@
                                             <div class="ripple-container"></div>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a mat-button class="nav-link" data-toggle="tab" href="#configact"
+                                            (click)="clickListadoActividades()">
+                                            <i class="material-icons">checklist</i> Actividades
+                                            <div class="ripple-container"></div>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -167,7 +174,7 @@
                                         <ng-container matColumnDef="demo-agencia">
                                             <th mat-header-cell *matHeaderCellDef>
                                                 <mat-form-field class="example-full-width" appearance="none">
-                                                    <mat-label>Agencia</mat-label>
+                                                    <mat-label>Localidad</mat-label>
                                                     <input matInput [(ngModel)]="inventario.nombre"
                                                         (change)="obtenerInfoInventario_p1()">
                                                 </mat-form-field>
@@ -690,6 +697,165 @@
                                 </table>
                                 <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageProblemas($event)"
                                     aria-label="Select page">
+                                </mat-paginator>
+                            </div>
+                            <div class="tab-pane" id="configact">
+                                <div class="table-responsive">
+                                    <table mat-table [dataSource]="actividades" class="demo-table">
+                                        <ng-container matColumnDef="demo-id5">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Id</mat-label>
+                                                    <input matInput  [disabled]="true">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{element.id}}
+                                            </td>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="demo-nombre5" sticky>
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Nombre</mat-label>
+                                                    <input matInput [(ngModel)]="actividad.nombre"
+                                                        (change)="clickListadoActividades()">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element"> {{element.nombre}} </td>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="demo-issub5">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Es Subactividad</mat-label>
+                                                    <input matInput  [disabled]="true">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{activado[element.issub?0:1].nombre}}
+                                            </td>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="demo-mins5">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Minutos</mat-label>
+                                                    <input matInput  [disabled]="true">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{element.mins}}
+                                            </td>
+                                        </ng-container>
+    
+    
+                                        <ng-container matColumnDef="demo-hassub5">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Tiene Subactividad</mat-label>
+                                                    <input matInput  [disabled]="true">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{activado[element.hassub?0:1].nombre}}
+                                            </td>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="demo-sub50">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>N/A</mat-label>
+                                                    <input matInput  [disabled]="true">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{element.subact0}}
+                                            </td>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="demo-sub51">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>I/R de equipo</mat-label>
+                                                    <input matInput  [disabled]="true">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{element.subact1}}
+                                            </td>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="demo-sub52">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Wireless</mat-label>
+                                                    <input matInput  [disabled]="true">
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                {{element.subact2}}
+                                            </td>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="demo-sub53">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>I/R de equipo - Wireless</mat-label>
+                                                    <input matInput  [disabled]="true">
+                                                </mat-form-field>
+                                            </th>                                            
+                                            <td mat-cell *matCellDef="let element">
+                                                {{element.subact3}}
+                                            </td>
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="demo-estado5">
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <mat-form-field class="example-full-width" appearance="none">
+                                                    <mat-label>Activado</mat-label>
+                                                    <mat-select id="a" name="a" [(ngModel)]="actividad.estado"
+                                                        (selectionChange)="obtenerInfoActividades()">
+                                                        <mat-option *ngFor="let a of activado" [value]="a.id">
+                                                            {{a.nombre}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                <mat-icon [ngClass]="element.estado ? 'green' : 'red' ">check_circle
+                                                </mat-icon>
+                                            </td>
+    
+                                        </ng-container>
+    
+                                        <ng-container matColumnDef="demo-action5" stickyEnd>
+                                            <th mat-header-cell *matHeaderCellDef>
+                                                <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                    <button mat-icon-button (click)="openDialogActividades()" matTooltip="Agregar"
+                                                        [matTooltipPosition]="'above'">
+                                                        <mat-icon>add_circle_outline</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </th>
+                                            <td mat-cell *matCellDef="let element">
+                                                <div style="display:flex !important ;justify-content: flex-end !important;">
+                                                    <button mat-icon-button matTooltip="Editar"
+                                                        [matTooltipPosition]="'above'"
+                                                        (click)="openDialogActividadesEdit(element.id)">
+                                                        <mat-icon>mode_edit</mat-icon>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </ng-container>
+    
+                                        <tr mat-header-row *matHeaderRowDef="displayedColumns5"></tr>
+                                        <tr mat-row *matRowDef="let row; columns: displayedColumns5;"></tr>
+                                    </table>
+                                </div>
+                                
+                                <mat-paginator [length]="totalenght" [pageSize]="20" (page)="PageActividades($event)"
+                                    [pageIndex]="pageIndex" aria-label="Select page">
                                 </mat-paginator>
                             </div>
                         </div>
