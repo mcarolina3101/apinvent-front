@@ -14,6 +14,7 @@ This project was generated with Angular CLI version 1.0.0 and angular 4.x.
 Within the download you'll find the following directories and files:
 
 material-dashboard-angular2
+
 ├── CHANGELOG.md
 ├── LICENSE.md
 ├── README.md
