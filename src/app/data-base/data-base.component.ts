@@ -171,7 +171,7 @@ export class DataBaseComponent implements OnInit {
     this.cd = { "ciudades": "Guayaquil,Quito,Manta,Quevedo,Riobamba,Ibarra" }
     this.inventario = { "nagencia": "", "ntipo": "", "nciudad": "", "countenlaces": null, "countinv": null, "estado": 1, "pindex": this.pageIndex + 1 }
     this.ambiente = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
-    this.problema = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
+    this.problema = { "nombre": "", "lan": null,  "estado": 1, "pindex": this.pageIndex + 1 }
     this.orion = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.actividad = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
     this.entidad = { "nombre": "", "estado": 1, "pindex": this.pageIndex + 1 }
@@ -1814,7 +1814,7 @@ export class DataBaseComponent implements OnInit {
     this.informacionService.getpropietariobyid(n).subscribe(resp => {
       this.editado1 = resp["info"];
       this.nombre = this.editado1.nombre;
-      this.varform.selectedact = this.editado1.estado ? 1 : 0;
+      this.selectedact = this.editado1.estado ? 1 : 0;
       this.id = this.editado1.id;
       const dialogRef = this.dialog.open(FormComponentEdit, {
         width: '400px',
@@ -2234,7 +2234,7 @@ export class DataBaseComponent implements OnInit {
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result != undefined) {
-          this.informacionService.editarproblema({ "nombre": result.nombre, "lan": result.lan, "id": result.id, "estado": result.varform.selectedact }).subscribe(resp => {
+          this.informacionService.editarproblema({ "nombre": result.nombre, "lan": result.varform.lan, "id": result.id, "estado": result.selectedact }).subscribe(resp => {
             this.obtenerInfoProblemas();
             $.notify({
               icon: "notifications",
@@ -2289,7 +2289,7 @@ export class DataBaseComponent implements OnInit {
     });
   }
   obtenerInfoProblemas() {
-    this.informacionService.listproblemas(this.ambiente).subscribe(resp => {
+    this.informacionService.listproblemas(this.problema).subscribe(resp => {
       this.problemas = resp.body["info"];
       const keys = resp.headers;
       this.totalenght = Number(keys.getAll("totalresultados")[0].toString());

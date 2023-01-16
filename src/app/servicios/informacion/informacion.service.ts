@@ -534,7 +534,7 @@ export class InformacionService {
   insertproblema(info: any): Observable<HttpResponse<any>> {
     this.ruta = 'problema/crear';
     let body = JSON.stringify({
-      nombre: info,
+      nombre: info.nombre,
       lan: info.lan? 1 : 0,
       username: localStorage.getItem("username")
     });

@@ -11,7 +11,7 @@
   </div>
   <div [hidden]="data.varform.hiddenselectubi">
     <mat-form-field class="example-full-width" appearance="fill">
-      <mat-label>Localidad/TipoCiudad/</mat-label>
+      <mat-label>Localidad/Tipo/Ciudad</mat-label>
       <mat-select [formControl]="data.ubicontrol" (selectionChange)="onSelectionUbi()">
         <mat-option *ngFor="let c of selectUbic" [value]="c">{{c.nombre}}
         </mat-option>
