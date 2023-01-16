@@ -151,3 +151,4 @@ material-dashboard-angular2
 ├── tsconfig.json
 ├── tslint.json
 └── typings
+
