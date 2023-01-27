@@ -12,7 +12,7 @@ This project was generated with Angular CLI version 1.0.0 and angular 4.x.
 
 # What's included
 Within the download you'll find the following directories and files:
-
+```
 material-dashboard-angular2
 ├── CHANGELOG.md
 ├── LICENSE.md
@@ -151,3 +151,5 @@ material-dashboard-angular2
 ├── tsconfig.json
 ├── tslint.json
 └── typings
+```
+
