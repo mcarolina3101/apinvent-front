@@ -159,8 +159,7 @@
                         <mat-form-field class="example-full-width">
                             <mat-label>Carpeta Orion</mat-label>
                             <mat-select id="o" name="o" formControlName="orion">
-                                <mat-option *ngFor="let o of orion" [value]="o"
-                                    [disabled]="boolorion&&(o.nombre.toUpperCase()=='N/A') ">
+                                <mat-option *ngFor="let o of orion" [value]="o">
                                     {{o.nombre}}
                                 </mat-option>
                             </mat-select>

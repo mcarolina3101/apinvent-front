@@ -174,6 +174,7 @@ export class InventarioService {
   }
   insert(info: any): Observable<HttpResponse<any>> {
     this.ruta = 'inventario/crear';
+    console.log(info)
     let body = JSON.stringify({
       //id:info.idedit,      
       ip: info.networkFormG.value.ip,
@@ -188,6 +189,7 @@ export class InventarioService {
       nombre: info.modeloFormG.value.nombre,
       idModelo: info.modeloFormG.value.modelo.id,
       idPropietario: info.adicionalFormG.value.propietario.id,
+      marca: info.modeloFormG.controls["marca"].value,
       idOrion: info.networkFormG.value.orion == undefined ? null : info.networkFormG.value.orion.id,
       agencia: info.ubicacionFormG.value.ag.id,
       tipo: info.ubicacionFormG.value.tipo.id,
@@ -218,6 +220,7 @@ export class InventarioService {
       idAmbiente: info.ambienteFormG.value.ambiente.id,
       nombre: info.modeloFormG.value.nombre,
       idModelo: info.modeloFormG.controls["modelo"].value.id,
+      marca: info.modeloFormG.controls["marca"].value,
       idPropietario: info.adicionalFormG.controls["propietario"].value.id,
       idOrion: info.networkFormG.controls["orion"].value == undefined ? undefined : info.networkFormG.controls["orion"].value.id,
       agencia: info.ubicacionFormG.value.ag.id,

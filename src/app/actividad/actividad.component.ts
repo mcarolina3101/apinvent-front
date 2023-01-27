@@ -54,6 +54,7 @@ export const MY_FORMATS = {
 export class ActividadComponent implements OnInit {
 
   public displayedColumns: string[] = [
+    'demo-id',
     'demo-fecha',
     'demo-fecha2',
     'demo-usuario',
@@ -590,7 +591,7 @@ export class FormComponentActividad implements OnInit {
         this.w = false;
         $.notify({
           icon: "notifications",
-          message: "El Ticket se ha agregado"
+          message: "La actividad se ha agregado"
         }, {
           type: "success",
           timer: 4000,
@@ -641,7 +642,7 @@ export class FormComponentActividad implements OnInit {
           this.botonenviar = false;
           $.notify({
             icon: "notifications",
-            message: "El Ticket se ha editado"
+            message: "La actividad se ha editado"
           }, {
             type: "success",
             timer: 4000,

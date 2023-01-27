@@ -34,6 +34,7 @@ export class ActividadService {
       time2:info.time2,
       subactividad:info.subactividad,
       actividad:info.actividad,
+      id:info.id,
       usuario:info.usuario,
       mins:info.mins,
       username: localStorage.getItem("username")

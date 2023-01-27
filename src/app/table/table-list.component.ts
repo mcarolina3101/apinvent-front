@@ -189,22 +189,22 @@ export class TableListComponent implements OnInit {
       "nubicacion": "",
       "pindex": this.pageIndex + 1
     }
-    this.inventario.util=this.dashboardService.util;
-    if(this.dashboardService.fechalimite==1){
+    this.inventario.util = this.dashboardService.util;
+    if (this.dashboardService.fechalimite == 1) {
       this.range.controls.start.reset()
       this.range.controls.end.setValue(moment(this.dashboardService.todayf).format('YYYY-MM-DD'))
       this.range.disable()
-    }else if(this.dashboardService.fecharango==1){
+    } else if (this.dashboardService.fecharango == 1) {
       this.range.controls.end.setValue(moment(this.dashboardService.today1f).format('YYYY-MM-DD'))
       this.range.controls.start.setValue(moment(this.dashboardService.todayf).format('YYYY-MM-DD'))
       this.range.disable()
-    }else{
+    } else {
       this.range.reset()
       this.range.enable()
     }
-    if(this.dashboardService.util !=undefined){
+    if (this.dashboardService.util != undefined) {
       this.utildis = true;
-    }else{
+    } else {
       this.utildis = false;
     }
     this.obtenerInfoInventario();
@@ -250,7 +250,7 @@ export class TableListComponent implements OnInit {
     const dialogRef = this.dialog.open(FormComponentEdit2, {
       width: '1000px',
       data: {
-        idedit : 0 ,
+        idedit: 0,
         isnew: this.isnew,
         activado: this.activado,
         ambienteFormG: this.ambienteFormG,
@@ -594,7 +594,7 @@ export class TableListComponent implements OnInit {
       }
     });
   }
-  
+
   obtenerInfoTipos(cd) {
     this.informacionService.listtiposCiudades(cd).subscribe(resp => {
       this.tipos = resp.body["info"];
@@ -789,18 +789,18 @@ export class TableListComponent implements OnInit {
   dateEvent(event) {
     let date1;
     let date2;
-    if(this.range.controls.start.value !=null){
-      date1 =  moment(this.range.controls.start.value).format('YYYY-MM-DD');
-    }else{
+    if (this.range.controls.start.value != null) {
+      date1 = moment(this.range.controls.start.value).format('YYYY-MM-DD');
+    } else {
       date1 = undefined
     }
-    if(this.range.controls.end.value !=null){
-      date2 =  moment(this.range.controls.end.value).format('YYYY-MM-DD');
-    }else{
+    if (this.range.controls.end.value != null) {
+      date2 = moment(this.range.controls.end.value).format('YYYY-MM-DD');
+    } else {
       date2 = undefined
     }
-    this.inventario.fechaini=date1;
-    this.inventario.fechafin=date2;
+    this.inventario.fechaini = date1;
+    this.inventario.fechafin = date2;
     this.obtenerInfoInventario_p1()
   }
 
@@ -829,7 +829,6 @@ export class FormComponentEdit2 implements OnInit {
 
   public modelSelected: any;
   public boolcity: boolean;
-  public boolorion: boolean;
   public inventcheck: boolean;
   public usuariom: "";
   public fecham: "";
@@ -878,7 +877,6 @@ export class FormComponentEdit2 implements OnInit {
     this.data.adicionalFormG.controls["fechab"].enable();
 
     this.boolcity = false;
-    this.boolorion = false;
     this.inventcheck = false;
 
     this.data.adicionalFormG.controls["boolfechab"].setValue(false)
@@ -931,6 +929,17 @@ export class FormComponentEdit2 implements OnInit {
       this.data.modeloFormG.controls["flash"].setValue(this.modelSelected.Flash == undefined ? undefined : this.modelSelected.Flash[0].nombre)
       this.data.modeloFormG.controls["ram"].setValue(this.modelSelected.Ram == undefined ? undefined : this.modelSelected.Ram[0].nombre)
       this.data.modeloFormG.controls["fecha"].setValue(this.modelSelected.fechafin == undefined ? undefined : this.modelSelected.fechafin)
+      if (!this.data.modeloFormG.controls["marca"].value.includes("CISCO") && this.data.ambienteFormG.controls["ambiente"].value.id == 2) {
+        this.data.adicionalFormG.controls["opm"].enable()
+        this.data.adicionalFormG.controls["bpac"].enable()
+        this.data.adicionalFormG.controls["opm"].reset()
+        this.data.adicionalFormG.controls["bpac"].reset()
+      } else {
+        if (this.data.ambienteFormG.controls["ambiente"] != undefined) {
+          this.setopmadbp(this.data.ambienteFormG.controls["ambiente"].value)
+        }
+      }
+
     }, err => {
       if (err.status === 400) {
         $.notify({
@@ -979,7 +988,6 @@ export class FormComponentEdit2 implements OnInit {
               this.data.adicionalFormG.controls["opm"].enable()
               this.data.adicionalFormG.controls["bpac"].enable()
             }
-
             if (this.data.ambienteFormG.controls["ambiente"].value.id == 1) {
               this.data.adicionalFormG.controls["opm"].disable()
               this.data.adicionalFormG.controls["bpac"].disable()
@@ -987,15 +995,11 @@ export class FormComponentEdit2 implements OnInit {
             if (this.data.ambienteFormG.controls["ambiente"].value.id == 2) {
               this.data.adicionalFormG.controls["opm"].disable()
               this.data.adicionalFormG.controls["bpac"].disable()
-              //this.data.adicionalFormG.controls["bpac"].setValue(true);
-              this.boolorion = true;
-            } else {
-              this.boolorion = false;
-            }
+            } 
 
           }
         });
-        if (this.perfil == 1 || this.perfil==6) {
+        if (this.perfil == 1 || this.perfil == 6) {
           this.habilitarAdministrador();
         }
       }
@@ -1233,7 +1237,7 @@ export class FormComponentEdit2 implements OnInit {
         this.data.modeloFormG.controls["modelo"].disable();
         this.obtenerInfoModelo(this.data.inventid.Modelo[0].id);
 
-        if (this.perfil == 1 || this.perfil ==6) {
+        if (this.perfil == 1 || this.perfil == 6) {
           this.habilitarAdministrador();
         }
 
@@ -1358,6 +1362,7 @@ export class FormComponentEdit2 implements OnInit {
       this.data.ubicacionFormG.reset();
       this.data.modeloFormG.controls["nombre"].reset();
       this.data.modeloFormG.controls["equipo"].reset();
+      this.data.networkFormG.controls["orion"].reset();
       this.data.modeloFormG.controls["marca"].reset();
       this.data.modeloFormG.controls["flash"].reset();
       this.data.modeloFormG.controls["ram"].reset();
@@ -1396,7 +1401,7 @@ export class FormComponentEdit2 implements OnInit {
     } else {
       this.boolcity = false;
     }
-    
+
     if (value.id == 1) {
       this.data.adicionalFormG.controls["opm"].setValue(false);
       this.data.adicionalFormG.controls["opm"].disable();
@@ -1407,10 +1412,32 @@ export class FormComponentEdit2 implements OnInit {
       this.data.adicionalFormG.controls["opm"].disable();
       this.data.adicionalFormG.controls["bpac"].disable();
       this.data.adicionalFormG.controls["bpac"].setValue(true);
-      this.boolorion = true;
-    } else {
-      this.boolorion = false;
+    } 
 
+  }
+
+  setopmadbp(value) {
+    if (value.id === 4 || value.id === 5) {
+      this.data.adicionalFormG.controls["opm"].setValue(false);
+      this.data.adicionalFormG.controls["opm"].disable();
+      this.data.adicionalFormG.controls["bpac"].disable();
+      this.data.adicionalFormG.controls["bpac"].setValue(false);
+
+    } else {
+      this.data.adicionalFormG.controls["opm"].enable();
+      this.data.adicionalFormG.controls["bpac"].enable();
+    }
+
+    if (value.id == 1) {
+      this.data.adicionalFormG.controls["opm"].setValue(false);
+      this.data.adicionalFormG.controls["opm"].disable();
+      this.data.adicionalFormG.controls["bpac"].disable();
+      this.data.adicionalFormG.controls["bpac"].setValue(true);
+    } if (value.id == 2) {
+      this.data.adicionalFormG.controls["opm"].setValue(true);
+      this.data.adicionalFormG.controls["opm"].disable();
+      this.data.adicionalFormG.controls["bpac"].disable();
+      this.data.adicionalFormG.controls["bpac"].setValue(true);
     }
 
   }

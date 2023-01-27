@@ -54,6 +54,9 @@
 ::ng-deep th.mat-column-demo-mins, td.mat-column-demo-mins {
   max-width: 80px;
 }
+::ng-deep th.mat-column-demo-id, td.mat-column-demo-id {
+  max-width: 100px;
+}
 
 ::ng-deep th.mat-column-demo-actopn, td.mat-column-demo-actopn {
   max-width: 100px;
