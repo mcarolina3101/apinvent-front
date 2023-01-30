@@ -11,18 +11,18 @@ declare var $:any;
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  public total=0;
-  public tfecha=0;
-  public tfechaprox=0;
+  public total = {c:0,b:0,n:0};
+  public tfecha = {c:0,b:0,n:0};
+  public tfechaprox = {c:0,b:0,n:0};
   //public tcritico=0;
   //public tbpac=0;
   //public topmger=0;
-  public tutil=0;
-  public tufecha=0;
-  public tufechaprox=0;
-  public tbodega=0;
-  public tbfecha=0;
-  public tbfechaprox=0;
+  public tutil = {c:0,b:0,n:0};
+  public tufecha = {c:0,b:0,n:0};
+  public tufechaprox = {c:0,b:0,n:0};
+  public tbodega = {c:0,b:0,n:0};
+  public tbfecha = {c:0,b:0,n:0};
+  public tbfechaprox = {c:0,b:0,n:0};
 
   public today = new Date();
   public todayf = formatDate(this.today,'yyyy-MM-dd','en')
