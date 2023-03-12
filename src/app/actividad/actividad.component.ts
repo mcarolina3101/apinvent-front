@@ -7,7 +7,6 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 import {
   MAT_MOMENT_DATE_FORMATS,
   MomentDateAdapter,
@@ -18,8 +17,6 @@ import 'moment/locale/es';
 import * as _moment from 'moment';
 declare var $: any;
 import { saveAs } from 'file-saver';
-import { element } from 'protractor';
-import { isDefined } from '@angular/compiler/src/util';
 
 const moment = _moment;
 
@@ -246,8 +243,8 @@ export class ActividadComponent implements OnInit {
     });
   }
 
-  obtenerActid(n) {
-    this.actividadService.getheaderbyid(n).subscribe(resp => {
+  obtenerActid(n, estado) {
+    this.actividadService.getheaderbyid(n,estado).subscribe(resp => {
       this.inventid = resp["info"];
       this.openDialogEdit(n);
     }, err => {
@@ -537,6 +534,8 @@ export class FormComponentActividad implements OnInit {
   public disire = false;
   public disw = false;
   dataEventos: any[] = [];
+  public actest: any = [{ id:0, bul: false, nombre: 'ELIMINADO' }, { id:1, bul: true, nombre: 'INGRESADO' }];
+
   actividadescontrol = new FormControl();
 
   public displayedColumns: string[] = [
@@ -708,6 +707,7 @@ export class FormComponentActividad implements OnInit {
             usuario: this.data.usuario,
             mins: this.actividadescontrol.value.mins,
             disfecha: false,
+            estado: element.estado?1:0,
             dismins: !this.actividadescontrol.value.editmins,
             check: true,
             discheck: true
@@ -781,6 +781,7 @@ export class FormComponentActividad implements OnInit {
         namesubact: element.ConfigActividad[0].subactividad,
         usuario: element.usuario,
         mins: element.mins,
+        estado: element.estado?1:0,
         disfecha: element.usuario == undefined ? true : false,
         dismins: !this.actividadescontrol.value.editmins,
         check: element.usuario == undefined ? false : true,
@@ -828,6 +829,7 @@ export class FormComponentActividad implements OnInit {
             namesubact: element.nombre,
             usuario: undefined,
             mins: element.mins,
+            estado: element.estado?1:0,
             disfecha: true,
             dismins: !element.editmis,
             check: false,

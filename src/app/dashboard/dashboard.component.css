@@ -1,3 +1,17 @@
 .card{
     margin-top: 40px !important;
 }
+
+::ng-deep th.mat-column-demo-actividad,td.mat-column-demo-actividad {
+    max-width: 400px !important;
+    font-size :small;
+  }
+
+  ::ng-deep th.mat-column-demo-id,td.mat-column-demo-id {
+    max-width: 80px !important;
+    font-size :small;
+  }
+  ::ng-deep th.mat-column-demo-action,td.mat-column-demo-action {
+    max-width: 100px !important;
+    font-size :small;
+  }

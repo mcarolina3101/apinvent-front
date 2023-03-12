@@ -12,17 +12,19 @@
             </mat-select>
           </mat-form-field>
         </div>
-        <div class="col-lg-4 col-md-6 col-sm-6" >
+        <div class="col-lg-4 col-md-6 col-sm-6">
           <span class="example-list-section">
             <ul>
               <li>
-                <mat-checkbox id="ire" name="ire" [(ngModel)]="ire" (change)="fungetop()" [disabled]="disableop || disire" > Ingreso/Retiro de equipo</mat-checkbox>
+                <mat-checkbox id="ire" name="ire" [(ngModel)]="ire" (change)="fungetop()"
+                  [disabled]="disableop || disire"> Ingreso/Retiro de equipo</mat-checkbox>
               </li>
               <li>
-                <mat-checkbox id="w" name="w"  [(ngModel)]="w" (change)="fungetop()"  [disabled]="disableop || disw"> Ambiente Wireless</mat-checkbox>
+                <mat-checkbox id="w" name="w" [(ngModel)]="w" (change)="fungetop()" [disabled]="disableop || disw">
+                  Ambiente Wireless</mat-checkbox>
               </li>
             </ul>
-          </span>            
+          </span>
         </div>
       </div>
       <mat-divider></mat-divider>
@@ -33,14 +35,15 @@
             <input [(ngModel)]="comentario" matInput>
           </mat-form-field>
         </div>
-      </div>  
+      </div>
       <mat-divider></mat-divider>
       <section class="example-section">
         <span class="example-list-section">
           <ul>
             <li *ngFor="let a of dataEventos">
               <div class="row" style="max-width: 90%;">
-                <mat-checkbox class="example-margin" [(ngModel)]="a.check"  [disabled]="a.discheck" (change)="checksubact(a)"></mat-checkbox>
+                <mat-checkbox class="example-margin" [(ngModel)]="a.check" [disabled]="a.discheck"
+                  (change)="checksubact(a)"></mat-checkbox>
                 <div class="col-md-2 col-sm-6">
                   <mat-form-field class="example-full-width">
                     <mat-label>Fecha - Hora</mat-label>
@@ -50,7 +53,7 @@
                 <div class="col-md-2 col-sm-6">
                   <mat-form-field class="example-full-width">
                     <mat-label>Usuario</mat-label>
-                    <input [(ngModel)]="a.usuario"  [disabled]="true" matInput>
+                    <input [(ngModel)]="a.usuario" [disabled]="true" matInput>
                   </mat-form-field>
                 </div>
                 <div class="col-md-2 col-sm-6">
@@ -62,10 +65,17 @@
                 <div class="col-md-2 col-sm-6">
                   <mat-form-field class="example-full-width">
                     <mat-label>Minutos</mat-label>
-                    <input type="number" [(ngModel)]="a.mins" [disabled]="a.dismins"  matInput>
+                    <input type="number" [(ngModel)]="a.mins" [disabled]="a.dismins" matInput>
                   </mat-form-field>
                 </div>
-                
+                <div class="col-md-2 col-sm-6">
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Activado</mat-label>
+                    <mat-select [(value)]="a.estado">
+                      <mat-option *ngFor="let d of data.activado" [value]="d.id">{{ d.nombre }}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
               </div>
             </li>
           </ul>
@@ -77,7 +87,7 @@
     <div class="col-md-2 col-sm-6" [hidden]="data.isnew">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Activado</mat-label>
-        <mat-select [(value)]="data.selectedact" >
+        <mat-select [(value)]="data.selectedact">
           <mat-option *ngFor="let a of data.activado" [value]="a.id">{{ a.nombre }}</mat-option>
         </mat-select>
       </mat-form-field>
@@ -85,7 +95,7 @@
     <div class="col-md-2 col-sm-6" [hidden]="data.isnew">
       <mat-form-field class="example-full-width" appearance="fill">
         <mat-label>Banco complet.</mat-label>
-        <mat-select [(value)]="data.selectedabb" >
+        <mat-select [(value)]="data.selectedabb">
           <mat-option *ngFor="let a of data.open" [value]="a.id">{{ a.nombre }}</mat-option>
         </mat-select>
       </mat-form-field>

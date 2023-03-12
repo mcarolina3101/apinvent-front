@@ -259,12 +259,13 @@
                                         </div>
                                     </th>
                                     <td mat-cell *matCellDef="let element">
-                                        <!--div style="display:flex !important ;justify-content: flex-end !important;"-->
-                                        <button mat-icon-button
-                                            (click)="obtenerActid(element.HeaderActConf[0].ActHeader[0].idact)">
-                                            <mat-icon>medit</mat-icon>
-                                        </button>
-                                        <!--/div-->
+                                        <div style="display:flex !important ;justify-content: flex-end !important;">
+                                            <button mat-icon-button matTooltip="Editar"
+                                                [matTooltipPosition]="'above'"
+                                                (click)="obtenerActid(element.HeaderActConf[0].ActHeader[0].idact,element.estado?1:0)">
+                                                <mat-icon>mode_edit</mat-icon>
+                                            </button>
+                                        </div>
                                     </td>
                                 </ng-container>
 

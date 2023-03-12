@@ -1,6 +1,5 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { info } from 'console';
 import { Observable } from 'rxjs';
 import * as global from "../../global";
 import { DashboardService } from '../apis/dashboard.service';
@@ -44,6 +43,18 @@ export class ActividadService {
 
     //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
+  listact(info: any): Observable<HttpResponse<any>> {
+    this.ruta = 'actividades/listacts';
+    let body = JSON.stringify({
+      pageSize: 5,
+      pageIndex: info.pindex,
+      username: localStorage.getItem("username")
+    });
+    return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response' });
+    //return this.http.post(global.ruta + ruta, {}, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
+
+    //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
+  }
   download(info: any): Observable<HttpResponse<Blob>> {
     this.ruta = 'actividades/download';
 
@@ -61,10 +72,11 @@ export class ActividadService {
     return this.http.post(global.ruta + this.ruta, body, { headers: this.cabeceraReq, observe: 'response', responseType: 'blob' });
     //return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq});
   }
-  getheaderbyid(n: number): Observable<HttpResponse<any>> {
+  getheaderbyid(n: number, estado: number): Observable<HttpResponse<any>> {
     this.ruta = 'actividades/id';
     let body = JSON.stringify({
       id: n,
+      estado: estado,
       username: localStorage.getItem("username")
     });
     return this.http.post<any>(global.ruta + this.ruta, body, { headers: this.cabeceraReq });
